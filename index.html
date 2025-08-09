@@ -54,6 +54,21 @@
       text-shadow: 0 2px 8px rgba(0,0,0,0.28);
       color: #fff !important;
     }
+    /* Make card text dark for clarity */
+    .solution-bg .card-title {
+      color: #222 !important;
+      text-shadow: none !important;
+    }
+    .solution-bg .card-desc {
+      color: #444 !important;
+      text-shadow: none !important;
+    }
+    .solution-bg .card {
+      background: rgba(255,255,255,0.98) !important;
+      border: 1.5px solid #e5e7eb;
+      /* Optional: increase shadow for separation */
+      box-shadow: 0 8px 32px rgba(30,41,59,0.13);
+    }
     @media (max-width: 768px) {
       .hero-logo-bg {
         width: 330px;
@@ -126,26 +141,26 @@
         Our IoT-enabled system provides a complete and accurate picture of your concrete's development, moving beyond traditional methods.
       </p>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
+        <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
           <div class="text-blue-600 text-5xl mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 16a6 6 0 0 1-6-6a6 6 0 0 1 6-6a6 6 0 0 1 6 6a6 6 0 0 1-6 6M8.5 12A3.5 3.5 0 1 1 12 15.5A3.5 3.5 0 0 1 8.5 12"/></svg>
           </div>
-          <h3 class="text-xl font-semibold mb-2">Smart Sensors</h3>
-          <p class="text-gray-600">Wireless, embedded sensors collect continuous data on temperature, humidity, and strength gain.</p>
+          <h3 class="card-title text-xl font-semibold mb-2">Smart Sensors</h3>
+          <p class="card-desc">Wireless, embedded sensors collect continuous data on temperature, humidity, and strength gain.</p>
         </div>
-        <div class="bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
+        <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
           <div class="text-blue-600 text-5xl mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M21 16H3a1 1 0 0 1 0-2h18a1 1 0 0 1 0 2m-3-4H6a1 1 0 0 1 0-2h12a1 1 0 0 1 0 2M15 8H9a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2"/></svg>
           </div>
-          <h3 class="text-xl font-semibold mb-2">Cloud Integration</h3>
-          <p class="text-gray-600">All sensor data is securely transmitted to our cloud platform, accessible from any device, anywhere.</p>
+          <h3 class="card-title text-xl font-semibold mb-2">Cloud Integration</h3>
+          <p class="card-desc">All sensor data is securely transmitted to our cloud platform, accessible from any device, anywhere.</p>
         </div>
-        <div class="bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
+        <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
           <div class="text-blue-600 text-5xl mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z"/></svg>
           </div>
-          <h3 class="text-xl font-semibold mb-2">Actionable Alerts</h3>
-          <p class="text-gray-600">Get instant notifications for anomalies or when concrete reaches critical strength milestones.</p>
+          <h3 class="card-title text-xl font-semibold mb-2">Actionable Alerts</h3>
+          <p class="card-desc">Get instant notifications for anomalies or when concrete reaches critical strength milestones.</p>
         </div>
       </div>
     </div>
