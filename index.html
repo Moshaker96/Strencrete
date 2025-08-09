@@ -15,7 +15,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* Corrected file name and layered gradient */
       background:
         linear-gradient(120deg, rgba(30,41,59,0.88) 0%, rgba(30,58,138,0.78) 100%),
         url('concrete-monitoring-1.jpg') center center / cover no-repeat;
@@ -33,6 +32,22 @@
       z-index: 1;
       filter: blur(1px);
       pointer-events: none;
+    }
+    /* About Section Background */
+    .about-bg {
+      position: relative;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.92) 0%, rgba(224,242,254,0.96) 100%),
+        url('Gemini_Generated_Image_8dcaf08dcaf08dca.png') center center / cover no-repeat;
+      z-index: 1;
+    }
+    /* Solution Section Background */
+    .solution-bg {
+      position: relative;
+      background:
+        linear-gradient(120deg, rgba(248,250,252,0.96) 0%, rgba(191,219,254,0.92) 100%),
+        url('Gemini_Generated_Image_7osldc7osldc7osl.png') center center / cover no-repeat;
+      z-index: 1;
     }
     @media (max-width: 768px) {
       .hero-logo-bg {
@@ -82,8 +97,8 @@
     </div>
   </section>
 
-  <!-- About Section -->
-  <section id="about" class="bg-white py-20 md:py-32">
+  <!-- About Section with Gemini Background -->
+  <section id="about" class="about-bg py-20 md:py-32">
     <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
       <div>
         <h2 class="text-3xl md:text-4xl font-bold mb-4 text-blue-900">About Strencrete</h2>
@@ -98,8 +113,8 @@
     </div>
   </section>
 
-  <!-- Solution Section -->
-  <section id="solution" class="bg-gray-50 py-20 md:py-32">
+  <!-- Solution Section with Gemini Background -->
+  <section id="solution" class="solution-bg py-20 md:py-32">
     <div class="max-w-6xl mx-auto px-6 text-center">
       <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">A Better Way to Monitor</h2>
       <p class="text-lg text-gray-700 max-w-2xl mx-auto mb-12">
