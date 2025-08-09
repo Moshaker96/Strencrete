@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Home, LayoutDashboard, AlertCircle, TrendingUp, Cpu, Gauge, Globe, Phone, Clock, Lightbulb, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 
+// The HomePage component, containing all marketing content.
 const HomePage = ({ setCurrentPage }) => {
     return (
         <>
@@ -123,6 +124,7 @@ const HomePage = ({ setCurrentPage }) => {
     );
 };
 
+// The DashboardPage component, a placeholder for the live dashboard.
 const DashboardPage = () => {
     return (
         <div className="dashboard-bg min-h-screen">
@@ -155,11 +157,12 @@ const DashboardPage = () => {
     );
 };
 
+// The main App component, handling page state and navigation.
 const App = () => {
     const [currentPage, setCurrentPage] = useState('home');
     const [isHomeDropdownOpen, setIsHomeDropdownOpen] = useState(false);
 
-    // Function to handle link clicks within the dropdown
+    // Function to handle link clicks within the dropdown and scroll to section
     const handleHomeLinkClick = (e, sectionId) => {
         e.preventDefault();
         setCurrentPage('home'); // Ensure we are on the home page first
@@ -187,6 +190,7 @@ const App = () => {
 
     return (
         <div className="bg-gray-50 text-gray-900 antialiased">
+            {/* Custom CSS for backgrounds and fonts */}
             <style>{`
                 body { font-family: 'Inter', sans-serif; }
                 .hero-bg {
@@ -241,6 +245,8 @@ const App = () => {
                     color: #e5e7eb;
                 }
             `}</style>
+
+            {/* Navigation Bar */}
             <nav className="bg-white/90 shadow-lg sticky top-0 z-50 backdrop-blur">
                 <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
                     <a href="#" onClick={() => setCurrentPage('home')} className="flex items-center space-x-3">
@@ -299,8 +305,10 @@ const App = () => {
                 </div>
             </nav>
 
+            {/* Render the current page */}
             {renderPage()}
 
+            {/* Footer */}
             <footer className="bg-gray-900 text-gray-300 py-8">
                 <div className="max-w-6xl mx-auto px-6 text-center text-sm">
                     &copy; 2025 Strencrete. All rights reserved. | <a href="mailto:info@strencrete.com" className="text-blue-500 hover:underline">info@strencrete.com</a>
