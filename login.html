@@ -3,12 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Login</title>
+  <title>Strencrete Login</title>
   <!-- Tailwind CSS CDN for styling -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Inter font from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   
+  <!-- Firebase SDK v8 for a more robust standalone HTML implementation -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -31,12 +35,12 @@
       background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
     }
     .input-field {
-      transition: all 0.3s ease;
+        transition: all 0.3s ease;
     }
     .input-field:focus {
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
-      border-color: #3b82f6;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+        border-color: #3b82f6;
     }
     .message-box {
       font-weight: 600;
@@ -49,7 +53,7 @@
   <!-- Main container for the login form -->
   <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
     <div class="text-center">
-      <!-- Strencrete Logo -->
+      <!-- Strencrete Logo - Using a placeholder for now -->
       <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
       
       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
@@ -69,7 +73,7 @@
       <div id="passwordContainer" class="hidden">
         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
         <div class="mt-1">
-          <input id="password" name="password" type="password" autocomplete="current-password"
+          <input id="password" name="password" type="password" autocomplete="current-password" required
                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
       </div>
@@ -96,6 +100,7 @@
       
       <div class="mt-6">
         <button type="button" id="googleSignInBtn" class="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+          <!-- Google SVG Icon -->
           <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zm-10.7-3.7c1.8 0 3.3 1.5 3.3 3.3s-1.5 3.3-3.3 3.3-3.3-1.5-3.3-3.3 1.5-3.3 3.3-3.3zm0-1c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm-1 8.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1zm-3.3-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
             <path d="M18.8 8h-1.6v2.2h1.6z"/>
@@ -106,17 +111,10 @@
           Sign in with Google
         </button>
       </div>
-
     </form>
   </div>
-  
-  <!-- Non-modular Firebase SDK v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <script>
-    console.log("Script loading and DOM ready.");
-    
     // Your Firebase project configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
@@ -128,15 +126,9 @@
     };
 
     // Initialize Firebase
-    try {
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      console.log("Firebase initialized successfully.");
-    } catch (error) {
-      console.error("Firebase initialization failed:", error);
-    }
-    
-    // Get a reference to the elements
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordContainer = document.getElementById('passwordContainer');
@@ -144,130 +136,98 @@
     const submitBtn = document.getElementById('submitBtn');
     const googleSignInBtn = document.getElementById('googleSignInBtn');
     const messageBox = document.getElementById('messageBox');
-    
+
     // Function to display messages to the user
     function showMessage(text, isError = false) {
-      console.log("Displaying message:", text);
       messageBox.textContent = text;
-      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
-      if (isError) {
-        messageBox.classList.add('bg-red-100', 'text-red-700');
-      } else {
-        messageBox.classList.add('bg-blue-100', 'text-blue-700');
-      }
+      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
+      messageBox.classList.add(isError ? 'bg-red-100' : 'bg-blue-100');
+      messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
     }
 
     // Main form submission handler
-    if (loginForm) {
-      loginForm.addEventListener('submit', async (e) => {
-        console.log("Form submission event triggered.");
-        e.preventDefault();
-        const email = emailInput.value;
-        const password = passwordInput.value;
-        messageBox.classList.add('hidden'); // Clear previous messages
-        
-        // Show a temporary loading state
-        submitBtn.textContent = 'Loading...';
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      messageBox.classList.add('hidden'); // Clear previous messages
 
-        if (submitBtn.getAttribute('data-state') === 'password-prompt') {
-          // Second step: Sign the user in
-          console.log("Current state: password-prompt. Attempting sign in.");
-          try {
-            await firebase.auth().signInWithEmailAndPassword(email, password);
-            showMessage('Sign in successful! Redirecting...', false);
-            console.log("Sign in successful!");
-            // In a real app, you would redirect here
-            // window.location.href = 'dashboard.html';
-          } catch (error) {
-            console.error("Sign-in error:", error);
-            submitBtn.textContent = 'Sign In';
-            if (error.code === 'auth/wrong-password') {
-              showMessage('Incorrect password. Please try again.', true);
-              passwordInput.focus();
-            } else {
-              showMessage(`Sign-in failed: ${error.message}`, true);
-            }
-          }
-        } else if (submitBtn.getAttribute('data-state') === 'create-account') {
-          // Second step: Create a new account
-          console.log("Current state: create-account. Attempting to create user.");
-          try {
-            await firebase.auth().createUserWithEmailAndPassword(email, password);
-            showMessage('Account created successfully! Redirecting...', false);
-            console.log("Account created successfully!");
-            // In a real app, you would redirect here
-            // window.location.href = 'dashboard.html';
-          } catch (error) {
-            console.error("Account creation error:", error);
-            submitBtn.textContent = 'Create Account';
-            if (error.code === 'auth/email-already-in-use') {
-              showMessage('This email is already in use. Please sign in instead.', true);
-            } else {
-              showMessage(`Account creation failed: ${error.message}`, true);
-            }
-          }
-        } else {
-          // First step: Check if the email exists
-          console.log("Current state: initial. Checking email existence.");
-          try {
-            const methods = await firebase.auth().fetchSignInMethodsForEmail(email);
-            console.log("Found sign-in methods:", methods);
-            
-            submitBtn.textContent = 'Continue'; // Reset button text
-
-            if (methods.length === 0) {
-              // Email does not exist, so we need to sign up
-              showMessage('Email not found. Please create a new account by entering a password.');
-              passwordContainer.classList.remove('hidden');
-              submitBtn.textContent = 'Create Account';
-              submitBtn.setAttribute('data-state', 'create-account');
-              passwordInput.focus();
-            } else {
-              // Email exists, so we need to sign in
-              if (methods.includes('password')) {
-                // The account has a password, prompt for it
-                showMessage('Please enter your password to sign in.');
-                passwordContainer.classList.remove('hidden');
-                submitBtn.textContent = 'Sign In';
-                submitBtn.setAttribute('data-state', 'password-prompt');
-                passwordInput.focus();
-              } else {
-                // The account exists but has no password (e.g., created via Google)
-                showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
-                submitBtn.setAttribute('data-state', 'initial'); // Reset state
-                passwordContainer.classList.add('hidden');
-              }
-            }
-          } catch (error) {
-            console.error("Error fetching sign-in methods:", error);
-            submitBtn.textContent = 'Continue';
-            showMessage(`An error occurred: ${error.message}`, true);
-          }
-        }
-      });
-    }
-
-    // Google Sign-in button handler
-    if (googleSignInBtn) {
-      googleSignInBtn.addEventListener('click', async () => {
-        console.log("Google sign-in button clicked.");
-        const provider = new firebase.auth.GoogleAuthProvider();
+      if (submitBtn.textContent === 'Continue') {
+        // First step: Check if the email exists
         try {
-          await firebase.auth().signInWithPopup(provider);
-          showMessage('Google sign in successful! Redirecting...', false);
-          console.log("Google sign-in successful!");
+          const methods = await auth.fetchSignInMethodsForEmail(email);
+
+          if (methods.length === 0) {
+            // Email does not exist, so we need to sign up
+            showMessage('Email not found. Please create a new account by entering a password.');
+            passwordContainer.classList.remove('hidden');
+            submitBtn.textContent = 'Create Account';
+            passwordInput.focus();
+          } else {
+            // Email exists, so we need to sign in
+            if (methods.includes('password')) {
+              // The account has a password, prompt for it
+              showMessage('Please enter your password to sign in.');
+              passwordContainer.classList.remove('hidden');
+              submitBtn.textContent = 'Sign In';
+              passwordInput.focus();
+            } else {
+              // The account exists but has no password (e.g., created via Google)
+              showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
+              submitBtn.textContent = 'Continue'; // Reset button for new attempt
+              passwordContainer.classList.add('hidden');
+            }
+          }
+        } catch (error) {
+          showMessage(`An error occurred: ${error.message}`, true);
+        }
+      } else if (submitBtn.textContent === 'Sign In') {
+        // Second step: Sign the user in
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+          showMessage('Sign in successful! Redirecting...', false);
+          // In a real app, you would redirect here
           // window.location.href = 'dashboard.html';
         } catch (error) {
-          console.error("Google sign-in error:", error);
-          showMessage(`Google sign-in failed: ${error.message}`, true);
+          if (error.code === 'auth/wrong-password') {
+            showMessage('Incorrect password. Please try again.', true);
+            passwordInput.focus();
+          } else {
+            showMessage(`Sign-in failed: ${error.message}`, true);
+          }
         }
-      });
-    }
+      } else if (submitBtn.textContent === 'Create Account') {
+        // Second step: Create a new account
+        try {
+          await auth.createUserWithEmailAndPassword(email, password);
+          showMessage('Account created successfully! Redirecting...', false);
+          // In a real app, you would redirect here
+          // window.location.href = 'dashboard.html';
+        } catch (error) {
+          if (error.code === 'auth/email-already-in-use') {
+            // THIS IS THE KEY FIX: If email is already in use, change the button to "Sign In"
+            showMessage('This email is already in use. Please sign in instead.');
+            passwordContainer.classList.remove('hidden');
+            submitBtn.textContent = 'Sign In';
+            passwordInput.focus();
+          } else {
+            showMessage(`Account creation failed: ${error.message}`, true);
+          }
+        }
+      }
+    });
 
-    // Initial check to ensure elements are present
-    if (!loginForm || !emailInput || !submitBtn) {
-      console.error("Error: Could not find required DOM elements. Check your HTML IDs.");
-    }
+    // Google Sign-in button handler
+    googleSignInBtn.addEventListener('click', async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+        showMessage('Google sign in successful! Redirecting...', false);
+        // window.location.href = 'dashboard.html';
+      } catch (error) {
+        showMessage(`Google sign-in failed: ${error.message}`, true);
+      }
+    });
   </script>
 </body>
 </html>
