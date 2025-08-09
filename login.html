@@ -8,6 +8,15 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Inter font from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDKs for namespaced API (required for FirebaseUI) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- FirebaseUI CDN links -->
+  <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
+  
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -29,6 +38,11 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
     }
+    
+    /* Custom styling to make the FirebaseUI widget match the design */
+    #firebaseui-auth-container {
+      margin-top: 1.5rem;
+    }
   </style>
 </head>
 <body class="login-bg flex items-center justify-center min-h-screen">
@@ -43,76 +57,57 @@
       <p class="text-gray-500 mb-8">Sign in to monitor your projects.</p>
     </div>
 
-    <!-- The login form -->
-    <form id="loginForm" class="space-y-6">
-      <!-- Username field -->
-      <div>
-        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-        <input type="text" id="username" name="username" required 
-               class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
-      </div>
-
-      <!-- Password field -->
-      <div>
-        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-        <input type="password" id="password" name="password" required 
-               class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
-      </div>
-      
-      <!-- Error message box -->
-      <div id="messageBox" class="hidden p-4 text-sm text-red-700 bg-red-100 rounded-lg"></div>
-
-      <!-- Submit button -->
-      <div>
-        <button type="submit" 
-                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-          Sign In
-        </button>
-      </div>
-    </form>
+    <!-- This is the container where FirebaseUI will render the login form -->
+    <div id="firebaseui-auth-container"></div>
   </div>
 
   <script>
-    // Get a reference to the form and the message box
-    const loginForm = document.getElementById('loginForm');
-    const messageBox = document.getElementById('messageBox');
+    // Your Firebase project configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
+      authDomain: "concretelive.firebaseapp.com",
+      projectId: "concretelive",
+      storageBucket: "concretelive.firebasestorage.app",
+      messagingSenderId: "605153900631",
+      appId: "1:605153900631:web:68c72f63bdb2929a348b12"
+    };
 
-    // Add an event listener for form submission
-    loginForm.addEventListener('submit', function(event) {
-      // Prevent the default form submission behavior
-      event.preventDefault();
+    // Initialize Firebase
+    try {
+      firebase.initializeApp(firebaseConfig);
+    } catch (error) {
+      console.error("Error initializing Firebase:", error.message);
+    }
 
-      // Get the values from the username and password fields
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+    // Initialize the FirebaseUI Widget using Firebase's Auth instance.
+    const ui = new firebaseui.auth.AuthUI(firebase.auth());
 
-      // This is a simple, hardcoded authentication check.
-      // In a real application, you would replace this with a call to your backend API.
-      if (username === 'user' && password === 'password123') {
-        // If login is successful, you would typically store a token in local storage
-        // and redirect to the dashboard.
-        // For this example, we'll just show a success message and log the user in.
-        
-        // Use a custom message box instead of alert()
-        messageBox.classList.remove('bg-red-100', 'text-red-700');
-        messageBox.classList.add('bg-green-100', 'text-green-700', 'block');
-        messageBox.textContent = 'Login successful! Redirecting to dashboard...';
-
-        // Simulate a redirect after a short delay
-        setTimeout(() => {
-          // Replace 'dashboard.html' with the actual URL of your dashboard page
-          window.location.href = 'dashboard.html';
-        }, 1500);
-
-      } else {
-        // If login fails, display an error message
-        // Use a custom message box instead of alert()
-        messageBox.classList.remove('bg-green-100', 'text-green-700');
-        messageBox.classList.add('bg-red-100', 'text-red-700', 'block');
-        messageBox.textContent = 'Invalid username or password. Please try again.';
+    // Configuration object for FirebaseUI.
+    const uiConfig = {
+      // The sign-in flow we want to use: 'popup' or 'redirect'.
+      signInFlow: 'popup',
+      // Where to redirect to after successful sign-in.
+      // You should change this to the URL of your dashboard page.
+      signInSuccessUrl: './dashboard.html',
+      // The list of sign-in providers we want to use.
+      signInOptions: [
+        firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        // Add other providers here if you enable them in the Firebase Console:
+        // firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      ],
+      // Callback to handle successful sign-in.
+      callbacks: {
+        signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+          // You can do some additional actions here if needed.
+          console.log("User signed in successfully!");
+          // Return true to redirect to signInSuccessUrl.
+          return true;
+        }
       }
-    });
-  </script>
+    };
 
+    // The start method will wait until the DOM is loaded.
+    ui.start('#firebaseui-auth-container', uiConfig);
+  </script>
 </body>
 </html>
