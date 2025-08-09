@@ -142,11 +142,11 @@
                     </div>
                 </div>
 
-                <!-- Dashboard Button -->
-                <button onclick="showPage('dashboard')" class="flex items-center space-x-2 hover:text-blue-700 transition">
+                <!-- Dashboard Button changed to a link -->
+                <a href="dashboard.html" class="flex items-center space-x-2 hover:text-blue-700 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
                     <span>Dashboard</span>
-                </button>
+                </a>
             </div>
         </div>
     </nav>
@@ -162,7 +162,7 @@
                     <p class="text-lg md:text-xl text-gray-800/90 mb-8 font-medium">
                         Strencrete delivers an innovative IoT solution for real-time monitoring of concrete strength and temperature, ensuring <span class="font-semibold text-blue-700">quality, safety, and efficiency</span> across your construction projects.
                     </p>
-                    <button class="inline-block bg-blue-700 text-white font-semibold rounded-full px-10 py-3 shadow-lg hover:bg-blue-800 transition text-lg" onclick="showPage('dashboard')">Request a Demo</button>
+                    <button class="inline-block bg-blue-700 text-white font-semibold rounded-full px-10 py-3 shadow-lg hover:bg-blue-800 transition text-lg" onclick="window.location.href='dashboard.html'">Request a Demo</button>
                 </div>
             </div>
         </section>
@@ -268,74 +268,8 @@
         </section>
     </div>
 
-    <!-- Dashboard Container -->
-    <div id="dashboard-container" class="hidden flex flex-col min-h-screen">
-        <!-- Dashboard Navbar -->
-        <nav id="dashboard-navbar" class="bg-gray-900 shadow-md py-4 px-6 flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <h1 class="text-2xl font-bold text-blue-400">Strencrete Dashboard</h1>
-            </div>
-            <button onclick="logout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-colors duration-200">
-                Logout
-            </button>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main class="dashboard-main">
-            <!-- Login Page -->
-            <div id="login-page" class="w-full max-w-md">
-                <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
-                    <div class="text-center mb-6">
-                        <img src="https://placehold.co/80x80" alt="Logo" class="w-20 h-20 mx-auto mb-4 rounded-xl"/>
-                        <h2 class="text-3xl font-bold text-white">Log in to Strencrete</h2>
-                        <p class="text-gray-400">Access your project data securely.</p>
-                    </div>
-                    <form onsubmit="event.preventDefault(); login();">
-                        <div class="mb-4">
-                            <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
-                            <input type="text" id="username" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your username" required>
-                        </div>
-                        <div class="mb-6">
-                            <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                            <input type="password" id="password" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your password" required>
-                        </div>
-                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors duration-200">
-                            Login
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Projects Page -->
-            <div id="projects-page" class="w-full max-w-4xl hidden">
-                <h2 class="text-3xl font-bold mb-6">Your Projects</h2>
-                <div id="projects-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Project cards will be injected here by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Castings Page -->
-            <div id="castings-page" class="w-full max-w-4xl hidden">
-                <div class="flex items-center justify-between mb-6">
-                    <button onclick="showProjectsPage()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition-colors duration-200">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Projects
-                    </button>
-                    <h2 id="castings-title" class="text-3xl font-bold text-center">Castings for Project: [Project Name]</h2>
-                </div>
-                
-                <div id="castings-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Casting cards will be injected here by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Message Box -->
-            <div id="message-box" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-6 bg-red-600 text-white rounded-lg shadow-xl z-50 hidden">
-                <p id="message-text"></p>
-                <button onclick="hideMessageBox()" class="mt-4 px-4 py-2 bg-red-700 rounded-md">OK</button>
-            </div>
-        </main>
-    </div>
-
+    <!-- The dashboard container and its children have been removed since they are now on a separate page -->
+    
     <!-- Footer -->
     <footer id="main-footer" class="bg-gray-900 text-gray-300 py-8">
         <div class="max-w-6xl mx-auto px-6 text-center text-sm">
@@ -349,21 +283,20 @@
         const homePage = document.getElementById('home-page');
         const homeNavbar = document.getElementById('home-navbar');
         const mainFooter = document.getElementById('main-footer');
-        const dashboardContainer = document.getElementById('dashboard-container');
-
+    
         // Get the dropdown button and menu
         const homeDropdownBtn = document.getElementById('home-dropdown-btn');
         const homeDropdownMenu = document.getElementById('home-dropdown-menu');
         const chevronUp = document.getElementById('home-chevron-up');
         const chevronDown = document.getElementById('home-chevron-down');
-
+    
         // Toggle dropdown menu on button click
         homeDropdownBtn.addEventListener('click', () => {
             homeDropdownMenu.classList.toggle('hidden');
             chevronUp.classList.toggle('hidden');
             chevronDown.classList.toggle('hidden');
         });
-
+    
         // Close dropdown when clicking outside of it
         window.addEventListener('click', (event) => {
             if (!homeDropdownBtn.contains(event.target) && !homeDropdownMenu.contains(event.target)) {
@@ -372,7 +305,7 @@
                 chevronDown.classList.remove('hidden');
             }
         });
-
+    
         // Function to handle smooth scrolling to a section
         function scrollToSection(sectionId) {
             homeDropdownMenu.classList.add('hidden');
@@ -381,165 +314,34 @@
             const section = document.getElementById(sectionId);
             if (section) {
                 // Ensure the home page is visible before scrolling
-                showPage('home');
+                homePage.classList.remove('hidden');
+                homeNavbar.classList.remove('hidden');
+                mainFooter.classList.remove('hidden');
                 // A small delay to ensure the page has rendered
                 setTimeout(() => {
                     section.scrollIntoView({ behavior: 'smooth' });
                 }, 100);
             }
         }
-
-        // --- DASHBOARD SCRIPT ---
-        // Global state to manage the current view
-        let currentPage = 'home';
-        
-        const loginPage = document.getElementById('login-page');
-        const projectsPage = document.getElementById('projects-page');
-        const castingsPage = document.getElementById('castings-page');
-        const dashboardNavbar = document.getElementById('dashboard-navbar');
-        const messageBox = document.getElementById('message-box');
-        const messageText = document.getElementById('message-text');
-
-        // Sample data for demonstration
-        const projectsData = [
-            { id: 1, name: 'Project Alpha' },
-            { id: 2, name: 'Project Beta' },
-            { id: 3, name: 'Project Gamma' }
-        ];
-        
-        const castingsData = {
-            1: [ // Castings for Project Alpha
-                { id: 'alpha-1', name: 'Foundation Slab', temperature: '25°C' },
-                { id: 'alpha-2', name: 'Support Beam 1', temperature: '22°C' }
-            ],
-            2: [ // Castings for Project Beta
-                { id: 'beta-1', name: 'Column 3', temperature: '28°C' },
-                { id: 'beta-2', name: 'Retaining Wall', temperature: '24°C' }
-            ],
-            3: [ // Castings for Project Gamma
-                { id: 'gamma-1', name: 'Bridge Deck', temperature: '26°C' }
-            ]
-        };
-
+    
         // Function to show a page and hide others
         function showPage(pageId) {
-            homePage.classList.add('hidden');
-            homeNavbar.classList.add('hidden');
-            mainFooter.classList.add('hidden');
-            dashboardContainer.classList.add('hidden');
-            loginPage.classList.add('hidden');
-            projectsPage.classList.add('hidden');
-            castingsPage.classList.add('hidden');
-            dashboardNavbar.classList.add('hidden');
-
-
-            switch (pageId) {
-                case 'home':
-                    homePage.classList.remove('hidden');
-                    homeNavbar.classList.remove('hidden');
-                    mainFooter.classList.remove('hidden');
-                    break;
-                case 'dashboard':
-                    dashboardContainer.classList.remove('hidden');
-                    dashboardNavbar.classList.remove('hidden');
-                    mainFooter.classList.remove('hidden');
-                    loginPage.classList.remove('hidden');
-                    break;
-                case 'projects':
-                    dashboardContainer.classList.remove('hidden');
-                    dashboardNavbar.classList.remove('hidden');
-                    mainFooter.classList.remove('hidden');
-                    projectsPage.classList.remove('hidden');
-                    renderProjects();
-                    break;
-                case 'castings':
-                    dashboardContainer.classList.remove('hidden');
-                    dashboardNavbar.classList.remove('hidden');
-                    mainFooter.classList.remove('hidden');
-                    castingsPage.classList.remove('hidden');
-                    break;
-                default:
-                    homePage.classList.remove('hidden');
-                    homeNavbar.classList.remove('hidden');
-                    mainFooter.classList.remove('hidden');
-                    break;
-            }
-            currentPage = pageId;
+             // Since dashboard is now a separate page, we only handle the home page here
+             if (pageId === 'home') {
+                homePage.classList.remove('hidden');
+                homeNavbar.classList.remove('hidden');
+                mainFooter.classList.remove('hidden');
+             } else {
+                 // For now, any other page will be handled by standard href links
+                 window.location.href = pageId + '.html';
+             }
         }
-        
-        // Simple login function (for demo purposes)
-        function login() {
-            // In a real application, this would validate credentials
-            // For this example, any input is accepted
-            showPage('projects');
-        }
-
-        // Simple logout function
-        function logout() {
-            showPage('home');
-        }
-
-        // Render project cards
-        function renderProjects() {
-            const projectsList = document.getElementById('projects-list');
-            projectsList.innerHTML = ''; // Clear previous content
-            projectsData.forEach(project => {
-                const projectCard = `
-                    <div class="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 cursor-pointer hover:bg-gray-700 transition-colors duration-200" onclick="showCastingsPage(${project.id}, '${project.name}')">
-                        <h3 class="text-xl font-semibold text-blue-400">${project.name}</h3>
-                        <p class="text-gray-400 mt-2">Click to view castings</p>
-                    </div>
-                `;
-                projectsList.innerHTML += projectCard;
-            });
-        }
-        
-        // Render castings cards for a specific project
-        function showCastingsPage(projectId, projectName) {
-            document.getElementById('castings-title').innerText = `Castings for Project: ${projectName}`;
-            const castingsList = document.getElementById('castings-list');
-            castingsList.innerHTML = ''; // Clear previous content
-            
-            const projectCastings = castingsData[projectId] || [];
-            
-            if (projectCastings.length === 0) {
-                castingsList.innerHTML = `<p class="text-center text-gray-400 col-span-full">No castings found for this project.</p>`;
-            } else {
-                projectCastings.forEach(casting => {
-                    const castingCard = `
-                        <div class="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700">
-                            <h3 class="text-xl font-semibold">${casting.name}</h3>
-                            <p class="text-gray-400 mt-2">Temperature: <span class="text-white">${casting.temperature}</span></p>
-                            <p class="text-gray-400">Data last updated: <span class="text-white">Just now</span></p>
-                        </div>
-                    `;
-                    castingsList.innerHTML += castingCard;
-                });
-            }
-            
-            showPage('castings');
-        }
-
-        // Navigate back to the projects page
-        function showProjectsPage() {
-            showPage('projects');
-        }
-        
-        // Custom message box functions
-        function showMessageBox(message) {
-            messageText.innerText = message;
-            messageBox.classList.remove('hidden');
-        }
-        
-        function hideMessageBox() {
-            messageBox.classList.add('hidden');
-        }
-
+    
         // Initial page load
         document.addEventListener('DOMContentLoaded', () => {
-            showPage(currentPage);
+             // No need to call showPage() on load since we are on the home page by default
         });
-
+    
     </script>
 </body>
 </html>
