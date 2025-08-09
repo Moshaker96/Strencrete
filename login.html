@@ -1,233 +1,211 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Strencrete Login</title>
-  <!-- Tailwind CSS CDN for styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Inter font from Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+import React, { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  fetchSignInMethodsForEmail,
+  GoogleAuthProvider,
+  signInWithPopup
+} from 'firebase/auth';
+
+// Main App component
+export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
+  const [buttonText, setButtonText] = useState('Continue');
   
-  <!-- Firebase SDK v8 for a more robust standalone HTML implementation -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .login-bg {
-      background-image: url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      position: relative;
-      min-height: 100vh;
-    }
-    .login-bg::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
-    }
-    .input-field {
-        transition: all 0.3s ease;
-    }
-    .input-field:focus {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
-        border-color: #3b82f6;
-    }
-    .message-box {
-      font-weight: 600;
-      display: block;
-    }
-  </style>
-</head>
-<body class="login-bg flex items-center justify-center min-h-screen">
-
-  <!-- Main container for the login form -->
-  <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
-    <div class="text-center">
-      <!-- Strencrete Logo - Using a placeholder for now -->
-      <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
+  // Firebase initialization and auth instance
+  const [auth, setAuth] = useState(null);
+  
+  // Initialize Firebase on component mount
+  useEffect(() => {
+    try {
+      const firebaseConfig = {
+        apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
+        authDomain: "concretelive.firebaseapp.com",
+        projectId: "concretelive",
+        storageBucket: "concretelive.firebasestorage.app",
+        messagingSenderId: "605153900631",
+        appId: "1:605153900631:web:68c72f63bdb2929a348b12"
+      };
       
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
-      <p class="text-gray-500 mb-8">Sign in to monitor your projects.</p>
-    </div>
+      const app = initializeApp(firebaseConfig);
+      const authInstance = getAuth(app);
+      setAuth(authInstance);
+      console.log("Firebase initialized successfully.");
+    } catch (error) {
+      console.error("Firebase initialization failed:", error);
+      setMessage(`Initialization failed: ${error.message}`);
+      setIsError(true);
+    }
+  }, []);
 
-    <!-- The login form -->
-    <form id="loginForm" class="space-y-4">
-      <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-        <div class="mt-1">
-          <input id="email" name="email" type="email" autocomplete="email" required
-                 class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        </div>
-      </div>
+  // Handler for displaying messages
+  const showMessage = (text, error = false) => {
+    setMessage(text);
+    setIsError(error);
+  };
 
-      <div id="passwordContainer" class="hidden">
-        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-        <div class="mt-1">
-          <input id="password" name="password" type="password" autocomplete="current-password" required
-                 class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        </div>
-      </div>
-
-      <!-- Message box for errors and instructions -->
-      <div id="messageBox" class="hidden message-box p-3 text-sm rounded-lg" role="alert"></div>
-
-      <div>
-        <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-          Continue
-        </button>
-      </div>
-      
-      <div class="relative mt-6">
-        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-          <div class="w-full border-t border-gray-300"></div>
-        </div>
-        <div class="relative flex justify-center text-sm">
-          <span class="px-2 bg-white text-gray-500">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      
-      <div class="mt-6">
-        <button type="button" id="googleSignInBtn" class="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-          <!-- Google SVG Icon -->
-          <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zm-10.7-3.7c1.8 0 3.3 1.5 3.3 3.3s-1.5 3.3-3.3 3.3-3.3-1.5-3.3-3.3 1.5-3.3 3.3-3.3zm0-1c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm-1 8.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1zm-3.3-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
-            <path d="M18.8 8h-1.6v2.2h1.6z"/>
-            <path d="M12.9 6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm0 7.3c-1.7 0-3-1.4-3-3s1.3-3 3-3 3 1.4 3 3-1.3 3-3 3zm-2.8-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
-            <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zM10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zM10.8 6.9c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3z"/>
-            <path fill="currentColor" d="M10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zM10.8 6.9c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zM20 9.5h-1.6v2.2h1.6V9.5zM12.9 6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zM10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3z"/>
-          </svg>
-          Sign in with Google
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <script>
-    // Your Firebase project configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
-      authDomain: "concretelive.firebaseapp.com",
-      projectId: "concretelive",
-      storageBucket: "concretelive.firebasestorage.app",
-      messagingSenderId: "605153900631",
-      appId: "1:605153900631:web:68c72f63bdb2929a348b12"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passwordContainer = document.getElementById('passwordContainer');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submitBtn');
-    const googleSignInBtn = document.getElementById('googleSignInBtn');
-    const messageBox = document.getElementById('messageBox');
-
-    // Function to display messages to the user
-    function showMessage(text, isError = false) {
-      messageBox.textContent = text;
-      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
-      messageBox.classList.add(isError ? 'bg-red-100' : 'bg-blue-100');
-      messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
+  // Main form submission logic
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!auth) {
+      showMessage("Firebase is not initialized.", true);
+      return;
     }
 
-    // Main form submission handler
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = emailInput.value;
-      const password = passwordInput.value;
-      messageBox.classList.add('hidden'); // Clear previous messages
-
-      if (submitBtn.textContent === 'Continue') {
-        // First step: Check if the email exists
-        try {
-          const methods = await auth.fetchSignInMethodsForEmail(email);
-
-          if (methods.length === 0) {
-            // Email does not exist, so we need to sign up
-            showMessage('Email not found. Please create a new account by entering a password.');
-            passwordContainer.classList.remove('hidden');
-            submitBtn.textContent = 'Create Account';
-            passwordInput.focus();
-          } else {
-            // Email exists, so we need to sign in
-            if (methods.includes('password')) {
-              // The account has a password, prompt for it
-              showMessage('Please enter your password to sign in.');
-              passwordContainer.classList.remove('hidden');
-              submitBtn.textContent = 'Sign In';
-              passwordInput.focus();
-            } else {
-              // The account exists but has no password (e.g., created via Google)
-              showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
-              submitBtn.textContent = 'Continue'; // Reset button for new attempt
-              passwordContainer.classList.add('hidden');
-            }
-          }
-        } catch (error) {
-          showMessage(`An error occurred: ${error.message}`, true);
-        }
-      } else if (submitBtn.textContent === 'Sign In') {
-        // Second step: Sign the user in
-        try {
-          await auth.signInWithEmailAndPassword(email, password);
-          showMessage('Sign in successful! Redirecting...', false);
-          // In a real app, you would redirect here
-          // window.location.href = 'dashboard.html';
-        } catch (error) {
-          if (error.code === 'auth/wrong-password') {
-            showMessage('Incorrect password. Please try again.', true);
-            passwordInput.focus();
-          } else {
-            showMessage(`Sign-in failed: ${error.message}`, true);
-          }
-        }
-      } else if (submitBtn.textContent === 'Create Account') {
-        // Second step: Create a new account
-        try {
-          await auth.createUserWithEmailAndPassword(email, password);
-          showMessage('Account created successfully! Redirecting...', false);
-          // In a real app, you would redirect here
-          // window.location.href = 'dashboard.html';
-        } catch (error) {
-          if (error.code === 'auth/email-already-in-use') {
-            // THIS IS THE KEY FIX: If email is already in use, change the button to "Sign In"
-            showMessage('This email is already in use. Please sign in instead.');
-            passwordContainer.classList.remove('hidden');
-            submitBtn.textContent = 'Sign In';
-            passwordInput.focus();
-          } else {
-            showMessage(`Account creation failed: ${error.message}`, true);
-          }
-        }
-      }
-    });
-
-    // Google Sign-in button handler
-    googleSignInBtn.addEventListener('click', async () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
+    showMessage(''); // Clear previous messages
+    
+    // First step: Check email and determine next action
+    if (buttonText === 'Continue') {
       try {
-        await auth.signInWithPopup(provider);
-        showMessage('Google sign in successful! Redirecting...', false);
-        // window.location.href = 'dashboard.html';
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        
+        if (methods.length === 0) {
+          // Email not found, prompt for a new account
+          showMessage('Email not found. Please create a new account by entering a password.');
+          setShowPassword(true);
+          setButtonText('Create Account');
+        } else {
+          // Email exists, prompt for a password
+          showMessage('Please enter your password to sign in.');
+          setShowPassword(true);
+          setButtonText('Sign In');
+        }
       } catch (error) {
-        showMessage(`Google sign-in failed: ${error.message}`, true);
+        showMessage(`An error occurred: ${error.message}`, true);
       }
-    });
-  </script>
-</body>
-</html>
+    } 
+    // Second step: Sign In or Create Account
+    else if (buttonText === 'Sign In') {
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showMessage('Sign in successful! Redirecting...', false);
+        // In a real app, you'd redirect here.
+      } catch (error) {
+        if (error.code === 'auth/wrong-password') {
+          showMessage('Incorrect password. Please try again.', true);
+        } else {
+          showMessage(`Sign-in failed: ${error.message}`, true);
+        }
+      }
+    } else if (buttonText === 'Create Account') {
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        showMessage('Account created successfully! Redirecting...', false);
+        // In a real app, you'd redirect here.
+      } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+          // This is the key fix: if the email is already in use, switch to the sign-in flow.
+          showMessage('This email is already in use. Please sign in instead.');
+          setButtonText('Sign In');
+        } else {
+          showMessage(`Account creation failed: ${error.message}`, true);
+        }
+      }
+    }
+  };
+
+  // Google sign-in logic
+  const handleGoogleSignIn = async () => {
+    if (!auth) {
+      showMessage("Firebase is not initialized.", true);
+      return;
+    }
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      showMessage('Google sign in successful! Redirecting...', false);
+    } catch (error) {
+      showMessage(`Google sign-in failed: ${error.message}`, true);
+    }
+  };
+
+  return (
+    <div className="login-bg flex items-center justify-center min-h-screen">
+      <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
+        <div className="text-center">
+          <img src="strencrete-logo.jpg" onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO'; }} alt="Strencrete Logo" className="w-32 h-auto mx-auto mb-4 rounded-lg shadow" />
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
+          <p className="text-gray-500 mb-8">Sign in to monitor your projects.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
+            <div className="mt-1">
+              <input 
+                id="email" 
+                name="email" 
+                type="email" 
+                autoComplete="email" 
+                required 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          {showPassword && (
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+              <div className="mt-1">
+                <input 
+                  id="password" 
+                  name="password" 
+                  type="password" 
+                  autoComplete="current-password" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+            </div>
+          )}
+
+          {message && (
+            <div className={`message-box p-3 text-sm rounded-lg ${isError ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`} role="alert">
+              {message}
+            </div>
+          )}
+
+          <div>
+            <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+              {buttonText}
+            </button>
+          </div>
+          
+          <div className="relative mt-6">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          
+          <div className="mt-6">
+            <button type="button" onClick={handleGoogleSignIn} className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+              <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zm-10.7-3.7c1.8 0 3.3 1.5 3.3 3.3s-1.5 3.3-3.3 3.3-3.3-1.5-3.3-3.3 1.5-3.3 3.3-3.3zm0-1c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm-1 8.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1zm-3.3-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
+                <path d="M18.8 8h-1.6v2.2h1.6z"/>
+                <path d="M12.9 6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm0 7.3c-1.7 0-3-1.4-3-3s1.3-3 3-3 3 1.4 3 3-1.3 3-3 3zm-2.8-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
+                <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zM10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zM10.8 6.9c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3z"/>
+                <path fill="currentColor" d="M10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zM10.8 6.9c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zM20 9.5h-1.6v2.2h1.6V9.5zM12.9 6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zM10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3z"/>
+              </svg>
+              Sign in with Google
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
