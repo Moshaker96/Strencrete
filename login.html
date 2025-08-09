@@ -31,12 +31,16 @@
       background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
     }
     .input-field {
-        transition: all 0.3s ease;
+      transition: all 0.3s ease;
     }
     .input-field:focus {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
-        border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+      border-color: #3b82f6;
+    }
+    .message-box {
+      font-weight: 600;
+      display: block;
     }
   </style>
 </head>
@@ -46,7 +50,6 @@
   <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
     <div class="text-center">
       <!-- Strencrete Logo -->
-      <!-- Added an 'onerror' attribute to handle cases where the image URL is not valid. -->
       <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
       
       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
@@ -66,13 +69,13 @@
       <div id="passwordContainer" class="hidden">
         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
         <div class="mt-1">
-          <input id="password" name="password" type="password" autocomplete="current-password" required
+          <input id="password" name="password" type="password" autocomplete="current-password"
                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
       </div>
 
       <!-- Message box for errors and instructions -->
-      <div id="messageBox" class="hidden p-3 text-sm rounded-lg" role="alert"></div>
+      <div id="messageBox" class="hidden message-box p-3 text-sm rounded-lg" role="alert"></div>
 
       <div>
         <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
@@ -106,13 +109,14 @@
 
     </form>
   </div>
+  
+  <!-- Non-modular Firebase SDK v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
-  <!-- The single, combined script block -->
-  <script type="module">
-    // All imports and logic must be in the same script block
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
-
+  <script>
+    console.log("Script loading and DOM ready.");
+    
     // Your Firebase project configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
@@ -124,9 +128,15 @@
     };
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
+    try {
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      console.log("Firebase initialized successfully.");
+    } catch (error) {
+      console.error("Firebase initialization failed:", error);
+    }
+    
+    // Get a reference to the elements
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordContainer = document.getElementById('passwordContainer');
@@ -134,12 +144,12 @@
     const submitBtn = document.getElementById('submitBtn');
     const googleSignInBtn = document.getElementById('googleSignInBtn');
     const messageBox = document.getElementById('messageBox');
-
+    
     // Function to display messages to the user
     function showMessage(text, isError = false) {
+      console.log("Displaying message:", text);
       messageBox.textContent = text;
       messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
-      messageBox.classList.remove('hidden');
       if (isError) {
         messageBox.classList.add('bg-red-100', 'text-red-700');
       } else {
@@ -148,106 +158,116 @@
     }
 
     // Main form submission handler
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = emailInput.value;
-      const password = passwordInput.value;
-      messageBox.classList.add('hidden'); // Clear previous messages
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        console.log("Form submission event triggered.");
+        e.preventDefault();
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        messageBox.classList.add('hidden'); // Clear previous messages
+        
+        // Show a temporary loading state
+        submitBtn.textContent = 'Loading...';
 
-      if (submitBtn.textContent === 'Continue') {
-        // First step: Check if the email exists
-        try {
-          const methods = await fetchSignInMethodsForEmail(auth, email);
-
-          if (methods.length === 0) {
-            // Email does not exist, so we need to sign up
-            showMessage('Email not found. Please create a new account by entering a password.');
-            passwordContainer.classList.remove('hidden');
-            submitBtn.textContent = 'Create Account';
-            passwordInput.setAttribute('required', true);
-            passwordInput.focus();
-          } else {
-            // Email exists, so we need to sign in
-            if (methods.includes('password')) {
-              // The account has a password, prompt for it
-              showMessage('Please enter your password to sign in.');
-              passwordContainer.classList.remove('hidden');
-              submitBtn.textContent = 'Sign In';
-              passwordInput.setAttribute('required', true);
+        if (submitBtn.getAttribute('data-state') === 'password-prompt') {
+          // Second step: Sign the user in
+          console.log("Current state: password-prompt. Attempting sign in.");
+          try {
+            await firebase.auth().signInWithEmailAndPassword(email, password);
+            showMessage('Sign in successful! Redirecting...', false);
+            console.log("Sign in successful!");
+            // In a real app, you would redirect here
+            // window.location.href = 'dashboard.html';
+          } catch (error) {
+            console.error("Sign-in error:", error);
+            submitBtn.textContent = 'Sign In';
+            if (error.code === 'auth/wrong-password') {
+              showMessage('Incorrect password. Please try again.', true);
               passwordInput.focus();
             } else {
-              // The account exists but has no password (e.g., created via Google)
-              showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
-              submitBtn.textContent = 'Continue';
-              passwordContainer.classList.add('hidden');
+              showMessage(`Sign-in failed: ${error.message}`, true);
             }
           }
-        } catch (error) {
-          console.error("Error fetching sign-in methods:", error);
-          showMessage(`An error occurred: ${error.message}`, true);
-        }
-      } else if (submitBtn.textContent === 'Sign In') {
-        // Second step: Sign the user in
-        try {
-          await signInWithEmailAndPassword(auth, email, password);
-          showMessage('Sign in successful! Redirecting...', false);
-          // In a real app, you would redirect here
-          // window.location.href = 'dashboard.html';
-        } catch (error) {
-          console.error("Sign-in error:", error);
-          if (error.code === 'auth/wrong-password') {
-            showMessage('Incorrect password. Please try again.', true);
-            passwordInput.focus();
-          } else if (error.code === 'auth/user-not-found') {
-            showMessage('User not found. Please check your email and try again.', true);
-            submitBtn.textContent = 'Continue'; // Reset to initial state
-            passwordContainer.classList.add('hidden');
-            passwordInput.removeAttribute('required');
-          } else {
-            showMessage(`Sign-in failed: ${error.message}`, true);
+        } else if (submitBtn.getAttribute('data-state') === 'create-account') {
+          // Second step: Create a new account
+          console.log("Current state: create-account. Attempting to create user.");
+          try {
+            await firebase.auth().createUserWithEmailAndPassword(email, password);
+            showMessage('Account created successfully! Redirecting...', false);
+            console.log("Account created successfully!");
+            // In a real app, you would redirect here
+            // window.location.href = 'dashboard.html';
+          } catch (error) {
+            console.error("Account creation error:", error);
+            submitBtn.textContent = 'Create Account';
+            if (error.code === 'auth/email-already-in-use') {
+              showMessage('This email is already in use. Please sign in instead.', true);
+            } else {
+              showMessage(`Account creation failed: ${error.message}`, true);
+            }
           }
-        }
-      } else if (submitBtn.textContent === 'Create Account') {
-        // Second step: Create a new account
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
-          showMessage('Account created successfully! Redirecting...', false);
-          // In a real app, you would redirect here
-          // window.location.href = 'dashboard.html';
-        } catch (error) {
-          console.error("Account creation error:", error);
-          if (error.code === 'auth/email-already-in-use') {
-            showMessage('This email is already in use. Please sign in instead.', true);
+        } else {
+          // First step: Check if the email exists
+          console.log("Current state: initial. Checking email existence.");
+          try {
+            const methods = await firebase.auth().fetchSignInMethodsForEmail(email);
+            console.log("Found sign-in methods:", methods);
+            
+            submitBtn.textContent = 'Continue'; // Reset button text
+
+            if (methods.length === 0) {
+              // Email does not exist, so we need to sign up
+              showMessage('Email not found. Please create a new account by entering a password.');
+              passwordContainer.classList.remove('hidden');
+              submitBtn.textContent = 'Create Account';
+              submitBtn.setAttribute('data-state', 'create-account');
+              passwordInput.focus();
+            } else {
+              // Email exists, so we need to sign in
+              if (methods.includes('password')) {
+                // The account has a password, prompt for it
+                showMessage('Please enter your password to sign in.');
+                passwordContainer.classList.remove('hidden');
+                submitBtn.textContent = 'Sign In';
+                submitBtn.setAttribute('data-state', 'password-prompt');
+                passwordInput.focus();
+              } else {
+                // The account exists but has no password (e.g., created via Google)
+                showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
+                submitBtn.setAttribute('data-state', 'initial'); // Reset state
+                passwordContainer.classList.add('hidden');
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching sign-in methods:", error);
             submitBtn.textContent = 'Continue';
-            passwordContainer.classList.add('hidden');
-            passwordInput.removeAttribute('required');
-          } else {
-            showMessage(`Account creation failed: ${error.message}`, true);
+            showMessage(`An error occurred: ${error.message}`, true);
           }
         }
-      }
-    });
+      });
+    }
 
     // Google Sign-in button handler
-    googleSignInBtn.addEventListener('click', async () => {
-      const provider = new GoogleAuthProvider();
-      try {
-        await signInWithPopup(auth, provider);
-        showMessage('Google sign in successful! Redirecting...', false);
-        // window.location.href = 'dashboard.html';
-      } catch (error) {
-        console.error("Google sign-in error:", error);
-        showMessage(`Google sign-in failed: ${error.message}`, true);
-      }
-    });
+    if (googleSignInBtn) {
+      googleSignInBtn.addEventListener('click', async () => {
+        console.log("Google sign-in button clicked.");
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+          await firebase.auth().signInWithPopup(provider);
+          showMessage('Google sign in successful! Redirecting...', false);
+          console.log("Google sign-in successful!");
+          // window.location.href = 'dashboard.html';
+        } catch (error) {
+          console.error("Google sign-in error:", error);
+          showMessage(`Google sign-in failed: ${error.message}`, true);
+        }
+      });
+    }
 
-    // Handle pressing Enter in the email field
-    emailInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        loginForm.requestSubmit();
-      }
-    });
+    // Initial check to ensure elements are present
+    if (!loginForm || !emailInput || !submitBtn) {
+      console.error("Error: Could not find required DOM elements. Check your HTML IDs.");
+    }
   </script>
 </body>
 </html>
