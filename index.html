@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Company Name</title>
+    <title>Strencrete | IoT Concrete Monitoring</title>
     <!-- Use Tailwind CSS for a modern, responsive design -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +12,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
         }
         html {
             scroll-behavior: smooth;
@@ -30,6 +31,17 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+        /* Custom background with the logo for the hero section */
+        .hero-background {
+            background-image: url('ed62ed27-8e9c-4204-b751-1c42352bd668.jpg');
+            background-size: 200px;
+            background-repeat: repeat;
+            background-position: center;
+            opacity: 0.03; /* Extremely low opacity for a subtle watermark effect */
+        }
+        .hero-overlay {
+            background-color: rgba(15, 23, 42, 0.85); /* Semi-transparent dark overlay for readability */
+        }
         /* Style for a simple success message box */
         #form-success-message {
             display: none;
@@ -47,7 +59,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased">
+<body class="text-gray-800 antialiased">
     
     <!-- Simple success message box -->
     <div id="form-success-message">
@@ -56,31 +68,35 @@
     </div>
 
     <!-- Navigation Bar -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#hero" class="text-2xl font-bold text-gray-900">
-                <span class="text-blue-600">Your</span> Company
+            <a href="#hero" class="flex items-center space-x-2">
+                <img src="ed62ed27-8e9c-4204-b751-1c42352bd668.jpg" alt="Strencrete Logo" class="h-8 md:h-10">
             </a>
             <div class="space-x-8 hidden md:flex">
-                <a href="#about" class="text-gray-600 hover:text-blue-600 transition duration-300">About</a>
-                <a href="#services" class="text-gray-600 hover:text-blue-600 transition duration-300">Services</a>
-                <a href="#contact" class="text-gray-600 hover:text-blue-600 transition duration-300">Contact</a>
+                <a href="#about" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">About Us</a>
+                <a href="#solution" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Our Solution</a>
+                <a href="#benefits" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Benefits</a>
+                <a href="#contact" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Contact</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section id="hero" class="relative bg-blue-600 text-white min-h-screen flex items-center justify-center">
-        <div class="absolute inset-0 bg-blue-900 opacity-20"></div>
-        <div class="container mx-auto px-6 text-center z-10 py-20 md:py-0">
+    <section id="hero" class="relative min-h-screen flex items-center justify-center">
+        <!-- Background and overlay for the logo watermark effect -->
+        <div class="absolute inset-0 hero-background"></div>
+        <div class="absolute inset-0 hero-overlay"></div>
+        
+        <div class="container mx-auto px-6 text-center z-10 py-20 md:py-0 text-white">
             <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-                Solutions for <span class="text-blue-300">Modern</span> Construction
+                Empowering <span class="text-blue-400">Strength</span> Through Smart Monitoring
             </h1>
-            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-8">
-                We provide innovative temperature monitoring systems to ensure the integrity and quality of your concrete projects.
+            <p class="text-lg md:text-xl max-w-3xl mx-auto mb-8 font-light">
+                Strencrete provides an innovative IoT-based solution for real-time monitoring of concrete strength and temperature, ensuring quality, safety, and efficiency in construction.
             </p>
-            <a href="#services" class="bg-white text-blue-600 font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition duration-300">
-                Learn More
+            <a href="#contact" class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-blue-700 transition duration-300">
+                Request a Demo
             </a>
         </div>
     </section>
@@ -90,60 +106,113 @@
         <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
             <div class="md:w-1/2">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                    About Our Company
+                    About Strencrete
                 </h2>
                 <p class="text-lg text-gray-600 mb-6">
-                    Founded in 2020, our company has been a pioneer in providing reliable and precise temperature measurement solutions for the construction industry. With a deep understanding of the challenges in concrete curing, we've developed products that are not only accurate but also robust and easy to use.
+                    In the fast-paced world of construction, precision and reliability are paramount. Strencrete was founded to bridge the gap between traditional practices and modern technology. We've developed a robust IoT platform that provides real-time, actionable insights into your concrete's curing process.
                 </p>
                 <p class="text-lg text-gray-600">
-                    We believe in the power of data to improve project outcomes. Our mission is to equip you with the tools you need to ensure the quality and safety of your builds, every single time.
+                    Our mission is to help project managers and engineers make data-driven decisions, reduce curing times, and guarantee the highest quality standards for every project.
                 </p>
             </div>
             <div class="md:w-1/2 rounded-xl shadow-2xl overflow-hidden">
-                <img src="https://placehold.co/800x600/60a5fa/ffffff?text=Our+Team" alt="A team of professionals working" class="w-full h-auto object-cover">
+                <img src="https://placehold.co/800x600/1e40af/ffffff?text=Concrete+Testing" alt="Image of a team member working on a concrete construction site" class="w-full h-auto object-cover">
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="services" class="py-20 md:py-32 bg-gray-100">
+    <!-- Our Solution Section -->
+    <section id="solution" class="py-20 md:py-32 bg-gray-100">
         <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Services & Products</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">A Better Way to Monitor</h2>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-12">
-                We offer a range of products and services tailored to the needs of the modern construction site, focusing on precision and durability.
+                Our IoT-enabled system provides a complete and accurate picture of your concrete's development, moving beyond traditional methods.
             </p>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Service Card 1 -->
+                <!-- Solution Card 1 -->
                 <div class="bg-white p-8 rounded-xl shadow-lg transition-transform hover:scale-105 duration-300">
                     <div class="text-blue-600 text-5xl mb-4">
-                        &#9881; <!-- Cog Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 16a6 6 0 0 1-6-6a6 6 0 0 1 6-6a6 6 0 0 1 6 6a6 6 0 0 1-6 6M8.5 12A3.5 3.5 0 1 1 12 15.5A3.5 3.5 0 0 1 8.5 12"/></svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Concrete Temperature Sensors</h3>
+                    <h3 class="text-xl font-semibold mb-2">Smart Sensors</h3>
                     <p class="text-gray-600">
-                        High-accuracy, durable sensors designed to be embedded in concrete for real-time temperature monitoring during the curing process.
+                        Our wireless, embedded sensors collect continuous data on temperature, humidity, and strength gain.
                     </p>
                 </div>
                 
-                <!-- Service Card 2 -->
+                <!-- Solution Card 2 -->
                 <div class="bg-white p-8 rounded-xl shadow-lg transition-transform hover:scale-105 duration-300">
                     <div class="text-blue-600 text-5xl mb-4">
-                        &#128246; <!-- Signal Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M21 16H3a1 1 0 0 1 0-2h18a1 1 0 0 1 0 2m-3-4H6a1 1 0 0 1 0-2h12a1 1 0 0 1 0 2M15 8H9a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2"/></svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Wireless Data Logging</h3>
+                    <h3 class="text-xl font-semibold mb-2">Cloud Integration</h3>
                     <p class="text-gray-600">
-                        Our wireless systems allow you to monitor sensor data remotely from a central hub, improving efficiency and reducing manual checks.
+                        All sensor data is securely transmitted to our cloud platform, accessible from any device, anywhere.
                     </p>
                 </div>
                 
-                <!-- Service Card 3 -->
+                <!-- Solution Card 3 -->
                 <div class="bg-white p-8 rounded-xl shadow-lg transition-transform hover:scale-105 duration-300">
                     <div class="text-blue-600 text-5xl mb-4">
-                        &#128200; <!-- Chart Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z"/></svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Data Analysis & Reporting</h3>
+                    <h3 class="text-xl font-semibold mb-2">Actionable Alerts</h3>
                     <p class="text-gray-600">
-                        We provide software and tools to analyze the temperature data, helping you generate reports and ensure compliance with project specifications.
+                        Get instant notifications for temperature anomalies or when concrete reaches critical strength milestones.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="py-20 md:py-32 bg-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose Strencrete?</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-12">
+                Our solution provides clear advantages that directly impact your project's bottom line and quality.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Benefit Card 1 -->
+                <div class="bg-gray-100 p-6 rounded-xl shadow-md">
+                    <div class="text-blue-600 text-4xl mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-10 10a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m4.2 14.2l-5-2.9v-5a1 1 0 0 1 2 0v4.3l4.5 2.6a1 1 0 0 1-1 1.7"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-1">Time Savings</h3>
+                    <p class="text-gray-600 text-sm">
+                        Reduce waiting times by knowing the exact moment concrete is ready.
+                    </p>
+                </div>
+                <!-- Benefit Card 2 -->
+                <div class="bg-gray-100 p-6 rounded-xl shadow-md">
+                    <div class="text-blue-600 text-4xl mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 18a6 6 0 0 1-6-6a6 6 0 0 1 6-6a6 6 0 0 1 6 6a6 6 0 0 1-6 6m12-6a12 12 0 0 0-24 0a12 12 0 0 0 24 0M12 10a2 2 0 0 0-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-1">Increased Accuracy</h3>
+                    <p class="text-gray-600 text-sm">
+                        Eliminate human error with precise, automated data collection.
+                    </p>
+                </div>
+                <!-- Benefit Card 3 -->
+                <div class="bg-gray-100 p-6 rounded-xl shadow-md">
+                    <div class="text-blue-600 text-4xl mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14m0 2a9 9 0 1 1 0-18a9 9 0 0 1 0 18M12 7a5 5 0 1 0 0 10a5 5 0 0 0 0-10m0 2a3 3 0 1 1 0 6a3 3 0 0 1 0-6"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-1">Enhanced Quality</h3>
+                    <p class="text-gray-600 text-sm">
+                        Ensure concrete meets and exceeds specified strength and durability.
+                    </p>
+                </div>
+                <!-- Benefit Card 4 -->
+                <div class="bg-gray-100 p-6 rounded-xl shadow-md">
+                    <div class="text-blue-600 text-4xl mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M15 12a3 3 0 1 1-6 0a3 3 0 0 1 6 0m0 2a5 5 0 1 0-10 0a5 5 0 0 0 10 0"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-1">Remote Access</h3>
+                    <p class="text-gray-600 text-sm">
+                        Monitor all your projects from a single dashboard, from anywhere in the world.
                     </p>
                 </div>
             </div>
@@ -151,16 +220,16 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-20 md:py-32 bg-white">
+    <section id="contact" class="py-20 md:py-32 bg-gray-50">
         <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Get in Touch</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Ready to Build Stronger?</h2>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-12">
-                Have a question or a project you'd like to discuss? Fill out the form below and we'll get back to you as soon as possible.
+                Let's discuss how Strencrete can transform your construction projects. Contact us for a free consultation.
             </p>
             
-            <div class="max-w-xl mx-auto bg-gray-100 p-8 rounded-xl shadow-lg">
+            <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
                 <!--
-                    This form now uses Formspree, a free service that allows you to receive
+                    This form uses Formspree, a free service that allows you to receive
                     form submissions without writing any server-side code.
                     
                     IMPORTANT: You must replace the placeholder 'your-form-id' with your actual
@@ -190,7 +259,7 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300 py-8">
         <div class="container mx-auto px-6 text-center text-sm">
-            &copy; 2024 Your Company Name. All rights reserved.
+            &copy; 2024 Strencrete. All rights reserved.
         </div>
     </footer>
 
@@ -222,12 +291,12 @@
                     form.reset();
                 } else {
                     // Handle errors here
-                    alert("There was an error sending your message. Please try again later.");
+                    console.error('Form submission failed.');
+                    // Using a custom modal is better than an alert, but for this simple example, we'll log to console.
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert("There was an error sending your message. Please try again later.");
             });
         });
     </script>
