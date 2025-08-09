@@ -9,14 +9,12 @@
   <!-- Inter font from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDKs for namespaced API (required for FirebaseUI) -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <!-- Firebase Modular SDK for manual control -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
+  </script>
 
-  <!-- FirebaseUI CDN links -->
-  <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
-  
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -38,10 +36,13 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
     }
-    
-    /* Custom styling to make the FirebaseUI widget match the design */
-    #firebaseui-auth-container {
-      margin-top: 1.5rem;
+    .input-field {
+        transition: all 0.3s ease;
+    }
+    .input-field:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+        border-color: #3b82f6;
     }
   </style>
 </head>
@@ -57,11 +58,64 @@
       <p class="text-gray-500 mb-8">Sign in to monitor your projects.</p>
     </div>
 
-    <!-- This is the container where FirebaseUI will render the login form -->
-    <div id="firebaseui-auth-container"></div>
+    <!-- The login form -->
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+        <div class="mt-1">
+          <input id="email" name="email" type="email" autocomplete="email" required
+                 class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+      </div>
+
+      <div id="passwordContainer" class="hidden">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <div class="mt-1">
+          <input id="password" name="password" type="password" autocomplete="current-password" required
+                 class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+      </div>
+
+      <!-- Message box for errors and instructions -->
+      <div id="messageBox" class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg" role="alert"></div>
+
+      <div>
+        <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+          Continue
+        </button>
+      </div>
+      
+      <div class="relative mt-6">
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white text-gray-500">
+            Or continue with
+          </span>
+        </div>
+      </div>
+      
+      <div class="mt-6">
+        <button type="button" id="googleSignInBtn" class="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+          <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zm-10.7-3.7c1.8 0 3.3 1.5 3.3 3.3s-1.5 3.3-3.3 3.3-3.3-1.5-3.3-3.3 1.5-3.3 3.3-3.3zm0-1c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm-1 8.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1zm-3.3-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
+            <path d="M18.8 8h-1.6v2.2h1.6z"/>
+            <path d="M12.9 6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm0 7.3c-1.7 0-3-1.4-3-3s1.3-3 3-3 3 1.4 3 3-1.3 3-3 3zm-2.8-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
+            <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zM10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zM10.8 6.9c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3z"/>
+            <path fill="currentColor" d="M10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zM10.8 6.9c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zM20 9.5h-1.6v2.2h1.6V9.5zM12.9 6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zM10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3z"/>
+          </svg>
+          Sign in with Google
+        </button>
+      </div>
+
+    </form>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
+
     // Your Firebase project configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
@@ -73,37 +127,117 @@
     };
 
     // Initialize Firebase
-    try {
-      firebase.initializeApp(firebaseConfig);
-    } catch (error) {
-      console.error("Error initializing Firebase:", error.message);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordContainer = document.getElementById('passwordContainer');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const googleSignInBtn = document.getElementById('googleSignInBtn');
+    const messageBox = document.getElementById('messageBox');
+
+    // Function to display messages to the user
+    function showMessage(text, isError = false) {
+      messageBox.textContent = text;
+      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+      if (isError) {
+        messageBox.classList.add('bg-red-100', 'text-red-700');
+      } else {
+        messageBox.classList.add('bg-green-100', 'text-green-700');
+      }
     }
 
-    // Initialize the FirebaseUI Widget using Firebase's Auth instance.
-    const ui = new firebaseui.auth.AuthUI(firebase.auth());
+    // Main form submission handler
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      messageBox.classList.add('hidden'); // Clear previous messages
 
-    // Configuration object for FirebaseUI.
-    const uiConfig = {
-      // The sign-in flow we want to use: 'popup' or 'redirect'.
-      signInFlow: 'popup',
-      // Where to redirect to after successful sign-in.
-      signInSuccessUrl: './dashboard.html',
-      // The list of sign-in providers we want to use.
-      signInOptions: [
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      ],
-      // Callback to handle successful sign-in.
-      callbacks: {
-        signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-          console.log("User signed in successfully!");
-          return true;
+      if (submitBtn.textContent === 'Continue') {
+        // First step: Check if the email exists
+        try {
+          const methods = await fetchSignInMethodsForEmail(auth, email);
+
+          if (methods.length === 0) {
+            // Email does not exist, so we need to sign up
+            showMessage('Email not found. Please create a new account by entering a password.', false);
+            passwordContainer.classList.remove('hidden');
+            submitBtn.textContent = 'Create Account';
+            passwordInput.setAttribute('required', true);
+            passwordInput.focus();
+          } else {
+            // Email exists, so we need to sign in
+            if (methods.includes('password')) {
+              // The account has a password, prompt for it
+              showMessage('Please enter your password to sign in.', false);
+              passwordContainer.classList.remove('hidden');
+              submitBtn.textContent = 'Sign In';
+              passwordInput.setAttribute('required', true);
+              passwordInput.focus();
+            } else {
+              // The account exists but has no password (e.g., created via Google)
+              showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching sign-in methods:", error);
+          showMessage(`An error occurred: ${error.message}`, true);
+        }
+      } else if (submitBtn.textContent === 'Sign In') {
+        // Second step: Sign the user in
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          showMessage('Sign in successful!', false);
+          window.location.href = 'dashboard.html';
+        } catch (error) {
+          console.error("Sign-in error:", error);
+          if (error.code === 'auth/wrong-password') {
+            showMessage('Incorrect password. Please try again.', true);
+            passwordInput.focus();
+          } else if (error.code === 'auth/user-not-found') {
+            showMessage('User not found. Please create an account.', true);
+            submitBtn.textContent = 'Continue'; // Reset to initial state
+            passwordContainer.classList.add('hidden');
+          } else {
+            showMessage(`Sign-in failed: ${error.message}`, true);
+          }
+        }
+      } else if (submitBtn.textContent === 'Create Account') {
+        // Second step: Create a new account
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          showMessage('Account created successfully!', false);
+          window.location.href = 'dashboard.html';
+        } catch (error) {
+          console.error("Account creation error:", error);
+          showMessage(`Account creation failed: ${error.message}`, true);
         }
       }
-    };
+    });
 
-    // The start method will wait until the DOM is loaded.
-    ui.start('#firebaseui-auth-container', uiConfig);
+    // Google Sign-in button handler
+    googleSignInBtn.addEventListener('click', async () => {
+      const provider = new GoogleAuthProvider();
+      try {
+        await signInWithPopup(auth, provider);
+        showMessage('Google sign in successful!', false);
+        window.location.href = 'dashboard.html';
+      } catch (error) {
+        console.error("Google sign-in error:", error);
+        showMessage(`Google sign-in failed: ${error.message}`, true);
+      }
+    });
+
+    // Handle pressing Enter in the email field
+    emailInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        loginForm.requestSubmit();
+      }
+    });
   </script>
 </body>
 </html>
