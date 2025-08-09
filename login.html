@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Login</title>
+  <!-- Tailwind CSS CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .login-bg {
+      background-image: url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      min-height: 100vh;
+    }
+    .login-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    }
+  </style>
+</head>
+<body class="login-bg flex items-center justify-center min-h-screen">
+
+  <!-- Main container for the login form -->
+  <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
+    <div class="text-center">
+      <!-- Strencrete Logo -->
+      <img src="strencrete-logo.jpg" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
+      
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
+      <p class="text-gray-500 mb-8">Sign in to monitor your projects.</p>
+    </div>
+
+    <!-- The login form -->
+    <form id="loginForm" class="space-y-6">
+      <!-- Username field -->
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" id="username" name="username" required 
+               class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+      </div>
+
+      <!-- Password field -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" id="password" name="password" required 
+               class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+      </div>
+      
+      <!-- Error message box -->
+      <div id="messageBox" class="hidden p-4 text-sm text-red-700 bg-red-100 rounded-lg"></div>
+
+      <!-- Submit button -->
+      <div>
+        <button type="submit" 
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+          Sign In
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Get a reference to the form and the message box
+    const loginForm = document.getElementById('loginForm');
+    const messageBox = document.getElementById('messageBox');
+
+    // Add an event listener for form submission
+    loginForm.addEventListener('submit', function(event) {
+      // Prevent the default form submission behavior
+      event.preventDefault();
+
+      // Get the values from the username and password fields
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      // This is a simple, hardcoded authentication check.
+      // In a real application, you would replace this with a call to your backend API.
+      if (username === 'user' && password === 'password123') {
+        // If login is successful, you would typically store a token in local storage
+        // and redirect to the dashboard.
+        // For this example, we'll just show a success message and log the user in.
+        
+        // Use a custom message box instead of alert()
+        messageBox.classList.remove('bg-red-100', 'text-red-700');
+        messageBox.classList.add('bg-green-100', 'text-green-700', 'block');
+        messageBox.textContent = 'Login successful! Redirecting to dashboard...';
+
+        // Simulate a redirect after a short delay
+        setTimeout(() => {
+          // Replace 'dashboard.html' with the actual URL of your dashboard page
+          window.location.href = 'dashboard.html';
+        }, 1500);
+
+      } else {
+        // If login fails, display an error message
+        // Use a custom message box instead of alert()
+        messageBox.classList.remove('bg-green-100', 'text-green-700');
+        messageBox.classList.add('bg-red-100', 'text-red-700', 'block');
+        messageBox.textContent = 'Invalid username or password. Please try again.';
+      }
+    });
+  </script>
+
+</body>
+</html>
