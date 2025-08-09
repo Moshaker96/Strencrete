@@ -9,9 +9,136 @@
   <!-- Inter font from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDK v8 for a more robust standalone HTML implementation -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <!-- Firebase SDK v9 modular imports -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { 
+        getAuth, 
+        fetchSignInMethodsForEmail, 
+        signInWithEmailAndPassword, 
+        createUserWithEmailAndPassword, 
+        GoogleAuthProvider, 
+        signInWithPopup 
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    // Wait for the window to load before executing the script
+    window.onload = function() {
+      // Your Firebase project configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
+        authDomain: "concretelive.firebaseapp.com",
+        projectId: "concretelive",
+        storageBucket: "concretelive.firebasestorage.app",
+        messagingSenderId: "605153900631",
+        appId: "1:605153900631:web:68c72f63bdb2929a348b12"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // Get DOM elements after the page has loaded
+      const loginForm = document.getElementById('loginForm');
+      const emailInput = document.getElementById('email');
+      const passwordContainer = document.getElementById('passwordContainer');
+      const passwordInput = document.getElementById('password');
+      const submitBtn = document.getElementById('submitBtn');
+      const googleSignInBtn = document.getElementById('googleSignInBtn');
+      const messageBox = document.getElementById('messageBox');
+
+      // Function to display messages to the user
+      function showMessage(text, isError = false) {
+        messageBox.textContent = text;
+        messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
+        messageBox.classList.add(isError ? 'bg-red-100' : 'bg-blue-100');
+        messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
+      }
+
+      // Main form submission handler
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        messageBox.classList.add('hidden'); // Clear previous messages
+
+        if (submitBtn.textContent === 'Continue') {
+          // First step: Check if the email exists
+          try {
+            const methods = await fetchSignInMethodsForEmail(auth, email);
+
+            if (methods.length === 0) {
+              // Email does not exist, so we need to sign up
+              showMessage('Email not found. Please create a new account by entering a password.');
+              passwordContainer.classList.remove('hidden');
+              submitBtn.textContent = 'Create Account';
+              passwordInput.focus();
+            } else {
+              // Email exists, so we need to sign in
+              if (methods.includes('password')) {
+                // The account has a password, prompt for it
+                showMessage('Please enter your password to sign in.');
+                passwordContainer.classList.remove('hidden');
+                submitBtn.textContent = 'Sign In';
+                passwordInput.focus();
+              } else {
+                // The account exists but has no password (e.g., created via Google)
+                showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
+                submitBtn.textContent = 'Continue'; // Reset button for new attempt
+                passwordContainer.classList.add('hidden');
+              }
+            }
+          } catch (error) {
+            showMessage(`An error occurred: ${error.message}`, true);
+          }
+        } else if (submitBtn.textContent === 'Sign In') {
+          // Second step: Sign the user in
+          try {
+            await signInWithEmailAndPassword(auth, email, password);
+            showMessage('Sign in successful! Redirecting...', false);
+            // In a real app, you would redirect here
+            // window.location.href = 'dashboard.html';
+          } catch (error) {
+            if (error.code === 'auth/wrong-password') {
+              showMessage('Incorrect password. Please try again.', true);
+              passwordInput.focus();
+            } else {
+              showMessage(`Sign-in failed: ${error.message}`, true);
+            }
+          }
+        } else if (submitBtn.textContent === 'Create Account') {
+          // Second step: Create a new account
+          try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            showMessage('Account created successfully! Redirecting...', false);
+            // In a real app, you would redirect here
+            // window.location.href = 'dashboard.html';
+          } catch (error) {
+            if (error.code === 'auth/email-already-in-use') {
+              // If email is already in use, change the button to "Sign In"
+              showMessage('This email is already in use. Please sign in instead.');
+              passwordContainer.classList.remove('hidden');
+              submitBtn.textContent = 'Sign In';
+              passwordInput.focus();
+            } else {
+              showMessage(`Account creation failed: ${error.message}`, true);
+            }
+          }
+        }
+      });
+
+      // Google Sign-in button handler
+      googleSignInBtn.addEventListener('click', async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+          await signInWithPopup(auth, provider);
+          showMessage('Google sign in successful! Redirecting...', false);
+          // window.location.href = 'dashboard.html';
+        } catch (error) {
+          showMessage(`Google sign-in failed: ${error.message}`, true);
+        }
+      });
+    };
+  </script>
 
   <style>
     body {
@@ -38,9 +165,9 @@
         transition: all 0.3s ease;
     }
     .input-field:focus {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
-        border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+      border-color: #3b82f6;
     }
     .message-box {
       font-weight: 600;
@@ -66,7 +193,7 @@
         <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
         <div class="mt-1">
           <input id="email" name="email" type="email" autocomplete="email" required
-                 class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
       </div>
 
@@ -74,7 +201,7 @@
         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
         <div class="mt-1">
           <input id="password" name="password" type="password" autocomplete="current-password" required
-                 class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
       </div>
 
@@ -113,121 +240,5 @@
       </div>
     </form>
   </div>
-
-  <script>
-    // Your Firebase project configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
-      authDomain: "concretelive.firebaseapp.com",
-      projectId: "concretelive",
-      storageBucket: "concretelive.firebasestorage.app",
-      messagingSenderId: "605153900631",
-      appId: "1:605153900631:web:68c72f63bdb2929a348b12"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passwordContainer = document.getElementById('passwordContainer');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submitBtn');
-    const googleSignInBtn = document.getElementById('googleSignInBtn');
-    const messageBox = document.getElementById('messageBox');
-
-    // Function to display messages to the user
-    function showMessage(text, isError = false) {
-      messageBox.textContent = text;
-      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
-      messageBox.classList.add(isError ? 'bg-red-100' : 'bg-blue-100');
-      messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
-    }
-
-    // Main form submission handler
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = emailInput.value;
-      const password = passwordInput.value;
-      messageBox.classList.add('hidden'); // Clear previous messages
-
-      if (submitBtn.textContent === 'Continue') {
-        // First step: Check if the email exists
-        try {
-          const methods = await auth.fetchSignInMethodsForEmail(email);
-
-          if (methods.length === 0) {
-            // Email does not exist, so we need to sign up
-            showMessage('Email not found. Please create a new account by entering a password.');
-            passwordContainer.classList.remove('hidden');
-            submitBtn.textContent = 'Create Account';
-            passwordInput.focus();
-          } else {
-            // Email exists, so we need to sign in
-            if (methods.includes('password')) {
-              // The account has a password, prompt for it
-              showMessage('Please enter your password to sign in.');
-              passwordContainer.classList.remove('hidden');
-              submitBtn.textContent = 'Sign In';
-              passwordInput.focus();
-            } else {
-              // The account exists but has no password (e.g., created via Google)
-              showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
-              submitBtn.textContent = 'Continue'; // Reset button for new attempt
-              passwordContainer.classList.add('hidden');
-            }
-          }
-        } catch (error) {
-          showMessage(`An error occurred: ${error.message}`, true);
-        }
-      } else if (submitBtn.textContent === 'Sign In') {
-        // Second step: Sign the user in
-        try {
-          await auth.signInWithEmailAndPassword(email, password);
-          showMessage('Sign in successful! Redirecting...', false);
-          // In a real app, you would redirect here
-          // window.location.href = 'dashboard.html';
-        } catch (error) {
-          if (error.code === 'auth/wrong-password') {
-            showMessage('Incorrect password. Please try again.', true);
-            passwordInput.focus();
-          } else {
-            showMessage(`Sign-in failed: ${error.message}`, true);
-          }
-        }
-      } else if (submitBtn.textContent === 'Create Account') {
-        // Second step: Create a new account
-        try {
-          await auth.createUserWithEmailAndPassword(email, password);
-          showMessage('Account created successfully! Redirecting...', false);
-          // In a real app, you would redirect here
-          // window.location.href = 'dashboard.html';
-        } catch (error) {
-          if (error.code === 'auth/email-already-in-use') {
-            // THIS IS THE KEY FIX: If email is already in use, change the button to "Sign In"
-            showMessage('This email is already in use. Please sign in instead.');
-            passwordContainer.classList.remove('hidden');
-            submitBtn.textContent = 'Sign In';
-            passwordInput.focus();
-          } else {
-            showMessage(`Account creation failed: ${error.message}`, true);
-          }
-        }
-      }
-    });
-
-    // Google Sign-in button handler
-    googleSignInBtn.addEventListener('click', async () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      try {
-        await auth.signInWithPopup(provider);
-        showMessage('Google sign in successful! Redirecting...', false);
-        // window.location.href = 'dashboard.html';
-      } catch (error) {
-        showMessage(`Google sign-in failed: ${error.message}`, true);
-      }
-    });
-  </script>
 </body>
 </html>
