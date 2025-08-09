@@ -10,12 +10,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   
   <!-- Firebase SDKs for namespaced API (required for FirebaseUI) -->
-  <!-- Reverted Firebase SDKs to a compatible version (v8.10.1) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- FirebaseUI CDN links -->
-  <!-- Reverted FirebaseUI SDKs to a compatible version (v4.8.1) -->
   <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
   
@@ -92,6 +90,8 @@
       signInSuccessUrl: './dashboard.html',
       // The list of sign-in providers we want to use.
       signInOptions: [
+        // This is where we add Google sign-in.
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         firebase.auth.EmailAuthProvider.PROVIDER_ID,
       ],
       // Callback to handle successful sign-in.
