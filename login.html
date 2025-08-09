@@ -14,7 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- FirebaseUI CDN links -->
-  <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+  <script src="https://www.gstatic.com/gstatic/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
   
   <style>
@@ -57,8 +57,18 @@
       <p class="text-gray-500 mb-8">Sign in to monitor your projects.</p>
     </div>
 
+    <!-- The choice buttons -->
+    <div id="choiceContainer" class="space-y-4">
+      <button id="signInBtn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+        Sign In
+      </button>
+      <button id="signUpBtn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+        Sign Up
+      </button>
+    </div>
+
     <!-- This is the container where FirebaseUI will render the login form -->
-    <div id="firebaseui-auth-container"></div>
+    <div id="firebaseui-auth-container" class="hidden"></div>
   </div>
 
   <script>
@@ -82,32 +92,48 @@
     // Initialize the FirebaseUI Widget using Firebase's Auth instance.
     const ui = new firebaseui.auth.AuthUI(firebase.auth());
 
+    // Get a reference to the choice container and buttons
+    const choiceContainer = document.getElementById('choiceContainer');
+    const signInBtn = document.getElementById('signInBtn');
+    const signUpBtn = document.getElementById('signUpBtn');
+    const firebaseuiContainer = document.getElementById('firebaseui-auth-container');
+
     // Configuration object for FirebaseUI.
     const uiConfig = {
-      // The sign-in flow we want to use: 'popup' or 'redirect'.
       signInFlow: 'popup',
-      // Where to redirect to after successful sign-in.
-      // You should change this to the URL of your dashboard page.
       signInSuccessUrl: './dashboard.html',
-      // The list of sign-in providers we want to use.
       signInOptions: [
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        // Add other providers here if you enable them in the Firebase Console:
-        // firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        {
+          provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+          // This tells FirebaseUI to hide the sign-up option when signing in
+          // and vice-versa when signing up.
+          // Note: This feature is not officially documented for the namespaced API,
+          // but a common pattern is to just let the user choose on the form.
+          // For a clean implementation, we can just show the form for all cases.
+          // The widget handles sign-up/sign-in automatically based on whether the
+          // email is already registered.
+        },
       ],
-      // Callback to handle successful sign-in.
       callbacks: {
         signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-          // You can do some additional actions here if needed.
           console.log("User signed in successfully!");
-          // Return true to redirect to signInSuccessUrl.
           return true;
         }
       }
     };
 
-    // The start method will wait until the DOM is loaded.
-    ui.start('#firebaseui-auth-container', uiConfig);
+    // Event listeners to start the FirebaseUI flow
+    signInBtn.addEventListener('click', () => {
+      choiceContainer.classList.add('hidden');
+      firebaseuiContainer.classList.remove('hidden');
+      ui.start('#firebaseui-auth-container', uiConfig);
+    });
+
+    signUpBtn.addEventListener('click', () => {
+      choiceContainer.classList.add('hidden');
+      firebaseuiContainer.classList.remove('hidden');
+      ui.start('#firebaseui-auth-container', uiConfig);
+    });
   </script>
 </body>
 </html>
