@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Strencrete | IoT Concrete Monitoring</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujlYd9k3X3y8eX8Vd+C4q9g3Vn5l/wRz4z3Xn3hF3bF3S7q2D5Z5fG5n5S5s7fG5n5S5s7fG5n5s7w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -142,7 +143,8 @@
                     </div>
                 </div>
 
-                <!-- Dashboard button now points to the login page -->
+                <!-- Dashboard Button changed to a link -->
+                <!-- UPDATED: This link now points to login.html -->
                 <a href="login.html" class="flex items-center space-x-2 hover:text-blue-700 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
                     <span>Dashboard</span>
@@ -162,8 +164,8 @@
                     <p class="text-lg md:text-xl text-gray-800/90 mb-8 font-medium">
                         Strencrete delivers an innovative IoT solution for real-time monitoring of concrete strength and temperature, ensuring <span class="font-semibold text-blue-700">quality, safety, and efficiency</span> across your construction projects.
                     </p>
-                    <!-- Request a Demo button now points to the login page -->
-                    <button class="inline-block bg-blue-700 text-white font-semibold rounded-full px-10 py-3 shadow-lg hover:bg-blue-800 transition text-lg" onclick="window.location.href='login.html'">Request a Demo</button>
+                    <!-- UPDATED: This button now scrolls to the contact section -->
+                    <button class="inline-block bg-blue-700 text-white font-semibold rounded-full px-10 py-3 shadow-lg hover:bg-blue-800 transition text-lg" onclick="scrollToSection('contact')">Request a Demo</button>
                 </div>
             </div>
         </section>
@@ -269,35 +271,33 @@
         </section>
     </div>
 
-    <!-- The dashboard container and its children have been removed since they are now on a separate page -->
-    
     <!-- Footer -->
     <footer id="main-footer" class="bg-gray-900 text-gray-300 py-8">
         <div class="max-w-6xl mx-auto px-6 text-center text-sm">
             &copy; 2025 Strencrete. All rights reserved. | <a href="mailto:info@strencrete.com" class="text-blue-500 hover:underline">info@strencrete.com</a>
         </div>
     </footer>
-    
+
     <script>
         // --- HOME PAGE SCRIPT ---
         // Get the home and dashboard page containers
         const homePage = document.getElementById('home-page');
         const homeNavbar = document.getElementById('home-navbar');
         const mainFooter = document.getElementById('main-footer');
-    
+
         // Get the dropdown button and menu
         const homeDropdownBtn = document.getElementById('home-dropdown-btn');
         const homeDropdownMenu = document.getElementById('home-dropdown-menu');
         const chevronUp = document.getElementById('home-chevron-up');
         const chevronDown = document.getElementById('home-chevron-down');
-    
+
         // Toggle dropdown menu on button click
         homeDropdownBtn.addEventListener('click', () => {
             homeDropdownMenu.classList.toggle('hidden');
             chevronUp.classList.toggle('hidden');
             chevronDown.classList.toggle('hidden');
         });
-    
+
         // Close dropdown when clicking outside of it
         window.addEventListener('click', (event) => {
             if (!homeDropdownBtn.contains(event.target) && !homeDropdownMenu.contains(event.target)) {
@@ -306,7 +306,7 @@
                 chevronDown.classList.remove('hidden');
             }
         });
-    
+
         // Function to handle smooth scrolling to a section
         function scrollToSection(sectionId) {
             homeDropdownMenu.classList.add('hidden');
@@ -314,35 +314,10 @@
             chevronDown.classList.remove('hidden');
             const section = document.getElementById(sectionId);
             if (section) {
-                // Ensure the home page is visible before scrolling
-                homePage.classList.remove('hidden');
-                homeNavbar.classList.remove('hidden');
-                mainFooter.classList.remove('hidden');
-                // A small delay to ensure the page has rendered
-                setTimeout(() => {
-                    section.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
+                section.scrollIntoView({ behavior: 'smooth' });
             }
         }
-    
-        // Function to show a page and hide others
-        function showPage(pageId) {
-             // Since dashboard is now a separate page, we only handle the home page here
-             if (pageId === 'home') {
-                homePage.classList.remove('hidden');
-                homeNavbar.classList.remove('hidden');
-                mainFooter.classList.remove('hidden');
-             } else {
-                 // For now, any other page will be handled by standard href links
-                 window.location.href = pageId + '.html';
-             }
-        }
-    
-        // Initial page load
-        document.addEventListener('DOMContentLoaded', () => {
-             // No need to call showPage() on load since we are on the home page by default
-        });
-    
+
     </script>
 </body>
 </html>
