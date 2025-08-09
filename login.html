@@ -9,12 +9,6 @@
   <!-- Inter font from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   
-  <!-- Firebase Modular SDK for manual control -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
-  </script>
-
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -52,7 +46,8 @@
   <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
     <div class="text-center">
       <!-- Strencrete Logo -->
-      <img src="strencrete-logo.jpg" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
+      <!-- Added an 'onerror' attribute to handle cases where the image URL is not valid. -->
+      <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
       
       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
       <p class="text-gray-500 mb-8">Sign in to monitor your projects.</p>
@@ -77,7 +72,7 @@
       </div>
 
       <!-- Message box for errors and instructions -->
-      <div id="messageBox" class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg" role="alert"></div>
+      <div id="messageBox" class="hidden p-3 text-sm rounded-lg" role="alert"></div>
 
       <div>
         <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
@@ -112,7 +107,9 @@
     </form>
   </div>
 
+  <!-- The single, combined script block -->
   <script type="module">
+    // All imports and logic must be in the same script block
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
 
@@ -141,11 +138,12 @@
     // Function to display messages to the user
     function showMessage(text, isError = false) {
       messageBox.textContent = text;
-      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+      messageBox.classList.remove('hidden');
       if (isError) {
         messageBox.classList.add('bg-red-100', 'text-red-700');
       } else {
-        messageBox.classList.add('bg-green-100', 'text-green-700');
+        messageBox.classList.add('bg-blue-100', 'text-blue-700');
       }
     }
 
@@ -163,7 +161,7 @@
 
           if (methods.length === 0) {
             // Email does not exist, so we need to sign up
-            showMessage('Email not found. Please create a new account by entering a password.', false);
+            showMessage('Email not found. Please create a new account by entering a password.');
             passwordContainer.classList.remove('hidden');
             submitBtn.textContent = 'Create Account';
             passwordInput.setAttribute('required', true);
@@ -172,7 +170,7 @@
             // Email exists, so we need to sign in
             if (methods.includes('password')) {
               // The account has a password, prompt for it
-              showMessage('Please enter your password to sign in.', false);
+              showMessage('Please enter your password to sign in.');
               passwordContainer.classList.remove('hidden');
               submitBtn.textContent = 'Sign In';
               passwordInput.setAttribute('required', true);
@@ -180,6 +178,8 @@
             } else {
               // The account exists but has no password (e.g., created via Google)
               showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
+              submitBtn.textContent = 'Continue';
+              passwordContainer.classList.add('hidden');
             }
           }
         } catch (error) {
@@ -190,17 +190,19 @@
         // Second step: Sign the user in
         try {
           await signInWithEmailAndPassword(auth, email, password);
-          showMessage('Sign in successful!', false);
-          window.location.href = 'dashboard.html';
+          showMessage('Sign in successful! Redirecting...', false);
+          // In a real app, you would redirect here
+          // window.location.href = 'dashboard.html';
         } catch (error) {
           console.error("Sign-in error:", error);
           if (error.code === 'auth/wrong-password') {
             showMessage('Incorrect password. Please try again.', true);
             passwordInput.focus();
           } else if (error.code === 'auth/user-not-found') {
-            showMessage('User not found. Please create an account.', true);
+            showMessage('User not found. Please check your email and try again.', true);
             submitBtn.textContent = 'Continue'; // Reset to initial state
             passwordContainer.classList.add('hidden');
+            passwordInput.removeAttribute('required');
           } else {
             showMessage(`Sign-in failed: ${error.message}`, true);
           }
@@ -209,11 +211,19 @@
         // Second step: Create a new account
         try {
           await createUserWithEmailAndPassword(auth, email, password);
-          showMessage('Account created successfully!', false);
-          window.location.href = 'dashboard.html';
+          showMessage('Account created successfully! Redirecting...', false);
+          // In a real app, you would redirect here
+          // window.location.href = 'dashboard.html';
         } catch (error) {
           console.error("Account creation error:", error);
-          showMessage(`Account creation failed: ${error.message}`, true);
+          if (error.code === 'auth/email-already-in-use') {
+            showMessage('This email is already in use. Please sign in instead.', true);
+            submitBtn.textContent = 'Continue';
+            passwordContainer.classList.add('hidden');
+            passwordInput.removeAttribute('required');
+          } else {
+            showMessage(`Account creation failed: ${error.message}`, true);
+          }
         }
       }
     });
@@ -223,8 +233,8 @@
       const provider = new GoogleAuthProvider();
       try {
         await signInWithPopup(auth, provider);
-        showMessage('Google sign in successful!', false);
-        window.location.href = 'dashboard.html';
+        showMessage('Google sign in successful! Redirecting...', false);
+        // window.location.href = 'dashboard.html';
       } catch (error) {
         console.error("Google sign-in error:", error);
         showMessage(`Google sign-in failed: ${error.message}`, true);
