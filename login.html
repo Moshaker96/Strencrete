@@ -98,22 +98,6 @@
         signInSuccessWithAuthResult: function(authResult, redirectUrl) {
           console.log("User signed in successfully!");
           return true;
-        },
-        signInFailure: function(error) {
-          // This is the key part that handles the error you described.
-          if (error.code === 'firebaseui-auth/account-exists-with-different-credential') {
-            // Get the email from the error object
-            const email = error.email;
-            // Get the provider that the account is already linked to
-            const existingProvider = error.credential.providerId;
-
-            console.log(`An account with email ${email} already exists, but it was created with ${existingProvider}.`);
-            // Here you would prompt the user to sign in with the original provider.
-            // For now, we'll log it and let FirebaseUI handle the next steps.
-            // The FirebaseUI widget should automatically detect this and guide the user.
-          }
-          console.error("Sign-in failed:", error);
-          return Promise.resolve(); // Keep the FirebaseUI widget visible.
         }
       }
     };
