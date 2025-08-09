@@ -20,19 +20,17 @@
         GoogleAuthProvider, 
         signInWithPopup 
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-
+    
     // Wait for the window to load before executing the script
     window.onload = function() {
-      // Your Firebase project configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
-        authDomain: "concretelive.firebaseapp.com",
-        projectId: "concretelive",
-        storageBucket: "concretelive.firebasestorage.app",
-        messagingSenderId: "605153900631",
-        appId: "1:605153900631:web:68c72f63bdb2929a348b12"
-      };
+      // Use the provided Firebase config from the environment
+      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
 
+      if (!firebaseConfig) {
+        showMessage("Firebase configuration not found. The app cannot initialize.", true);
+        return;
+      }
+      
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
@@ -53,7 +51,7 @@
         messageBox.classList.add(isError ? 'bg-red-100' : 'bg-blue-100');
         messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
       }
-
+      
       // Main form submission handler
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -125,7 +123,7 @@
           }
         }
       });
-
+      
       // Google Sign-in button handler
       googleSignInBtn.addEventListener('click', async () => {
         const provider = new GoogleAuthProvider();
