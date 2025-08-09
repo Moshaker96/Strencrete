@@ -33,21 +33,26 @@
       filter: blur(1px);
       pointer-events: none;
     }
-    /* About Section Background - make image clear by reducing gradient opacity */
+    /* About Section Background - add a stronger dark overlay for text clarity */
     .about-bg {
       position: relative;
       background:
-        linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(224,242,254,0.18) 100%),
+        linear-gradient(120deg, rgba(30,41,59,0.60) 0%, rgba(30,58,138,0.60) 100%),
         url('Gemini_Generated_Image_8dcaf08dcaf08dca.png') center center / cover no-repeat;
       z-index: 1;
     }
-    /* Solution Section Background - make image clear by reducing gradient opacity */
+    /* Solution Section Background - add a stronger dark overlay for text clarity */
     .solution-bg {
       position: relative;
       background:
-        linear-gradient(120deg, rgba(248,250,252,0.16) 0%, rgba(191,219,254,0.16) 100%),
+        linear-gradient(120deg, rgba(30,41,59,0.58) 0%, rgba(30,58,138,0.58) 100%),
         url('Gemini_Generated_Image_7osldc7osldc7osl.png') center center / cover no-repeat;
       z-index: 1;
+    }
+    .about-bg h2, .about-bg p,
+    .solution-bg h2, .solution-bg p {
+      text-shadow: 0 2px 8px rgba(0,0,0,0.28);
+      color: #fff !important;
     }
     @media (max-width: 768px) {
       .hero-logo-bg {
@@ -101,11 +106,11 @@
   <section id="about" class="about-bg py-20 md:py-32">
     <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
       <div>
-        <h2 class="text-3xl md:text-4xl font-bold mb-4 text-blue-900">About Strencrete</h2>
-        <p class="text-lg text-gray-700 mb-5">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">About Strencrete</h2>
+        <p class="text-lg mb-5">
           In the fast-paced world of construction, precision and reliability are paramount. Strencrete bridges the gap between traditional practices and modern technology. Our robust IoT platform provides <span class="font-semibold">real-time, actionable insights</span> into your concrete's curing process.
         </p>
-        <p class="text-lg text-gray-700">
+        <p class="text-lg">
           Our mission: Help project managers and engineers make data-driven decisions, reduce curing times, and guarantee the highest quality standards on every project.
         </p>
       </div>
@@ -116,8 +121,8 @@
   <!-- Solution Section with Gemini Background -->
   <section id="solution" class="solution-bg py-20 md:py-32">
     <div class="max-w-6xl mx-auto px-6 text-center">
-      <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">A Better Way to Monitor</h2>
-      <p class="text-lg text-gray-700 max-w-2xl mx-auto mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">A Better Way to Monitor</h2>
+      <p class="text-lg max-w-2xl mx-auto mb-12">
         Our IoT-enabled system provides a complete and accurate picture of your concrete's development, moving beyond traditional methods.
       </p>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
