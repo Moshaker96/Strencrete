@@ -78,7 +78,7 @@
       <div id="messageBox" class="hidden message-box p-3 text-sm rounded-lg" role="alert"></div>
 
       <div>
-        <button type="submit" id="submitBtn" data-mode="check" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+        <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
           Continue
         </button>
       </div>
@@ -121,6 +121,8 @@
           const submitBtn = document.getElementById('submitBtn');
           const messageBox = document.getElementById('messageBox');
 
+          let mode = 'emailCheck'; // 'emailCheck', 'signIn', or 'signUp'
+
           // Function to display messages to the user
           function showMessage(text, isError = false) {
             messageBox.textContent = text;
@@ -140,12 +142,10 @@
               console.log("Auth state changed: User is signed in as", user.email);
               window.location.href = 'dashboard.html';
             } else {
-              // No user is signed in. Stay on the login form.
+              // No user is signed in. Reset UI.
               console.log("Auth state changed: No user is signed in.");
-              
-              // Reset the form state for the next login attempt
               submitBtn.textContent = 'Continue';
-              submitBtn.dataset.mode = 'check';
+              mode = 'emailCheck';
               passwordContainer.classList.add('hidden');
               passwordInput.removeAttribute('required');
               passwordInput.value = '';
@@ -158,31 +158,31 @@
             e.preventDefault();
             const email = emailInput.value;
             const password = passwordInput.value;
-            const mode = submitBtn.dataset.mode;
             hideMessage(); // Clear previous messages
             
-            if (mode === 'check') {
+            if (mode === 'emailCheck') {
               try {
+                // First, check if the email exists
                 const methods = await fetchSignInMethodsForEmail(auth, email);
 
                 if (methods.includes('password')) {
-                  // The email has a password, so it's a sign-in attempt
+                  // Email exists, so we're in sign-in mode
+                  mode = 'signIn';
                   showMessage('Please enter your password to sign in.');
                   passwordContainer.classList.remove('hidden');
                   passwordInput.setAttribute('required', 'required');
                   submitBtn.textContent = 'Sign In';
-                  submitBtn.dataset.mode = 'signIn';
                   passwordInput.focus();
                 } else if (methods.length > 0) {
-                    // Email exists, but not with a password.
+                    // Email exists but with a different sign-in method
                     showMessage('This email is associated with a different sign-in method.', true);
                 } else {
-                  // Email does not exist, so it's a sign-up attempt
+                  // Email does not exist, so we're in sign-up mode
+                  mode = 'signUp';
                   showMessage('Email not found. Please enter a password to create a new account.');
                   passwordContainer.classList.remove('hidden');
                   passwordInput.setAttribute('required', 'required');
                   submitBtn.textContent = 'Create Account';
-                  submitBtn.dataset.mode = 'signUp';
                   passwordInput.focus();
                 }
               } catch (error) {
@@ -207,11 +207,12 @@
                   await createUserWithEmailAndPassword(auth, email, password);
                   showMessage('Account created successfully!', false);
                 } catch (error) {
-                  // The most common error here is the email already being in use
+                  // This is a common error, but with this logic, it shouldn't happen.
+                  // This is a fallback just in case.
                   if (error.code === 'auth/email-already-in-use') {
                     showMessage('This email is already in use. Please sign in instead.', true);
+                    mode = 'signIn';
                     submitBtn.textContent = 'Sign In';
-                    submitBtn.dataset.mode = 'signIn';
                   } else {
                     showMessage(`Account creation failed: ${error.message}`, true);
                   }
