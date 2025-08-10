@@ -1,247 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Strencrete | IoT Concrete Monitoring</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .hero-bg {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        linear-gradient(120deg, rgba(30,41,59,0.88) 0%, rgba(30,58,138,0.78) 100%),
-        url('concrete-monitoring-1.jpg') center center / cover no-repeat;
-      overflow: hidden;
-    }
-    .hero-logo-bg {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 600px;
-      height: 600px;
-      transform: translate(-50%, -50%);
-      background: url('strencrete-logo.jpg') center/contain no-repeat;
-      opacity: 0.10;
-      z-index: 1;
-      filter: blur(1px);
-      pointer-events: none;
-    }
-    /* About Section Background - add a stronger dark overlay for text clarity */
-    .about-bg {
-      position: relative;
-      background:
-        linear-gradient(120deg, rgba(30,41,59,0.60) 0%, rgba(30,58,138,0.60) 100%),
-        url('Gemini_Generated_Image_8dcaf08dcaf08dca.png') center center / cover no-repeat;
-      z-index: 1;
-    }
-    /* Solution Section Background - add a stronger dark overlay for text clarity */
-    .solution-bg {
-      position: relative;
-      background:
-        linear-gradient(120deg, rgba(30,41,59,0.58) 0%, rgba(30,58,138,0.58) 100%),
-        url('Gemini_Generated_Image_7osldc7osldc7osl.png') center center / cover no-repeat;
-      z-index: 1;
-    }
-    /* Benefits Section Background */
-    .benefits-bg {
-      position: relative;
-      background:
-        linear-gradient(120deg, rgba(30,41,59,0.7) 0%, rgba(30,58,138,0.8) 100%),
-        url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png') center center / cover no-repeat;
-      z-index: 1;
-    }
-    /* Universal text styling for dark overlays */
-    .about-bg h2, .about-bg p,
-    .solution-bg h2, .solution-bg p,
-    .benefits-bg h2, .benefits-bg p {
-      text-shadow: 0 2px 8px rgba(0,0,0,0.28);
-      color: #fff !important;
-    }
-    /* Make card text dark for clarity */
-    .solution-bg .card-title {
-      color: #222 !important;
-      text-shadow: none !important;
-    }
-    .solution-bg .card-desc {
-      color: #444 !important;
-      text-shadow: none !important;
-    }
-    .solution-bg .card {
-      background: rgba(255,255,255,0.98) !important;
-      border: 1.5px solid #e5e7eb;
-      /* Optional: increase shadow for separation */
-      box-shadow: 0 8px 32px rgba(30,41,59,0.13);
-    }
-    /* Ensure benefits card text is dark for visibility */
-    .benefits-bg .card {
-      background: rgba(255,255,255,0.98) !important;
-    }
-    .benefits-bg .card h3 {
-      color: #1f2937 !important;
-    }
-    .benefits-bg .card p {
-      color: #4b5563 !important;
-    }
-    @media (max-width: 768px) {
-      .hero-logo-bg {
-        width: 330px;
-        height: 330px;
-      }
-    }
-    .glass {
-      background: rgba(255,255,255,0.16);
-      border-radius: 1.5rem;
-      box-shadow: 0 10px 32px 0 rgba(31,38,135,0.20);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1.5px solid rgba(255,255,255,0.22);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strencrete</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujlYd9k3X3y8eX8Vd+C4q9g3Vn5l/wRz4z3Xn3hF3bF3S7q2D5Z5fG5n5S5s7fG5n5S5s7fG5n5s7w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .hero-bg {
+            background:
+                linear-gradient(120deg, rgba(30,41,59,0.88) 0%, rgba(30,58,138,0.78) 100%),
+                url('concrete-monitoring-1.jpg') center center / cover no-repeat;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .about-bg {
+            background:
+                linear-gradient(120deg, rgba(30,41,59,0.60) 0%, rgba(30,58,138,0.60) 100%),
+                url('Gemini_Generated_Image_8dcaf08dcaf08dca.png') center center / cover no-repeat;
+            position: relative;
+            z-index: 1;
+        }
+        .solution-bg {
+            background:
+                linear-gradient(120deg, rgba(30,41,59,0.58) 0%, rgba(30,58,138,0.58) 100%),
+                url('Gemini_Generated_Image_7osldc7osldc7osl.png') center center / cover no-repeat;
+            position: relative;
+            z-index: 1;
+        }
+        .benefits-bg {
+            background:
+                linear-gradient(120deg, rgba(30,41,59,0.7) 0%, rgba(30,58,138,0.8) 100%),
+                url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png') center center / cover no-repeat;
+            position: relative;
+            z-index: 1;
+        }
+        /* Universal text styling for dark overlays */
+        .about-bg h2, .about-bg p,
+        .solution-bg h2, .solution-bg p,
+        .benefits-bg h2, .benefits-bg p {
+            text-shadow: 0 2px 8px rgba(0,0,0,0.28);
+            color: #fff !important;
+        }
+        /* Make card text dark for clarity */
+        .solution-bg .card-title {
+            color: #222 !important;
+            text-shadow: none !important;
+        }
+        .solution-bg .card-desc {
+            color: #444 !important;
+            text-shadow: none !important;
+        }
+        .solution-bg .card {
+            background: rgba(255,255,255,0.98) !important;
+            border: 1.5px solid #e5e7eb;
+            /* Optional: increase shadow for separation */
+            box-shadow: 0 8px 32px rgba(30,41,59,0.13);
+        }
+        /* Ensure benefits card text is dark for visibility */
+        .benefits-bg .card {
+            background: rgba(255,255,255,0.98) !important;
+        }
+        .benefits-bg .card h3 {
+            color: #1f2937 !important;
+        }
+        .benefits-bg .card p {
+            color: #4b5563 !important;
+        }
+        .hero-logo-bg {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 600px;
+            height: 600px;
+            transform: translate(-50%, -50%);
+            background: url('strencrete-logo.jpg') center/contain no-repeat;
+            opacity: 0.10;
+            z-index: 1;
+            filter: blur(1px);
+            pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            .hero-logo-bg {
+                width: 330px;
+                height: 330px;
+            }
+        }
+        .glass {
+            background: rgba(255,255,255,0.16);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 32px 0 rgba(31,38,135,0.20);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255,255,255,0.22);
+        }
+        .dashboard-bg {
+            background-color: #1f2937;
+            color: #e5e7eb;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
-  <!-- Navbar -->
-  <nav class="bg-white/90 shadow-lg sticky top-0 z-50 backdrop-blur">
-    <div class="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
-      <a href="#" class="flex items-center space-x-3">
-        <img src="strencrete-logo.jpg" alt="Strencrete Logo" class="h-10 w-10 rounded-lg shadow"/>
-        <span class="font-bold text-2xl tracking-tight text-blue-900">Strencrete</span>
-      </a>
-      <div class="hidden md:flex space-x-8 font-medium">
-        <a href="#about" class="hover:text-blue-700 transition">About</a>
-        <a href="#solution" class="hover:text-blue-700 transition">Solution</a>
-        <a href="#benefits" class="hover:text-blue-700 transition">Benefits</a>
-        <a href="#contact" class="hover:text-blue-700 transition">Contact</a>
-      </div>
-    </div>
-  </nav>
+    <!-- Navigation Bar -->
+    <nav class="bg-white/90 shadow-lg sticky top-0 z-50 backdrop-blur">
+        <div class="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
+            <a href="#" class="flex items-center space-x-3" onclick="showPage('home')">
+                <img src="strencrete-logo.jpg" alt="Strencrete Logo" class="h-10 w-10 rounded-lg shadow"/>
+                <span class="font-bold text-2xl tracking-tight text-blue-900">Strencrete</span>
+            </a>
+            <div class="flex space-x-8 font-medium">
+                <!-- Home Dropdown Menu -->
+                <div class="relative">
+                    <button id="home-dropdown-btn" class="flex items-center space-x-2 hover:text-blue-700 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        <span>Home</span>
+                        <svg id="home-chevron-down" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                        <svg id="home-chevron-up" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-up hidden"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
+                    <div id="home-dropdown-menu" class="absolute hidden top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                        <div class="py-1">
+                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="scrollToSection('about')">About</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="scrollToSection('solution')">Solution</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="scrollToSection('benefits')">Benefits</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="scrollToSection('contact')">Contact</button>
+                        </div>
+                    </div>
+                </div>
 
-  <!-- Hero Section -->
-  <section class="hero-bg">
-    <div class="hero-logo-bg"></div>
-    <div class="relative z-10 w-full flex flex-col items-center justify-center px-4">
-      <div class="glass max-w-2xl w-full mx-auto text-center px-6 py-16 shadow-2xl">
-        <img src="strencrete-logo.jpg" alt="Logo" class="w-24 h-24 mx-auto mb-6 rounded-xl shadow-lg border-4 border-white/40 bg-white/40"/>
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 drop-shadow">Empowering <span class="text-blue-600">Strength</span> Through Smart Monitoring</h1>
-        <p class="text-lg md:text-xl text-gray-800/90 mb-8 font-medium">
-          Strencrete delivers an innovative IoT solution for real-time monitoring of concrete strength and temperature, ensuring <span class="font-semibold text-blue-700">quality, safety, and efficiency</span> across your construction projects.
-        </p>
-        <a href="#contact" class="inline-block bg-blue-700 text-white font-semibold rounded-full px-10 py-3 shadow-lg hover:bg-blue-800 transition text-lg">Request a Demo</a>
-      </div>
-    </div>
-  </section>
+                <!-- Dashboard Button -->
+                <button onclick="showPage('dashboard')" class="flex items-center space-x-2 hover:text-blue-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                    <span>Dashboard</span>
+                </button>
+            </div>
+        </div>
+    </nav>
 
-  <!-- About Section with Gemini Background -->
-  <section id="about" class="about-bg py-20 md:py-32">
-    <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-      <div>
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">About Strencrete</h2>
-        <p class="text-lg mb-5">
-          In the fast-paced world of construction, precision and reliability are paramount. Strencrete bridges the gap between traditional practices and modern technology. Our robust IoT platform provides <span class="font-semibold">real-time, actionable insights</span> into your concrete's curing process.
-        </p>
-        <p class="text-lg">
-          Our mission: Help project managers and engineers make data-driven decisions, reduce curing times, and guarantee the highest quality standards on every project.
-        </p>
-      </div>
-      <img src="https://placehold.co/600x420/1e40af/fff?text=Smart+Concrete" class="rounded-2xl shadow-lg" alt="Concrete Monitoring"/>
-    </div>
-  </section>
+    <!-- Page Containers -->
+    <div id="home-page">
+        <!-- Hero Section -->
+        <section id="hero" class="relative hero-bg min-h-screen flex items-center justify-center px-4">
+            <div class="relative z-10 w-full flex flex-col items-center justify-center">
+                <div class="glass max-w-2xl w-full mx-auto text-center px-6 py-16 shadow-2xl rounded-3xl">
+                    <img src="strencrete-logo.jpg" alt="Logo" class="w-24 h-24 mx-auto mb-6 rounded-xl shadow-lg border-4 border-white/40 bg-white/40"/>
+                    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 drop-shadow">Empowering <span class="text-blue-600">Strength</span> Through Smart Monitoring</h1>
+                    <p class="text-lg md:text-xl text-gray-800/90 mb-8 font-medium">
+                        Strencrete delivers an innovative IoT solution for real-time monitoring of concrete strength and temperature, ensuring <span class="font-semibold text-blue-700">quality, safety, and efficiency</span> across your construction projects.
+                    </p>
+                    <button class="inline-block bg-blue-700 text-white font-semibold rounded-full px-10 py-3 shadow-lg hover:bg-blue-800 transition text-lg" onclick="showPage('dashboard')">Request a Demo</button>
+                </div>
+            </div>
+        </section>
 
-  <!-- Solution Section with Gemini Background -->
-  <section id="solution" class="solution-bg py-20 md:py-32">
-    <div class="max-w-6xl mx-auto px-6 text-center">
-      <h2 class="text-3xl md:text-4xl font-bold mb-4">A Better Way to Monitor</h2>
-      <p class="text-lg max-w-2xl mx-auto mb-12">
-        Our IoT-enabled system provides a complete and accurate picture of your concrete's development, moving beyond traditional methods.
-      </p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
-          <div class="text-blue-600 text-5xl mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 16a6 6 0 0 1-6-6a6 6 0 0 1 6-6a6 6 0 0 1 6 6a6 6 0 0 1-6 6M8.5 12A3.5 3.5 0 1 1 12 15.5A3.5 3.5 0 0 1 8.5 12"/></svg>
-          </div>
-          <h3 class="card-title text-xl font-semibold mb-2">Smart Sensors</h3>
-          <p class="card-desc">Wireless, embedded sensors collect continuous data on temperature, humidity, and strength gain.</p>
-        </div>
-        <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
-          <div class="text-blue-600 text-5xl mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M21 16H3a1 1 0 0 1 0-2h18a1 1 0 0 1 0 2m-3-4H6a1 1 0 0 1 0-2h12a1 1 0 0 1 0 2M15 8H9a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2"/></svg>
-          </div>
-          <h3 class="card-title text-xl font-semibold mb-2">Cloud Integration</h3>
-          <p class="card-desc">All sensor data is securely transmitted to our cloud platform, accessible from any device, anywhere.</p>
-        </div>
-        <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
-          <div class="text-blue-600 text-5xl mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z"/></svg>
-          </div>
-          <h3 class="card-title text-xl font-semibold mb-2">Actionable Alerts</h3>
-          <p class="card-desc">Get instant notifications for anomalies or when concrete reaches critical strength milestones.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+        <!-- About Section -->
+        <section id="about" class="about-bg py-20 md:py-32">
+            <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">About Strencrete</h2>
+                    <p class="text-lg mb-5">
+                        In the fast-paced world of construction, precision and reliability are paramount. Strencrete bridges the gap between traditional practices and modern technology. Our robust IoT platform provides <span class="font-semibold">real-time, actionable insights</span> into your concrete's curing process.
+                    </p>
+                    <p class="text-lg">
+                        Our mission: Help project managers and engineers make data-driven decisions, reduce curing times, and guarantee the highest quality standards on every project.
+                    </p>
+                </div>
+                <img src="https://placehold.co/600x420/1e40af/fff?text=Smart+Concrete" class="rounded-2xl shadow-lg" alt="Concrete Monitoring"/>
+            </div>
+        </section>
 
-  <!-- Benefits Section -->
-  <section id="benefits" class="benefits-bg py-20 md:py-32">
-    <div class="max-w-6xl mx-auto px-6 text-center">
-      <h2 class="text-3xl md:text-4xl font-bold mb-4">Why Choose Strencrete?</h2>
-      <p class="text-lg max-w-2xl mx-auto mb-12">
-        Our solution provides clear advantages that directly impact your project's bottom line and quality.
-      </p>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div class="card bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-blue-100">
-          <div class="text-blue-600 text-4xl mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-10 10a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m4.2 14.2l-5-2.9v-5a1 1 0 0 1 2 0v4.3l4.5 2.6a1 1 0 0 1-1 1.7"/></svg>
-          </div>
-          <h3 class="text-lg font-semibold mb-1 text-gray-900">Time Savings</h3>
-          <p class="text-gray-600 text-sm">Reduce waiting times by knowing the exact moment concrete is ready.</p>
-        </div>
-        <div class="card bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-blue-100">
-          <div class="text-blue-600 text-4xl mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 18a6 6 0 0 1-6-6a6 6 0 0 1 6-6a6 6 0 0 1 6 6a6 6 0 0 1-6 6m12-6a12 12 0 0 0-24 0a12 12 0 0 0 24 0M12 10a2 2 0 0 0-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg>
-          </div>
-          <h3 class="text-lg font-semibold mb-1 text-gray-900">Increased Accuracy</h3>
-          <p class="text-gray-600 text-sm">Eliminate human error with precise, automated data collection.</p>
-        </div>
-        <div class="card bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-blue-100">
-          <div class="text-blue-600 text-4xl mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14m0 2a9 9 0 1 1 0-18a9 9 0 0 1 0 18M12 7a5 5 0 1 0 0 10a5 5 0 0 0 0-10m0 2a3 3 0 1 1 0 6a3 3 0 0 1 0-6"/></svg>
-          </div>
-          <h3 class="text-lg font-semibold mb-1 text-gray-900">Enhanced Quality</h3>
-          <p class="text-gray-600 text-sm">Ensure concrete meets and exceeds specified strength and durability.</p>
-        </div>
-        <div class="card bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-blue-100">
-          <div class="text-blue-600 text-4xl mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M15 12a3 3 0 1 1-6 0a3 3 0 0 1 6 0m0 2a5 5 0 1 0-10 0a5 5 0 0 0 10 0"/></svg>
-          </div>
-          <h3 class="text-lg font-semibold mb-1 text-gray-900">Remote Access</h3>
-          <p class="text-gray-600 text-sm">Monitor all your projects from a single dashboard, from anywhere in the world.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+        <!-- Solution Section -->
+        <section id="solution" class="solution-bg py-20 md:py-32">
+            <div class="max-w-6xl mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">A Better Way to Monitor</h2>
+                <p class="text-lg max-w-2xl mx-auto mb-12">
+                    Our IoT-enabled system provides a complete and accurate picture of your concrete's development, moving beyond traditional methods.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
+                        <div class="text-blue-600 text-5xl mb-3 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M20 15h2"/><path d="M15 2h2"/><path d="M20 15h2"/><path d="M15 2h-2"/><path d="M20 9h2"/><path d="M9 20v2"/><path d="M4 9h2"/><path d="M9 2h2"/><path d="M2 9h2"/></svg>
+                        </div>
+                        <h3 class="card-title text-xl font-semibold mb-2">Smart Sensors</h3>
+                        <p class="card-desc">Wireless, embedded sensors collect continuous data on temperature, humidity, and strength gain.</p>
+                    </div>
+                    <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
+                        <div class="text-blue-600 text-5xl mb-3 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        </div>
+                        <h3 class="card-title text-xl font-semibold mb-2">Cloud Integration</h3>
+                        <p class="card-desc">All sensor data is securely transmitted to our cloud platform, accessible from any device, anywhere.</p>
+                    </div>
+                    <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
+                        <div class="text-blue-600 text-5xl mb-3 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-circle"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                        </div>
+                        <h3 class="card-title text-xl font-semibold mb-2">Actionable Alerts</h3>
+                        <p class="card-desc">Get instant notifications for anomalies or when concrete reaches critical strength milestones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="py-20 md:py-32 bg-gradient-to-b from-white to-blue-50">
-    <div class="max-w-xl mx-auto px-6 text-center">
-      <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">Ready to Build Stronger?</h2>
-      <p class="text-lg text-gray-700 max-w-2xl mx-auto mb-8">
-        Let's discuss how Strencrete can transform your construction projects.<br>
-        <b>Contact us: <a href="mailto:info@strencrete.com" class="text-blue-700 underline">info@strencrete.com</a></b>
-      </p>
-    </div>
-  </section>
+        <!-- Benefits Section -->
+        <section id="benefits" class="benefits-bg py-20 md:py-32">
+            <div class="max-w-6xl mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Why Choose Strencrete?</h2>
+                <p class="text-lg max-w-2xl mx-auto mb-12">
+                    Our solution provides clear advantages that directly impact your project's bottom line and quality.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border">
+                        <div class="text-blue-600 text-4xl mb-3 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1 text-gray-900">Time Savings</h3>
+                        <p class="text-gray-600 text-sm">Reduce waiting times by knowing the exact moment concrete is ready.</p>
+                    </div>
+                    <div class="card bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border">
+                        <div class="text-blue-600 text-4xl mb-3 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle-2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M9 12l2 2 4-4"/></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1 text-gray-900">Increased Accuracy</h3>
+                        <p class="text-gray-600 text-sm">Eliminate human error with precise, automated data collection.</p>
+                    </div>
+                    <div class="card bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border">
+                        <div class="text-blue-600 text-4xl mb-3 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1 text-gray-900">Enhanced Quality</h3>
+                        <p class="text-gray-600 text-sm">Ensure concrete meets and exceeds specified strength and durability.</p>
+                    </div>
+                    <div class="card bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border">
+                        <div class="text-blue-600 text-4xl mb-3 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge"><path d="m12 14-6.17-6.17a6.25 6.25 0 1 1 8.84 8.84l-6.17-6.17"/><path d="M14.5 14.5 18 18"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1 text-gray-900">Remote Access</h3>
+                        <p class="text-gray-600 text-sm">Monitor all your projects from a single dashboard, from anywhere in the world.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-gray-300 py-8">
-    <div class="max-w-6xl mx-auto px-6 text-center text-sm">
-      &copy; 2025 Strencrete. All rights reserved. | info@strencrete.com
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 md:py-32 bg-gradient-to-b from-white to-blue-50">
+            <div class="max-w-xl mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">Ready to Build Stronger?</h2>
+                <p class="text-lg text-gray-700 max-w-2xl mx-auto mb-8">
+                    Let's discuss how Strencrete can transform your construction projects.<br/>
+                    <b>Contact us: <a href="mailto:info@strencrete.com" class="text-blue-700 underline">info@strencrete.com</a></b>
+                </p>
+            </div>
+        </section>
     </div>
-  </footer>
+
+    <div id="dashboard-page" class="hidden">
+        <!-- Dashboard Section -->
+        <div class="dashboard-bg min-h-screen">
+            <section class="py-20 md:py-32">
+                <div class="max-w-6xl mx-auto px-6 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Live Dashboard</h2>
+                    <p class="text-lg text-gray-300 max-w-2xl mx-auto mb-12">
+                        This is a placeholder for your live data, graphs, and monitoring tools.
+                    </p>
+                    <div class="bg-gray-800 rounded-2xl p-8 shadow-xl">
+                        <h3 class="text-2xl font-semibold mb-4 text-white">Project Overview</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                            <div class="bg-gray-700 p-6 rounded-lg text-white">
+                                <p class="text-gray-400">Project Alpha</p>
+                                <p class="text-xl font-bold">Curing: 80%</p>
+                            </div>
+                            <div class="bg-gray-700 p-6 rounded-lg text-white">
+                                <p class="text-gray-400">Project Beta</p>
+                                <p class="text-xl font-bold">Curing: 45%</p>
+                            </div>
+                            <div class="bg-gray-700 p-6 rounded-lg text-white">
+                                <p class="text-gray-400">Project Gamma</p>
+                                <p class="text-xl font-bold">Curing: 95%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center text-sm">
+            &copy; 2025 Strencrete. All rights reserved. | <a href="mailto:info@strencrete.com" class="text-blue-500 hover:underline">info@strencrete.com</a>
+        </div>
+    </footer>
+
+    <script>
+        // Get the home and dashboard page containers
+        const homePage = document.getElementById('home-page');
+        const dashboardPage = document.getElementById('dashboard-page');
+
+        // Function to show the selected page
+        function showPage(pageId) {
+            if (pageId === 'home') {
+                homePage.classList.remove('hidden');
+                dashboardPage.classList.add('hidden');
+            } else if (pageId === 'dashboard') {
+                homePage.classList.add('hidden');
+                dashboardPage.classList.remove('hidden');
+            }
+        }
+
+        // Get the dropdown button and menu
+        const homeDropdownBtn = document.getElementById('home-dropdown-btn');
+        const homeDropdownMenu = document.getElementById('home-dropdown-menu');
+        const chevronUp = document.getElementById('home-chevron-up');
+        const chevronDown = document.getElementById('home-chevron-down');
+
+        // Toggle dropdown menu on button click
+        homeDropdownBtn.addEventListener('click', () => {
+            homeDropdownMenu.classList.toggle('hidden');
+            chevronUp.classList.toggle('hidden');
+            chevronDown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside of it
+        window.addEventListener('click', (event) => {
+            if (!homeDropdownBtn.contains(event.target) && !homeDropdownMenu.contains(event.target)) {
+                homeDropdownMenu.classList.add('hidden');
+                chevronUp.classList.add('hidden');
+                chevronDown.classList.remove('hidden');
+            }
+        });
+
+        // Function to handle smooth scrolling to a section
+        function scrollToSection(sectionId) {
+            homeDropdownMenu.classList.add('hidden');
+            chevronUp.classList.add('hidden');
+            chevronDown.classList.remove('hidden');
+            const section = document.getElementById(sectionId);
+            if (section) {
+                // Ensure the home page is visible before scrolling
+                showPage('home');
+                // A small delay to ensure the page has rendered
+                setTimeout(() => {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    </script>
 </body>
 </html>
