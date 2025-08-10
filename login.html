@@ -46,17 +46,17 @@
 </head>
 <body class="login-bg flex items-center justify-center min-h-screen">
 
-  <!-- Main container for both login form and dashboard -->
+  <!-- Main container for the login form -->
   <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
     <div class="text-center">
       <!-- Strencrete Logo - Using a placeholder for now -->
       <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
       
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2" id="mainTitle">Dashboard Login</h1>
-      <p class="text-gray-500 mb-8" id="mainSubtitle">Sign in or create an account to continue.</p>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
+      <p class="text-gray-500 mb-8">Sign in or create an account to continue.</p>
     </div>
 
-    <!-- The login form (initially visible) -->
+    <!-- The login form -->
     <form id="loginForm" class="space-y-4" autocomplete="off">
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
@@ -83,25 +83,6 @@
         </button>
       </div>
     </form>
-
-    <!-- The dashboard content (initially hidden) -->
-    <main id="dashboardPage" class="hidden text-center">
-      <h2 id="welcomeMessage" class="text-xl font-bold text-gray-900 mb-4"></h2>
-      <p class="text-gray-700 mb-6">This is your personalized dashboard. More content will go here!</p>
-      <div class="space-y-4">
-        <div class="bg-gray-100 p-4 rounded-lg shadow-inner">
-          <h3 class="font-semibold text-lg">Project Overview</h3>
-          <p class="text-sm text-gray-600">Your latest project statistics will be displayed here.</p>
-        </div>
-        <div class="bg-gray-100 p-4 rounded-lg shadow-inner">
-          <h3 class="font-semibold text-lg">Recent Activity</h3>
-          <p class="text-sm text-gray-600">See what's new and what needs your attention.</p>
-        </div>
-      </div>
-      <button id="logoutBtn" class="mt-8 w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
-        Sign Out
-      </button>
-    </main>
   </div>
 
   <script type="module">
@@ -140,12 +121,6 @@
           const passwordInput = document.getElementById('password');
           const submitBtn = document.getElementById('submitBtn');
           const messageBox = document.getElementById('messageBox');
-          const mainTitle = document.getElementById('mainTitle');
-          const mainSubtitle = document.getElementById('mainSubtitle');
-          
-          const dashboardPage = document.getElementById('dashboardPage');
-          const welcomeMessage = document.getElementById('welcomeMessage');
-          const logoutBtn = document.getElementById('logoutBtn');
 
           let isSignInMode = false; // State to track whether to sign in or sign up
 
@@ -164,23 +139,12 @@
           // onAuthStateChanged observer to react to user sign-in/sign-out
           onAuthStateChanged(auth, (user) => {
             if (user) {
-              // User is signed in. Show the dashboard.
+              // User is signed in. Redirect to the dashboard page.
               console.log("Auth state changed: User is signed in as", user.email);
-              mainTitle.textContent = "Welcome!";
-              mainSubtitle.textContent = "You are now logged in.";
-              welcomeMessage.textContent = `Hello, ${user.email}!`;
-              
-              loginForm.classList.add('hidden');
-              dashboardPage.classList.remove('hidden');
-
+              window.location.href = 'dashboard.html';
             } else {
-              // No user is signed in. Show the login form.
+              // No user is signed in. Stay on the login form.
               console.log("Auth state changed: No user is signed in.");
-              mainTitle.textContent = "Dashboard Login";
-              mainSubtitle.textContent = "Sign in or create an account to continue.";
-
-              dashboardPage.classList.add('hidden');
-              loginForm.classList.remove('hidden');
               
               // Reset the form state for the next login attempt
               submitBtn.textContent = 'Continue';
@@ -247,7 +211,6 @@
                   showMessage('Account created successfully!', false);
                 } catch (error) {
                   if (error.code === 'auth/email-already-in-use') {
-                    // Handle the case where the user attempts to sign up with an existing email
                     isSignInMode = true;
                     showMessage('This email is already in use. Please sign in instead.');
                     submitBtn.textContent = 'Sign In';
@@ -258,20 +221,6 @@
                 }
             }
           });
-          
-          // Sign out handler
-          logoutBtn.addEventListener('click', async () => {
-            try {
-              await signOut(auth);
-              showMessage('You have been signed out successfully.', false);
-              // The onAuthStateChanged listener handles the UI reset
-            } catch (error) {
-              showMessage(`Sign-out failed: ${error.message}`, true);
-            }
-          });
-          
-          // Debug log to confirm script is running
-          console.log("Strencrete login script loaded with new Firebase API key.");
         });
       });
     };
