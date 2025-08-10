@@ -182,7 +182,7 @@
             showMessage('Email not found. Please enter a password to create an account.');
             passwordContainer.classList.remove('hidden');
             submitBtn.textContent = 'Create Account';
-            passwordInput.focus();
+            setTimeout(() => passwordInput.focus(), 10); // FIXED: Wait for field to be visible
           } else {
             // Email exists, so we need to sign in
             if (methods.includes('password')) {
@@ -190,7 +190,7 @@
               showMessage('Please enter your password to sign in.');
               passwordContainer.classList.remove('hidden');
               submitBtn.textContent = 'Sign In';
-              passwordInput.focus();
+              setTimeout(() => passwordInput.focus(), 10); // FIXED: Wait for field to be visible
             } else {
               // The account exists but has no password (e.g., created via Google in a different app)
               showMessage('This email is not associated with an email/password login.', true);
@@ -209,7 +209,7 @@
         } catch (error) {
           if (error.code === 'auth/wrong-password') {
             showMessage('Incorrect password. Please try again.', true);
-            passwordInput.focus();
+            setTimeout(() => passwordInput.focus(), 10); // FIXED: Wait for field to be visible
           } else {
             showMessage(`Sign-in failed: ${error.message}`, true);
           }
@@ -225,7 +225,7 @@
             showMessage('This email is already in use. Please sign in instead.');
             passwordContainer.classList.remove('hidden');
             submitBtn.textContent = 'Sign In';
-            passwordInput.focus();
+            setTimeout(() => passwordInput.focus(), 10); // FIXED: Wait for field to be visible
           } else {
             showMessage(`Account creation failed: ${error.message}`, true);
           }
