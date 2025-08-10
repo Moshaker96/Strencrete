@@ -1,323 +1,245 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Strencrete | IoT Concrete Monitoring</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujlYd9k3X3y8eX8Vd+C4q9g3Vn5l/wRz4z3Xn3hF3bF3S7q2D5Z5fG5n5S5s7fG5n5S5s7fG5n5s7w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .hero-bg {
-            background:
-                linear-gradient(120deg, rgba(30,41,59,0.88) 0%, rgba(30,58,138,0.78) 100%),
-                url('concrete-monitoring-1.jpg') center center / cover no-repeat;
+import { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
+import { LayoutGrid, LogOut } from 'lucide-react';
+
+// Your Firebase project configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
+  authDomain: "concretelive.firebaseapp.com",
+  projectId: "concretelive",
+  storageBucket: "concretelive.appspot.com",
+  messagingSenderId: "605153900631",
+  appId: "1:605153900631:web:68c72f63bdb2929a348b12"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Placeholder project data
+const projects = [
+  { id: 1, name: 'Bridge Foundation Phase 1', status: 'Active', sensors: 12, lastUpdated: '2 hours ago' },
+  { id: 2, name: 'Skyscraper Core Wall A', status: 'On Hold', sensors: 8, lastUpdated: '1 day ago' },
+  { id: 3, name: 'Residential Slab Curing', status: 'Completed', sensors: 4, lastUpdated: '1 week ago' },
+  { id: 4, name: 'Dam Reinforcement Project', status: 'Active', sensors: 15, lastUpdated: '30 minutes ago' },
+  { id: 5, name: 'Highway Overpass Section 2', status: 'Active', sensors: 9, lastUpdated: '5 hours ago' }
+];
+
+const Dashboard = ({ user, handleSignOut }) => {
+  return (
+    <div className="flex flex-col md:flex-row min-h-screen font-sans">
+      {/* Sidebar */}
+      <aside className="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0">
+        <div className="flex items-center justify-center md:justify-start mb-8">
+          <img src="https://placehold.co/96x96/e5e7eb/6b7280?text=LOGO" alt="Strencrete Logo" className="w-24 h-auto rounded-lg shadow-md" />
+        </div>
+        <div className="text-center md:text-left mb-8">
+          <h2 className="text-lg font-bold text-gray-900">Welcome, User</h2>
+          <p className="text-sm text-gray-500">{user?.email}</p>
+        </div>
+        <nav className="space-y-2">
+          <a href="#" className="flex items-center space-x-3 p-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-150 ease-in-out">
+            <LayoutGrid size={24} />
+            <span>Projects</span>
+          </a>
+          <button onClick={handleSignOut} className="flex items-center space-x-3 p-3 rounded-lg text-gray-600 w-full hover:bg-red-50 hover:text-red-600 transition-colors duration-150 ease-in-out">
+            <LogOut size={24} />
+            <span>Sign Out</span>
+          </button>
+        </nav>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-grow p-8">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Projects Overview</h1>
+          <p className="text-gray-600">Monitor all your concrete projects in one place.</p>
+        </header>
+
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map(project => {
+            const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
+                                project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800';
+            return (
+              <div key={project.id} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900">{project.name}</h3>
+                  <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
+                    {project.status}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-500 mb-2">Sensors: {project.sensors}</p>
+                <p className="text-sm text-gray-500">Last updated: {project.lastUpdated}</p>
+              </div>
+            );
+          })}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+const Login = ({ handleLogin, message }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleLogin(email, password);
+  };
+
+  const messageBoxClass = message.isError ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700';
+
+  return (
+    <div className="login-bg flex items-center justify-center min-h-screen font-sans">
+      <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
+        <div className="text-center">
+          <img src="https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO" alt="Strencrete Logo" className="w-32 h-auto mx-auto mb-4 rounded-lg shadow" />
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
+          <p className="text-gray-500 mb-8">Sign in or create an account to continue.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
+            <div className="mt-1">
+              <input 
+                id="email" 
+                name="email" 
+                type="email" 
+                autoComplete="email" 
+                required 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+            <div className="mt-1">
+              <input 
+                id="password" 
+                name="password" 
+                type="password" 
+                autoComplete="current-password" 
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+              />
+            </div>
+          </div>
+
+          {message.text && (
+            <div className={`message-box p-3 text-sm rounded-lg ${messageBoxClass}`} role="alert">
+              {message.text}
+            </div>
+          )}
+
+          <div>
+            <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+              Sign In / Sign Up
+            </button>
+          </div>
+        </form>
+      </div>
+      <style>
+        {`
+          body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+          }
+          .login-bg {
+            background-image: url('https://placehold.co/1200x800/212121/ffffff?text=Concrete+Background');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             position: relative;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        .about-bg {
-            background:
-                linear-gradient(120deg, rgba(30,41,59,0.60) 0%, rgba(30,58,138,0.60) 100%),
-                url('Gemini_Generated_Image_8dcaf08dcaf08dca.png') center center / cover no-repeat;
-            position: relative;
-            z-index: 1;
-        }
-        .solution-bg {
-            background:
-                linear-gradient(120deg, rgba(30,41,59,0.58) 0%, rgba(30,58,138,0.58) 100%),
-                url('Gemini_Generated_Image_7osldc7osldc7osl.png') center center / cover no-repeat;
-            position: relative;
-            z-index: 1;
-        }
-        .benefits-bg {
-            background:
-                linear-gradient(120deg, rgba(30,41,59,0.7) 0%, rgba(30,58,138,0.8) 100%),
-                url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png') center center / cover no-repeat;
-            position: relative;
-            z-index: 1;
-        }
-        /* Universal text styling for dark overlays */
-        .about-bg h2, .about-bg p,
-        .solution-bg h2, .solution-bg p,
-        .benefits-bg h2, .benefits-bg p {
-            text-shadow: 0 2px 8px rgba(0,0,0,0.28);
-            color: #fff !important;
-        }
-        /* Make card text dark for clarity */
-        .solution-bg .card-title {
-            color: #222 !important;
-            text-shadow: none !important;
-        }
-        .solution-bg .card-desc {
-            color: #444 !important;
-            text-shadow: none !important;
-        }
-        .solution-bg .card {
-            background: rgba(255,255,255,0.98) !important;
-            border: 1.5px solid #e5e7eb;
-            box-shadow: 0 8px 32px rgba(30,41,59,0.13);
-        }
-        /* Ensure benefits card text is dark for visibility */
-        .benefits-bg .card {
-            background: rgba(255,255,255,0.98) !important;
-        }
-        .benefits-bg .card h3 {
-            color: #1f2937 !important;
-        }
-        .benefits-bg .card p {
-            color: #4b5563 !important;
-        }
-        .hero-logo-bg {
+          }
+          .login-bg::before {
+            content: '';
             position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 600px;
-            height: 600px;
-            transform: translate(-50%, -50%);
-            background: url('strencrete-logo.jpg') center/contain no-repeat;
-            opacity: 0.10;
-            z-index: 1;
-            filter: blur(1px);
-            pointer-events: none;
-        }
-        @media (max-width: 768px) {
-            .hero-logo-bg {
-                width: 330px;
-                height: 330px;
-            }
-        }
-        .glass {
-            background: rgba(255,255,255,0.16);
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 32px 0 rgba(31,38,135,0.20);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1.5px solid rgba(255,255,255,0.22);
-        }
-        /* New dashboard styles */
-        .dashboard-bg {
-            background-color: #1a202c;
-            color: #e2e8f0;
-        }
-        .dashboard-main {
-            background-color: #1a202c;
-            color: #e2e8f0;
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-        }
-    </style>
-</head>
-<body class="bg-gray-50 text-gray-900 antialiased">
-    <!-- Navigation Bar -->
-    <nav class="bg-white/90 shadow-lg sticky top-0 z-50 backdrop-blur" id="home-navbar">
-        <div class="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
-            <a href="#" class="flex items-center space-x-3" onclick="showPage('home')">
-                <img src="strencrete-logo.jpg" alt="Strencrete Logo" class="h-10 w-10 rounded-lg shadow"/>
-                <span class="font-bold text-2xl tracking-tight text-blue-900">Strencrete</span>
-            </a>
-            <div class="flex space-x-8 font-medium">
-                <!-- Home Dropdown Menu -->
-                <div class="relative">
-                    <button id="home-dropdown-btn" class="flex items-center space-x-2 hover:text-blue-700 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                        <span>Home</span>
-                        <svg id="home-chevron-down" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
-                        <svg id="home-chevron-up" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-up hidden"><path d="m18 15-6-6-6 6"/></svg>
-                    </button>
-                    <div id="home-dropdown-menu" class="absolute hidden top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                        <div class="py-1">
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="scrollToSection('about')">About</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="scrollToSection('solution')">Solution</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="scrollToSection('benefits')">Benefits</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="scrollToSection('contact')">Contact</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dashboard Button changed to a link -->
-                <!-- UPDATED: This link now points to login.html -->
-                <a href="login.html" class="flex items-center space-x-2 hover:text-blue-700 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-                    <span>Dashboard</span>
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Page Containers -->
-    <div id="home-page" class="">
-        <!-- Hero Section -->
-        <section id="hero" class="relative hero-bg min-h-screen flex items-center justify-center px-4">
-            <div class="relative z-10 w-full flex flex-col items-center justify-center">
-                <div class="glass max-w-2xl w-full mx-auto text-center px-6 py-16 shadow-2xl rounded-3xl">
-                    <img src="strencrete-logo.jpg" alt="Logo" class="w-24 h-24 mx-auto mb-6 rounded-xl shadow-lg border-4 border-white/40 bg-white/40"/>
-                    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 drop-shadow">Empowering <span class="text-blue-600">Strength</span> Through Smart Monitoring</h1>
-                    <p class="text-lg md:text-xl text-gray-800/90 mb-8 font-medium">
-                        Strencrete delivers an innovative IoT solution for real-time monitoring of concrete strength and temperature, ensuring <span class="font-semibold text-blue-700">quality, safety, and efficiency</span> across your construction projects.
-                    </p>
-                    <!-- UPDATED: This button now scrolls to the contact section -->
-                    <button class="inline-block bg-blue-700 text-white font-semibold rounded-full px-10 py-3 shadow-lg hover:bg-blue-800 transition text-lg" onclick="scrollToSection('contact')">Request a Demo</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="about" class="about-bg py-20 md:py-32">
-            <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">About Strencrete</h2>
-                    <p class="text-lg mb-5">
-                        In the fast-paced world of construction, precision and reliability are paramount. Strencrete bridges the gap between traditional practices and modern technology. Our robust IoT platform provides <span class="font-semibold">real-time, actionable insights</span> into your concrete's curing process.
-                    </p>
-                    <p class="text-lg">
-                        Our mission: Help project managers and engineers make data-driven decisions, reduce curing times, and guarantee the highest quality standards on every project.
-                    </p>
-                </div>
-                <img src="https://placehold.co/600x420/1e40af/fff?text=Smart+Concrete" class="rounded-2xl shadow-lg" alt="Concrete Monitoring"/>
-            </div>
-        </section>
-
-        <!-- Solution Section -->
-        <section id="solution" class="solution-bg py-20 md:py-32">
-            <div class="max-w-6xl mx-auto px-6 text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">A Better Way to Monitor</h2>
-                <p class="text-lg max-w-2xl mx-auto mb-12">
-                    Our IoT-enabled system provides a complete and accurate picture of your concrete's development, moving beyond traditional methods.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
-                        <div class="text-blue-600 text-5xl mb-3 flex justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M20 15h2"/><path d="M15 2h2"/><path d="M20 15h2"/><path d="M15 2h-2"/><path d="M20 9h2"/><path d="M9 20v2"/><path d="M4 9h2"/><path d="M9 2h2"/><path d="M2 9h2"/></svg>
-                        </div>
-                        <h3 class="card-title text-xl font-semibold mb-2">Smart Sensors</h3>
-                        <p class="card-desc">Wireless, embedded sensors collect continuous data on temperature, humidity, and strength gain.</p>
-                    </div>
-                    <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
-                        <div class="text-blue-600 text-5xl mb-3 flex justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-                        </div>
-                        <h3 class="card-title text-xl font-semibold mb-2">Cloud Integration</h3>
-                        <p class="card-desc">All sensor data is securely transmitted to our cloud platform, accessible from any device, anywhere.</p>
-                    </div>
-                    <div class="card bg-white p-8 rounded-2xl shadow-xl border hover:shadow-2xl transition">
-                        <div class="text-blue-600 text-5xl mb-3 flex justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-circle"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                        </div>
-                        <h3 class="card-title text-xl font-semibold mb-2">Actionable Alerts</h3>
-                        <p class="card-desc">Get instant notifications for anomalies or when concrete reaches critical strength milestones.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Benefits Section -->
-        <section id="benefits" class="benefits-bg py-20 md:py-32">
-            <div class="max-w-6xl mx-auto px-6 text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Why Choose Strencrete?</h2>
-                <p class="text-lg max-w-2xl mx-auto mb-12">
-                    Our solution provides clear advantages that directly impact your project's bottom line and quality.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div class="card bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border">
-                        <div class="text-blue-600 text-4xl mb-3 flex justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
-                        <h3 class="text-lg font-semibold mb-1 text-gray-900">Time Savings</h3>
-                        <p class="text-gray-600 text-sm">Reduce waiting times by knowing the exact moment concrete is ready.</p>
-                    </div>
-                    <div class="card bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border">
-                        <div class="text-blue-600 text-4xl mb-3 flex justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle-2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M9 12l2 2 4-4"/></svg>
-                        </div>
-                        <h3 class="text-lg font-semibold mb-1 text-gray-900">Increased Accuracy</h3>
-                        <p class="text-gray-600 text-sm">Eliminate human error with precise, automated data collection.</p>
-                    </div>
-                    <div class="card bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border">
-                        <div class="text-blue-600 text-4xl mb-3 flex justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                        </div>
-                        <h3 class="text-lg font-semibold mb-1 text-gray-900">Enhanced Quality</h3>
-                        <p class="text-gray-600 text-sm">Ensure concrete meets and exceeds specified strength and durability.</p>
-                    </div>
-                    <div class="card bg-white p-6 rounded-2xl shadow-md hover:shadow-xl border">
-                        <div class="text-blue-600 text-4xl mb-3 flex justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge"><path d="m12 14-6.17-6.17a6.25 6.25 0 1 1 8.84 8.84l-6.17-6.17"/><path d="M14.5 14.5 18 18"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>
-                        </div>
-                        <h3 class="text-lg font-semibold mb-1 text-gray-900">Remote Access</h3>
-                        <p class="text-gray-600 text-sm">Monitor all your projects from a single dashboard, from anywhere in the world.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="py-20 md:py-32 bg-gradient-to-b from-white to-blue-50">
-            <div class="max-w-xl mx-auto px-6 text-center">
-                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">Ready to Build Stronger?</h2>
-                <p class="text-lg text-gray-700 max-w-2xl mx-auto mb-8">
-                    Let's discuss how Strencrete can transform your construction projects.<br/>
-                    <b>Contact us: <a href="mailto:info@strencrete.com" class="text-blue-700 underline">info@strencrete.com</a></b>
-                </p>
-            </div>
-        </section>
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+          }
+          .input-field {
+              transition: all 0.3s ease;
+          }
+          .input-field:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+            border-color: #3b82f6;
+          }
+          .message-box {
+            font-weight: 600;
+          }
+        `}
+      </style>
     </div>
+  );
+};
 
-    <!-- Footer -->
-    <footer id="main-footer" class="bg-gray-900 text-gray-300 py-8">
-        <div class="max-w-6xl mx-auto px-6 text-center text-sm">
-            &copy; 2025 Strencrete. All rights reserved. | <a href="mailto:info@strencrete.com" class="text-blue-500 hover:underline">info@strencrete.com</a>
-        </div>
-    </footer>
+const App = () => {
+  const [user, setUser] = useState(null);
+  const [message, setMessage] = useState({ text: '', isError: false });
 
-    <script>
-        // --- HOME PAGE SCRIPT ---
-        // Get the home and dashboard page containers
-        const homePage = document.getElementById('home-page');
-        const homeNavbar = document.getElementById('home-navbar');
-        const mainFooter = document.getElementById('main-footer');
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+      setUser(authUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
-        // Get the dropdown button and menu
-        const homeDropdownBtn = document.getElementById('home-dropdown-btn');
-        const homeDropdownMenu = document.getElementById('home-dropdown-menu');
-        const chevronUp = document.getElementById('home-chevron-up');
-        const chevronDown = document.getElementById('home-chevron-down');
-
-        // Toggle dropdown menu on button click
-        homeDropdownBtn.addEventListener('click', () => {
-            homeDropdownMenu.classList.toggle('hidden');
-            chevronUp.classList.toggle('hidden');
-            chevronDown.classList.toggle('hidden');
-        });
-
-        // Close dropdown when clicking outside of it
-        window.addEventListener('click', (event) => {
-            if (!homeDropdownBtn.contains(event.target) && !homeDropdownMenu.contains(event.target)) {
-                homeDropdownMenu.classList.add('hidden');
-                chevronUp.classList.add('hidden');
-                chevronDown.classList.remove('hidden');
-            }
-        });
-
-        // Function to handle smooth scrolling to a section
-        function scrollToSection(sectionId) {
-            homeDropdownMenu.classList.add('hidden');
-            chevronUp.classList.add('hidden');
-            chevronDown.classList.remove('hidden');
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.scrollIntoView({ behavior: 'smooth' });
-            }
+  const handleLogin = async (email, password) => {
+    try {
+      // First, try to sign in
+      await signInWithEmailAndPassword(auth, email, password);
+      setMessage({ text: 'Sign in successful!', isError: false });
+    } catch (error) {
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        // If sign-in fails, check if a user with this email exists
+        try {
+          const methods = await fetchSignInMethodsForEmail(auth, email);
+          if (methods.length > 0) {
+            // Email exists, but the password was wrong.
+            setMessage({ text: 'Invalid password. Please try again.', isError: true });
+          } else {
+            // Email does not exist, so try to create a new user
+            await createUserWithEmailAndPassword(auth, email, password);
+            setMessage({ text: 'New account created successfully!', isError: false });
+          }
+        } catch (checkError) {
+          setMessage({ text: `An error occurred while checking email: ${checkError.message}`, isError: true });
         }
+      } else if (error.code === 'auth/email-already-in-use') {
+        setMessage({ text: 'This email is already in use. Please sign in with your password.', isError: true });
+      } else {
+        setMessage({ text: `Login failed: ${error.message}`, isError: true });
+      }
+    }
+  };
 
-    </script>
-</body>
-</html>
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+  
+  if (user) {
+    return <Dashboard user={user} handleSignOut={handleSignOut} />;
+  } else {
+    return <Login handleLogin={handleLogin} message={message} />;
+  }
+};
+
+export default App;
