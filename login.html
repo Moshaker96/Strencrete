@@ -22,18 +22,16 @@
     
     // Wait for the window to load before executing the script
     window.onload = function() {
-      // Use the provided Firebase config from the environment
-      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+      // Your specific Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
+        authDomain: "concretelive.firebaseapp.com",
+        projectId: "concretelive",
+        storageBucket: "concretelive.firebasestorage.app",
+        messagingSenderId: "605153900631",
+        appId: "1:605153900631:web:68c72f63bdb2929a348b12"
+      };
 
-      if (!firebaseConfig) {
-        // If the config is not available, display an error and stop.
-        const messageBox = document.getElementById('messageBox');
-        messageBox.textContent = "Firebase configuration not found. The app cannot initialize.";
-        messageBox.classList.remove('hidden');
-        messageBox.classList.add('bg-red-100', 'text-red-700');
-        return;
-      }
-      
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
