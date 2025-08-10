@@ -1,245 +1,195 @@
-import { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
-import { LayoutGrid, LogOut } from 'lucide-react';
-
-// Your Firebase project configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
-  authDomain: "concretelive.firebaseapp.com",
-  projectId: "concretelive",
-  storageBucket: "concretelive.appspot.com",
-  messagingSenderId: "605153900631",
-  appId: "1:605153900631:web:68c72f63bdb2929a348b12"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// Placeholder project data
-const projects = [
-  { id: 1, name: 'Bridge Foundation Phase 1', status: 'Active', sensors: 12, lastUpdated: '2 hours ago' },
-  { id: 2, name: 'Skyscraper Core Wall A', status: 'On Hold', sensors: 8, lastUpdated: '1 day ago' },
-  { id: 3, name: 'Residential Slab Curing', status: 'Completed', sensors: 4, lastUpdated: '1 week ago' },
-  { id: 4, name: 'Dam Reinforcement Project', status: 'Active', sensors: 15, lastUpdated: '30 minutes ago' },
-  { id: 5, name: 'Highway Overpass Section 2', status: 'Active', sensors: 9, lastUpdated: '5 hours ago' }
-];
-
-const Dashboard = ({ user, handleSignOut }) => {
-  return (
-    <div className="flex flex-col md:flex-row min-h-screen font-sans">
-      {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0">
-        <div className="flex items-center justify-center md:justify-start mb-8">
-          <img src="https://placehold.co/96x96/e5e7eb/6b7280?text=LOGO" alt="Strencrete Logo" className="w-24 h-auto rounded-lg shadow-md" />
-        </div>
-        <div className="text-center md:text-left mb-8">
-          <h2 className="text-lg font-bold text-gray-900">Welcome, User</h2>
-          <p className="text-sm text-gray-500">{user?.email}</p>
-        </div>
-        <nav className="space-y-2">
-          <a href="#" className="flex items-center space-x-3 p-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-150 ease-in-out">
-            <LayoutGrid size={24} />
-            <span>Projects</span>
-          </a>
-          <button onClick={handleSignOut} className="flex items-center space-x-3 p-3 rounded-lg text-gray-600 w-full hover:bg-red-50 hover:text-red-600 transition-colors duration-150 ease-in-out">
-            <LogOut size={24} />
-            <span>Sign Out</span>
-          </button>
-        </nav>
-      </aside>
-
-      {/* Main Content Area */}
-      <main className="flex-grow p-8">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Projects Overview</h1>
-          <p className="text-gray-600">Monitor all your concrete projects in one place.</p>
-        </header>
-
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map(project => {
-            const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
-                                project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-gray-100 text-gray-800';
-            return (
-              <div key={project.id} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">{project.name}</h3>
-                  <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
-                    {project.status}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-500 mb-2">Sensors: {project.sensors}</p>
-                <p className="text-sm text-gray-500">Last updated: {project.lastUpdated}</p>
-              </div>
-            );
-          })}
-        </div>
-      </main>
-    </div>
-  );
-};
-
-const Login = ({ handleLogin, message }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Strencrete Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind CSS CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleLogin(email, password);
-  };
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .login-bg {
+      background-image: url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      min-height: 100vh;
+    }
+    .login-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    }
+    .input-field {
+        transition: all 0.3s ease;
+    }
+    .input-field:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+      border-color: #3b82f6;
+    }
+    .message-box {
+      font-weight: 600;
+      display: block;
+    }
+  </style>
+</head>
+<body class="login-bg flex items-center justify-center min-h-screen">
 
-  const messageBoxClass = message.isError ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700';
+  <!-- Main container for the login form -->
+  <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
+    <div class="text-center">
+      <!-- Strencrete Logo - Using a placeholder for now -->
+      <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
+      
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
+      <p class="text-gray-500 mb-8">Sign in or create an account to continue.</p>
+    </div>
 
-  return (
-    <div className="login-bg flex items-center justify-center min-h-screen font-sans">
-      <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
-        <div className="text-center">
-          <img src="https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO" alt="Strencrete Logo" className="w-32 h-auto mx-auto mb-4 rounded-lg shadow" />
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
-          <p className="text-gray-500 mb-8">Sign in or create an account to continue.</p>
+    <!-- The login form -->
+    <form id="loginForm" class="space-y-4" autocomplete="off">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+        <div class="mt-1">
+          <input id="email" name="email" type="email" autocomplete="email" required
+                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
-            <div className="mt-1">
-              <input 
-                id="email" 
-                name="email" 
-                type="email" 
-                autoComplete="email" 
-                required 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-            <div className="mt-1">
-              <input 
-                id="password" 
-                name="password" 
-                type="password" 
-                autoComplete="current-password" 
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
-              />
-            </div>
-          </div>
-
-          {message.text && (
-            <div className={`message-box p-3 text-sm rounded-lg ${messageBoxClass}`} role="alert">
-              {message.text}
-            </div>
-          )}
-
-          <div>
-            <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-              Sign In / Sign Up
-            </button>
-          </div>
-        </form>
       </div>
-      <style>
-        {`
-          body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-          }
-          .login-bg {
-            background-image: url('https://placehold.co/1200x800/212121/ffffff?text=Concrete+Background');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
-            min-height: 100vh;
-          }
-          .login-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-          }
-          .input-field {
-              transition: all 0.3s ease;
-          }
-          .input-field:focus {
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
-            border-color: #3b82f6;
-          }
-          .message-box {
-            font-weight: 600;
-          }
-        `}
-      </style>
-    </div>
-  );
-};
 
-const App = () => {
-  const [user, setUser] = useState(null);
-  const [message, setMessage] = useState({ text: '', isError: false });
+      <!-- Password field is now always visible -->
+      <div id="passwordContainer">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <div class="mt-1">
+          <input id="password" name="password" type="password" autocomplete="current-password" required
+                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+      </div>
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      setUser(authUser);
-    });
-    return () => unsubscribe();
-  }, []);
+      <!-- Message box for errors and instructions -->
+      <div id="messageBox" class="hidden message-box p-3 text-sm rounded-lg" role="alert"></div>
 
-  const handleLogin = async (email, password) => {
-    try {
-      // First, try to sign in
-      await signInWithEmailAndPassword(auth, email, password);
-      setMessage({ text: 'Sign in successful!', isError: false });
-    } catch (error) {
-      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-        // If sign-in fails, check if a user with this email exists
-        try {
-          const methods = await fetchSignInMethodsForEmail(auth, email);
-          if (methods.length > 0) {
-            // Email exists, but the password was wrong.
-            setMessage({ text: 'Invalid password. Please try again.', isError: true });
-          } else {
-            // Email does not exist, so try to create a new user
-            await createUserWithEmailAndPassword(auth, email, password);
-            setMessage({ text: 'New account created successfully!', isError: false });
+      <div>
+        <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+          Sign In / Sign Up
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script type="module">
+    // Wait for the window to load before executing the script
+    window.onload = function() {
+      // Import Firebase modules
+      import("https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js").then(firebaseAppModule => {
+        import("https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js").then(firebaseAuthModule => {
+          const { initializeApp } = firebaseAppModule;
+          const {
+            getAuth,
+            onAuthStateChanged,
+            fetchSignInMethodsForEmail,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword
+          } = firebaseAuthModule;
+
+          // Your specific Firebase configuration
+          const firebaseConfig = {
+            apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
+            authDomain: "concretelive.firebaseapp.com",
+            projectId: "concretelive",
+            storageBucket: "concretelive.appspot.com",
+            messagingSenderId: "605153900631",
+            appId: "1:605153900631:web:68c72f63bdb2929a348b12"
+          };
+
+          // Initialize Firebase
+          const app = initializeApp(firebaseConfig);
+          const auth = getAuth(app);
+
+          // Get DOM elements after the page has loaded
+          const loginForm = document.getElementById('loginForm');
+          const emailInput = document.getElementById('email');
+          const passwordInput = document.getElementById('password');
+          const messageBox = document.getElementById('messageBox');
+          const submitBtn = document.getElementById('submitBtn');
+
+          // Function to display messages to the user
+          function showMessage(text, isError = false) {
+            messageBox.textContent = text;
+            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
+            messageBox.classList.add(isError ? 'bg-red-100' : 'bg-blue-100');
+            messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
           }
-        } catch (checkError) {
-          setMessage({ text: `An error occurred while checking email: ${checkError.message}`, isError: true });
-        }
-      } else if (error.code === 'auth/email-already-in-use') {
-        setMessage({ text: 'This email is already in use. Please sign in with your password.', isError: true });
-      } else {
-        setMessage({ text: `Login failed: ${error.message}`, isError: true });
-      }
-    }
-  };
+          
+          function hideMessage() {
+            messageBox.classList.add('hidden');
+          }
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
-  
-  if (user) {
-    return <Dashboard user={user} handleSignOut={handleSignOut} />;
-  } else {
-    return <Login handleLogin={handleLogin} message={message} />;
-  }
-};
+          // onAuthStateChanged observer to react to user sign-in/sign-out
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              console.log("Auth state changed: User is signed in as", user.email);
+              showMessage('Sign in successful!', false);
+              // In a real application, you would navigate to the dashboard here.
+              // For this sandbox, we just show a message.
+            } else {
+              console.log("Auth state changed: No user is signed in.");
+              // This is a good place to reset the UI if needed
+              hideMessage();
+              submitBtn.textContent = 'Sign In / Sign Up';
+            }
+          });
+          
+          // Main form submission handler
+          loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            // Clear previous messages
+            hideMessage();
 
-export default App;
+            try {
+              // First, attempt to sign in the user
+              await signInWithEmailAndPassword(auth, email, password);
+              // If successful, onAuthStateChanged will handle the UI update
+            } catch (error) {
+              // If sign-in fails, handle the specific errors
+              if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                // If wrong password or user not found, check if a user with this email exists
+                try {
+                  const methods = await fetchSignInMethodsForEmail(auth, email);
+                  if (methods.length > 0) {
+                    // Email exists, but the password was wrong.
+                    showMessage('Invalid password. Please try again.', true);
+                  } else {
+                    // Email does not exist, so try to create a new user
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    // If successful, onAuthStateChanged will handle the UI update
+                  }
+                } catch (checkError) {
+                  // Handle errors from the email check itself
+                  showMessage(`An error occurred: ${checkError.message}`, true);
+                }
+              } else if (error.code === 'auth/email-already-in-use') {
+                showMessage('This email is already in use. Please sign in with your password.', true);
+              } else {
+                showMessage(`Login failed: ${error.message}`, true);
+              }
+            }
+          });
+        });
+      });
+    };
+  </script>
+</body>
+</html>
