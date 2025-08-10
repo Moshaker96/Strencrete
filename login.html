@@ -17,7 +17,8 @@
         onAuthStateChanged,
         fetchSignInMethodsForEmail, 
         signInWithEmailAndPassword, 
-        createUserWithEmailAndPassword, 
+        createUserWithEmailAndPassword,
+        signOut
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     
     // Wait for the window to load before executing the script
@@ -44,6 +45,8 @@
       const submitBtn = document.getElementById('submitBtn');
       const messageBox = document.getElementById('messageBox');
       const userStatusDisplay = document.getElementById('userStatus');
+      const logoutContainer = document.getElementById('logoutContainer');
+      const logoutBtn = document.getElementById('logoutBtn');
 
       // Function to display messages to the user
       function showMessage(text, isError = false) {
@@ -62,12 +65,21 @@
               userStatusDisplay.textContent = statusText;
               userStatusDisplay.classList.remove('hidden', 'bg-red-100', 'text-red-700');
               userStatusDisplay.classList.add('bg-green-100', 'text-green-700');
+
+              // Show the logout button and hide the login form
+              loginForm.classList.add('hidden');
+              logoutContainer.classList.remove('hidden');
+
           } else {
               // No user is signed in.
               console.log("Auth state changed: No user is signed in.");
               userStatusDisplay.textContent = "No user signed in.";
               userStatusDisplay.classList.remove('hidden', 'bg-green-100', 'text-green-700');
               userStatusDisplay.classList.add('bg-red-100', 'text-red-700');
+
+              // Hide the logout button and show the login form
+              loginForm.classList.remove('hidden');
+              logoutContainer.classList.add('hidden');
           }
       });
       
@@ -111,9 +123,7 @@
           // Second step: Sign the user in
           try {
             await signInWithEmailAndPassword(auth, email, password);
-            showMessage('Sign in successful! Your status will update shortly.', false);
-            // In a real app, you would redirect here
-            // window.location.href = 'dashboard.html';
+            showMessage('Sign in successful!', false);
           } catch (error) {
             if (error.code === 'auth/wrong-password') {
               showMessage('Incorrect password. Please try again.', true);
@@ -126,9 +136,7 @@
           // Second step: Create a new account
           try {
             await createUserWithEmailAndPassword(auth, email, password);
-            showMessage('Account created successfully! Your status will update shortly.', false);
-            // In a real app, you would redirect here
-            // window.location.href = 'dashboard.html';
+            showMessage('Account created successfully!', false);
           } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
               // If email is already in use, change the button to "Sign In"
@@ -140,6 +148,21 @@
               showMessage(`Account creation failed: ${error.message}`, true);
             }
           }
+        }
+      });
+
+      // Sign out handler
+      logoutBtn.addEventListener('click', async () => {
+        try {
+          await signOut(auth);
+          showMessage('You have been signed out successfully.', false);
+          // Reset the form state for the next login attempt
+          emailInput.value = '';
+          passwordInput.value = '';
+          passwordContainer.classList.add('hidden');
+          submitBtn.textContent = 'Continue';
+        } catch (error) {
+          showMessage(`Sign-out failed: ${error.message}`, true);
         }
       });
     };
@@ -195,7 +218,7 @@
     <!-- Status display for onAuthStateChanged -->
     <div id="userStatus" class="hidden message-box p-3 text-sm rounded-lg mb-4" role="status"></div>
 
-    <!-- The login form -->
+    <!-- The login form (initially visible) -->
     <form id="loginForm" class="space-y-4">
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
@@ -222,6 +245,15 @@
         </button>
       </div>
     </form>
+
+    <!-- The logout container (initially hidden) -->
+    <div id="logoutContainer" class="hidden">
+        <p class="text-center text-gray-700 mb-4">You are currently logged in.</p>
+        <button id="logoutBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+            Sign Out
+        </button>
+    </div>
   </div>
 </body>
 </html>
+
