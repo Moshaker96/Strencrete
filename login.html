@@ -138,12 +138,10 @@
           onAuthStateChanged(auth, (user) => {
             if (user) {
               console.log("Auth state changed: User is signed in as", user.email);
-              showMessage('Sign in successful!', false);
-              // In a real application, you would navigate to the dashboard here.
-              // For this sandbox, we just show a message.
+              // Redirect to the dashboard page on successful login or sign up
+              window.location.href = 'dashboard.html';
             } else {
               console.log("Auth state changed: No user is signed in.");
-              // This is a good place to reset the UI if needed
               hideMessage();
               submitBtn.textContent = 'Sign In / Sign Up';
             }
@@ -155,29 +153,20 @@
             const email = emailInput.value;
             const password = passwordInput.value;
             
-            // Clear previous messages
             hideMessage();
 
             try {
-              // First, attempt to sign in the user
               await signInWithEmailAndPassword(auth, email, password);
-              // If successful, onAuthStateChanged will handle the UI update
             } catch (error) {
-              // If sign-in fails, handle the specific errors
               if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                // If wrong password or user not found, check if a user with this email exists
                 try {
                   const methods = await fetchSignInMethodsForEmail(auth, email);
                   if (methods.length > 0) {
-                    // Email exists, but the password was wrong.
                     showMessage('Invalid password. Please try again.', true);
                   } else {
-                    // Email does not exist, so try to create a new user
                     await createUserWithEmailAndPassword(auth, email, password);
-                    // If successful, onAuthStateChanged will handle the UI update
                   }
                 } catch (checkError) {
-                  // Handle errors from the email check itself
                   showMessage(`An error occurred: ${checkError.message}`, true);
                 }
               } else if (error.code === 'auth/email-already-in-use') {
