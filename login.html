@@ -83,9 +83,9 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-    // --- IMPORTANT: Replace this with your real API key from your Firebase Console! ---
+    // Your real Firebase config with Web API Key provided
     const firebaseConfig = {
-      apiKey: "PASTE_YOUR_REAL_API_KEY_HERE",
+      apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
       authDomain: "concretelive.firebaseapp.com",
       projectId: "concretelive",
       storageBucket: "concretelive.appspot.com",
@@ -93,9 +93,11 @@
       appId: "1:605153900631:web:68c72f63bdb2929a348b12"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    // DOM elements
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordContainer = document.getElementById('passwordContainer');
@@ -110,9 +112,7 @@
       if (show) {
         passwordContainer.classList.remove('hidden');
         passwordInput.setAttribute('required', 'required');
-        setTimeout(() => { 
-          passwordInput.focus();
-        }, 30); // Give browser time to render
+        setTimeout(() => passwordInput.focus(), 30);
       } else {
         passwordContainer.classList.add('hidden');
         passwordInput.removeAttribute('required');
@@ -203,7 +203,7 @@
       }
     });
 
-    // For debugging: Confirm JS runs
+    // Debug log to confirm script is running
     console.log("Strencrete login script loaded.");
   </script>
 </body>
