@@ -69,7 +69,7 @@
         </div>
       </div>
 
-      <div id="passwordContainer" class="hidden">
+      <div id="passwordContainer" style="display:none;">
         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
         <div class="mt-1">
           <input id="password" name="password" type="password" autocomplete="current-password"
@@ -88,7 +88,7 @@
     </form>
 
     <!-- The logout container (initially hidden) -->
-    <div id="logoutContainer" class="hidden">
+    <div id="logoutContainer" style="display:none;">
         <p class="text-center text-gray-700 mb-4">You are currently logged in.</p>
         <button id="logoutBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
             Sign Out
@@ -96,7 +96,7 @@
     </div>
   </div>
 
-  <!-- Firebase SDK v9 modular imports (MOVED TO END OF BODY for DOM readiness) -->
+  <!-- Firebase SDK v9 modular imports -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { 
@@ -108,7 +108,7 @@
         signOut
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     
-    // Your specific Firebase configuration (CORRECTED storageBucket)
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
       authDomain: "concretelive.firebaseapp.com",
@@ -133,21 +133,26 @@
     const logoutContainer = document.getElementById('logoutContainer');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Utility function to show/hide password and manage 'required' attribute
+    // Utility functions
     function showPasswordField(show) {
       if (show) {
-        passwordContainer.classList.remove('hidden');
+        passwordContainer.style.display = "";
         passwordInput.setAttribute('required', 'required');
-        // Wait for next paint to ensure visibility before focus
-        requestAnimationFrame(() => passwordInput.focus());
+        setTimeout(() => { passwordInput.focus(); }, 30);
       } else {
-        passwordContainer.classList.add('hidden');
+        passwordContainer.style.display = "none";
         passwordInput.removeAttribute('required');
         passwordInput.value = '';
       }
     }
 
-    // Function to display messages to the user
+    function showLogout(show) {
+      logoutContainer.style.display = show ? "" : "none";
+    }
+    function showLogin(show) {
+      loginForm.style.display = show ? "" : "none";
+    }
+
     function showMessage(text, isError = false) {
       messageBox.textContent = text;
       messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
@@ -155,58 +160,44 @@
       messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
     }
 
-    // onAuthStateChanged observer to react to user sign-in/sign-out
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // User is signed in.
-            const statusText = `Currently logged in as: ${user.email}`;
-            userStatusDisplay.textContent = statusText;
-            userStatusDisplay.classList.remove('hidden', 'bg-red-100', 'text-red-700');
-            userStatusDisplay.classList.add('bg-green-100', 'text-green-700');
-
-            // Show the logout button and hide the login form
-            loginForm.classList.add('hidden');
-            logoutContainer.classList.remove('hidden');
-        } else {
-            // No user is signed in.
-            userStatusDisplay.textContent = "No user signed in.";
-            userStatusDisplay.classList.remove('hidden', 'bg-green-100', 'text-green-700');
-            userStatusDisplay.classList.add('bg-red-100', 'text-red-700');
-
-            // Hide the logout button and show the login form
-            loginForm.classList.remove('hidden');
-            logoutContainer.classList.add('hidden');
-        }
+      if (user) {
+        userStatusDisplay.textContent = `Currently logged in as: ${user.email}`;
+        userStatusDisplay.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+        userStatusDisplay.classList.add('bg-green-100', 'text-green-700');
+        showLogin(false);
+        showLogout(true);
+      } else {
+        userStatusDisplay.textContent = "No user signed in.";
+        userStatusDisplay.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+        userStatusDisplay.classList.add('bg-red-100', 'text-red-700');
+        showLogin(true);
+        showLogout(false);
+      }
     });
-    
-    // Main form submission handler
+
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = emailInput.value;
+      const email = emailInput.value.trim();
       const password = passwordInput.value;
-      messageBox.classList.add('hidden'); // Clear previous messages
+      messageBox.classList.add('hidden');
 
       if (submitBtn.textContent === 'Continue') {
-        // First step: Check if the email exists to determine if it's a sign-in or sign-up flow
         try {
           const methods = await fetchSignInMethodsForEmail(auth, email);
 
           if (methods.length === 0) {
-            // Email does not exist, so we need to sign up
             showMessage('Email not found. Please enter a password to create an account.');
             showPasswordField(true);
             submitBtn.textContent = 'Create Account';
           } else {
-            // Email exists, so we need to sign in
             if (methods.includes('password')) {
-              // The account has a password, prompt for it
               showMessage('Please enter your password to sign in.');
               showPasswordField(true);
               submitBtn.textContent = 'Sign In';
             } else {
-              // The account exists but has no password (e.g., created via Google in a different app)
               showMessage('This email is not associated with an email/password login.', true);
-              submitBtn.textContent = 'Continue'; // Reset button for new attempt
+              submitBtn.textContent = 'Continue';
               showPasswordField(false);
             }
           }
@@ -214,7 +205,6 @@
           showMessage(`An error occurred: ${error.message}`, true);
         }
       } else if (submitBtn.textContent === 'Sign In') {
-        // Second step: Sign the user in
         try {
           await signInWithEmailAndPassword(auth, email, password);
           showMessage('Sign in successful!', false);
@@ -227,13 +217,11 @@
           }
         }
       } else if (submitBtn.textContent === 'Create Account') {
-        // Second step: Create a new account
         try {
           await createUserWithEmailAndPassword(auth, email, password);
           showMessage('Account created successfully!', false);
         } catch (error) {
           if (error.code === 'auth/email-already-in-use') {
-            // If email is already in use, change the button to "Sign In"
             showMessage('This email is already in use. Please sign in instead.');
             showPasswordField(true);
             submitBtn.textContent = 'Sign In';
@@ -244,12 +232,10 @@
       }
     });
 
-    // Sign out handler
     logoutBtn.addEventListener('click', async () => {
       try {
         await signOut(auth);
         showMessage('You have been signed out successfully.', false);
-        // Reset the form state for the next login attempt
         emailInput.value = '';
         showPasswordField(false);
         submitBtn.textContent = 'Continue';
@@ -257,6 +243,9 @@
         showMessage(`Sign-out failed: ${error.message}`, true);
       }
     });
+
+    // Debug: Indicate script is loaded (remove or comment out after testing)
+    console.log("Strencrete login script loaded.");
   </script>
 </body>
 </html>
