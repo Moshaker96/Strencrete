@@ -60,7 +60,7 @@
     <div id="userStatus" class="hidden message-box p-3 text-sm rounded-lg mb-4" role="status"></div>
 
     <!-- The login form (initially visible) -->
-    <form id="loginForm" class="space-y-4">
+    <form id="loginForm" class="space-y-4" autocomplete="off">
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
         <div class="mt-1">
@@ -72,7 +72,7 @@
       <div id="passwordContainer" class="hidden">
         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
         <div class="mt-1">
-          <input id="password" name="password" type="password" autocomplete="current-password" required
+          <input id="password" name="password" type="password" autocomplete="current-password"
                   class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
       </div>
@@ -113,7 +113,7 @@
       apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
       authDomain: "concretelive.firebaseapp.com",
       projectId: "concretelive",
-      storageBucket: "concretelive.appspot.com", // <-- FIXED!
+      storageBucket: "concretelive.appspot.com",
       messagingSenderId: "605153900631",
       appId: "1:605153900631:web:68c72f63bdb2929a348b12"
     };
@@ -132,6 +132,20 @@
     const userStatusDisplay = document.getElementById('userStatus');
     const logoutContainer = document.getElementById('logoutContainer');
     const logoutBtn = document.getElementById('logoutBtn');
+
+    // Utility function to show/hide password and manage 'required' attribute
+    function showPasswordField(show) {
+      if (show) {
+        passwordContainer.classList.remove('hidden');
+        passwordInput.setAttribute('required', 'required');
+        // Wait for next paint to ensure visibility before focus
+        requestAnimationFrame(() => passwordInput.focus());
+      } else {
+        passwordContainer.classList.add('hidden');
+        passwordInput.removeAttribute('required');
+        passwordInput.value = '';
+      }
+    }
 
     // Function to display messages to the user
     function showMessage(text, isError = false) {
@@ -180,22 +194,20 @@
           if (methods.length === 0) {
             // Email does not exist, so we need to sign up
             showMessage('Email not found. Please enter a password to create an account.');
-            passwordContainer.classList.remove('hidden');
+            showPasswordField(true);
             submitBtn.textContent = 'Create Account';
-            setTimeout(() => passwordInput.focus(), 10); // FIXED: Wait for field to be visible
           } else {
             // Email exists, so we need to sign in
             if (methods.includes('password')) {
               // The account has a password, prompt for it
               showMessage('Please enter your password to sign in.');
-              passwordContainer.classList.remove('hidden');
+              showPasswordField(true);
               submitBtn.textContent = 'Sign In';
-              setTimeout(() => passwordInput.focus(), 10); // FIXED: Wait for field to be visible
             } else {
               // The account exists but has no password (e.g., created via Google in a different app)
               showMessage('This email is not associated with an email/password login.', true);
               submitBtn.textContent = 'Continue'; // Reset button for new attempt
-              passwordContainer.classList.add('hidden');
+              showPasswordField(false);
             }
           }
         } catch (error) {
@@ -209,7 +221,7 @@
         } catch (error) {
           if (error.code === 'auth/wrong-password') {
             showMessage('Incorrect password. Please try again.', true);
-            setTimeout(() => passwordInput.focus(), 10); // FIXED: Wait for field to be visible
+            showPasswordField(true);
           } else {
             showMessage(`Sign-in failed: ${error.message}`, true);
           }
@@ -223,9 +235,8 @@
           if (error.code === 'auth/email-already-in-use') {
             // If email is already in use, change the button to "Sign In"
             showMessage('This email is already in use. Please sign in instead.');
-            passwordContainer.classList.remove('hidden');
+            showPasswordField(true);
             submitBtn.textContent = 'Sign In';
-            setTimeout(() => passwordInput.focus(), 10); // FIXED: Wait for field to be visible
           } else {
             showMessage(`Account creation failed: ${error.message}`, true);
           }
@@ -240,8 +251,7 @@
         showMessage('You have been signed out successfully.', false);
         // Reset the form state for the next login attempt
         emailInput.value = '';
-        passwordInput.value = '';
-        passwordContainer.classList.add('hidden');
+        showPasswordField(false);
         submitBtn.textContent = 'Continue';
       } catch (error) {
         showMessage(`Sign-out failed: ${error.message}`, true);
