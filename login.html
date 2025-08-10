@@ -140,9 +140,11 @@
             if (user) {
               // User is signed in. Redirect to the dashboard page.
               console.log("Auth state changed: User is signed in as", user.email);
+              // Ensure we are redirecting only after a successful login
               window.location.href = 'dashboard.html';
             } else {
-              // No user is signed in. Reset UI.
+              // No user is signed in. This is a crucial point.
+              // We should only reset the UI if the user is truly not signed in.
               console.log("Auth state changed: No user is signed in.");
               submitBtn.textContent = 'Continue';
               mode = 'emailCheck';
@@ -192,6 +194,7 @@
                 // User is in sign-in mode, try to sign in
                 try {
                   await signInWithEmailAndPassword(auth, email, password);
+                  // The onAuthStateChanged observer will handle the redirection.
                   showMessage('Sign in successful!', false);
                 } catch (error) {
                   if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
@@ -205,6 +208,7 @@
                 // User is in sign-up mode, try to create an account
                 try {
                   await createUserWithEmailAndPassword(auth, email, password);
+                  // The onAuthStateChanged observer will handle the redirection.
                   showMessage('Account created successfully!', false);
                 } catch (error) {
                   // This is a common error, but with this logic, it shouldn't happen.
