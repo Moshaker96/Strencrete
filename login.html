@@ -9,6 +9,7 @@
     signOut
   } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
     authDomain: "concretelive.firebaseapp.com",
@@ -18,9 +19,11 @@
     appId: "1:605153900631:web:68c72f63bdb2929a348b12"
   };
 
+  // Init
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
+  // DOM elements
   const loginForm = document.getElementById('loginForm');
   const emailInput = document.getElementById('email');
   const passwordContainer = document.getElementById('passwordContainer');
@@ -31,7 +34,7 @@
   const logoutContainer = document.getElementById('logoutContainer');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  // Show password field from the start
+  // Show password from start
   passwordContainer.classList.remove('hidden');
   passwordInput.setAttribute('required', 'required');
 
@@ -46,6 +49,7 @@
     messageBox.classList.add('hidden');
   }
 
+  // Auth state change
   onAuthStateChanged(auth, (user) => {
     if (user) {
       userStatusDisplay.textContent = `Currently logged in as: ${user.email}`;
@@ -62,7 +66,7 @@
     }
   });
 
-  // Single-click login or create
+  // Single-step login/create
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     hideMessage();
@@ -94,6 +98,7 @@
     submitBtn.disabled = false;
   });
 
+  // Logout
   logoutBtn.addEventListener('click', async () => {
     try {
       await signOut(auth);
