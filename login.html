@@ -14,11 +14,10 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { 
         getAuth, 
+        onAuthStateChanged,
         fetchSignInMethodsForEmail, 
         signInWithEmailAndPassword, 
         createUserWithEmailAndPassword, 
-        GoogleAuthProvider, 
-        signInWithPopup 
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     
     // Wait for the window to load before executing the script
@@ -27,7 +26,11 @@
       const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
 
       if (!firebaseConfig) {
-        showMessage("Firebase configuration not found. The app cannot initialize.", true);
+        // If the config is not available, display an error and stop.
+        const messageBox = document.getElementById('messageBox');
+        messageBox.textContent = "Firebase configuration not found. The app cannot initialize.";
+        messageBox.classList.remove('hidden');
+        messageBox.classList.add('bg-red-100', 'text-red-700');
         return;
       }
       
@@ -41,8 +44,8 @@
       const passwordContainer = document.getElementById('passwordContainer');
       const passwordInput = document.getElementById('password');
       const submitBtn = document.getElementById('submitBtn');
-      const googleSignInBtn = document.getElementById('googleSignInBtn');
       const messageBox = document.getElementById('messageBox');
+      const userStatusDisplay = document.getElementById('userStatus');
 
       // Function to display messages to the user
       function showMessage(text, isError = false) {
@@ -51,6 +54,24 @@
         messageBox.classList.add(isError ? 'bg-red-100' : 'bg-blue-100');
         messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
       }
+
+      // onAuthStateChanged observer to react to user sign-in/sign-out
+      onAuthStateChanged(auth, (user) => {
+          if (user) {
+              // User is signed in.
+              const statusText = `Currently logged in as: ${user.email}`;
+              console.log("Auth state changed: User is signed in as", user.email);
+              userStatusDisplay.textContent = statusText;
+              userStatusDisplay.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+              userStatusDisplay.classList.add('bg-green-100', 'text-green-700');
+          } else {
+              // No user is signed in.
+              console.log("Auth state changed: No user is signed in.");
+              userStatusDisplay.textContent = "No user signed in.";
+              userStatusDisplay.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+              userStatusDisplay.classList.add('bg-red-100', 'text-red-700');
+          }
+      });
       
       // Main form submission handler
       loginForm.addEventListener('submit', async (e) => {
@@ -60,13 +81,13 @@
         messageBox.classList.add('hidden'); // Clear previous messages
 
         if (submitBtn.textContent === 'Continue') {
-          // First step: Check if the email exists
+          // First step: Check if the email exists to determine if it's a sign-in or sign-up flow
           try {
             const methods = await fetchSignInMethodsForEmail(auth, email);
 
             if (methods.length === 0) {
               // Email does not exist, so we need to sign up
-              showMessage('Email not found. Please create a new account by entering a password.');
+              showMessage('Email not found. Please enter a password to create an account.');
               passwordContainer.classList.remove('hidden');
               submitBtn.textContent = 'Create Account';
               passwordInput.focus();
@@ -79,8 +100,8 @@
                 submitBtn.textContent = 'Sign In';
                 passwordInput.focus();
               } else {
-                // The account exists but has no password (e.g., created via Google)
-                showMessage('This email is linked to a social account. Please use the Google sign-in button.', true);
+                // The account exists but has no password (e.g., created via Google in a different app)
+                showMessage('This email is not associated with an email/password login.', true);
                 submitBtn.textContent = 'Continue'; // Reset button for new attempt
                 passwordContainer.classList.add('hidden');
               }
@@ -92,7 +113,7 @@
           // Second step: Sign the user in
           try {
             await signInWithEmailAndPassword(auth, email, password);
-            showMessage('Sign in successful! Redirecting...', false);
+            showMessage('Sign in successful! Your status will update shortly.', false);
             // In a real app, you would redirect here
             // window.location.href = 'dashboard.html';
           } catch (error) {
@@ -107,7 +128,7 @@
           // Second step: Create a new account
           try {
             await createUserWithEmailAndPassword(auth, email, password);
-            showMessage('Account created successfully! Redirecting...', false);
+            showMessage('Account created successfully! Your status will update shortly.', false);
             // In a real app, you would redirect here
             // window.location.href = 'dashboard.html';
           } catch (error) {
@@ -121,18 +142,6 @@
               showMessage(`Account creation failed: ${error.message}`, true);
             }
           }
-        }
-      });
-      
-      // Google Sign-in button handler
-      googleSignInBtn.addEventListener('click', async () => {
-        const provider = new GoogleAuthProvider();
-        try {
-          await signInWithPopup(auth, provider);
-          showMessage('Google sign in successful! Redirecting...', false);
-          // window.location.href = 'dashboard.html';
-        } catch (error) {
-          showMessage(`Google sign-in failed: ${error.message}`, true);
         }
       });
     };
@@ -182,8 +191,11 @@
       <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
       
       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
-      <p class="text-gray-500 mb-8">Sign in to monitor your projects.</p>
+      <p class="text-gray-500 mb-8">Sign in or create an account to continue.</p>
     </div>
+
+    <!-- Status display for onAuthStateChanged -->
+    <div id="userStatus" class="hidden message-box p-3 text-sm rounded-lg mb-4" role="status"></div>
 
     <!-- The login form -->
     <form id="loginForm" class="space-y-4">
@@ -209,31 +221,6 @@
       <div>
         <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
           Continue
-        </button>
-      </div>
-      
-      <div class="relative mt-6">
-        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-          <div class="w-full border-t border-gray-300"></div>
-        </div>
-        <div class="relative flex justify-center text-sm">
-          <span class="px-2 bg-white text-gray-500">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      
-      <div class="mt-6">
-        <button type="button" id="googleSignInBtn" class="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-          <!-- Google SVG Icon -->
-          <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zm-10.7-3.7c1.8 0 3.3 1.5 3.3 3.3s-1.5 3.3-3.3 3.3-3.3-1.5-3.3-3.3 1.5-3.3 3.3-3.3zm0-1c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm-1 8.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1zm-3.3-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
-            <path d="M18.8 8h-1.6v2.2h1.6z"/>
-            <path d="M12.9 6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm0 7.3c-1.7 0-3-1.4-3-3s1.3-3 3-3 3 1.4 3 3-1.3 3-3 3zm-2.8-5.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
-            <path d="M19.7 9.5h-1.3v1.3h-1.3v-1.3h-1.3v-1.3h1.3v-1.3h1.3v1.3h1.3v1.3zM10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zM10.8 6.9c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3z"/>
-            <path fill="currentColor" d="M10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zM10.8 6.9c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zM20 9.5h-1.6v2.2h1.6V9.5zM12.9 6c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zM10.8 14.2c-1.8 0-3.3-1.5-3.3-3.3s1.5-3.3 3.3-3.3 3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3z"/>
-          </svg>
-          Sign in with Google
         </button>
       </div>
     </form>
