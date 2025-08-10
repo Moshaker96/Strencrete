@@ -8,8 +8,95 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Inter font from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Firebase SDK v9 modular imports -->
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .login-bg {
+      background-image: url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      min-height: 100vh;
+    }
+    .login-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    }
+    .input-field {
+        transition: all 0.3s ease;
+    }
+    .input-field:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+      border-color: #3b82f6;
+    }
+    .message-box {
+      font-weight: 600;
+      display: block;
+    }
+  </style>
+</head>
+<body class="login-bg flex items-center justify-center min-h-screen">
+
+  <!-- Main container for the login form -->
+  <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
+    <div class="text-center">
+      <!-- Strencrete Logo - Using a placeholder for now -->
+      <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
+      
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
+      <p class="text-gray-500 mb-8">Sign in or create an account to continue.</p>
+    </div>
+
+    <!-- Status display for onAuthStateChanged -->
+    <div id="userStatus" class="hidden message-box p-3 text-sm rounded-lg mb-4" role="status"></div>
+
+    <!-- The login form (initially visible) -->
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+        <div class="mt-1">
+          <input id="email" name="email" type="email" autocomplete="email" required
+                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+      </div>
+
+      <div id="passwordContainer" class="hidden">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <div class="mt-1">
+          <input id="password" name="password" type="password" autocomplete="current-password" required
+                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+      </div>
+
+      <!-- Message box for errors and instructions -->
+      <div id="messageBox" class="hidden message-box p-3 text-sm rounded-lg" role="alert"></div>
+
+      <div>
+        <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+          Continue
+        </button>
+      </div>
+    </form>
+
+    <!-- The logout container (initially hidden) -->
+    <div id="logoutContainer" class="hidden">
+        <p class="text-center text-gray-700 mb-4">You are currently logged in.</p>
+        <button id="logoutBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+            Sign Out
+        </button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK v9 modular imports (MOVED TO END OF BODY for DOM readiness) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { 
@@ -21,12 +108,12 @@
         signOut
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     
-    // Your specific Firebase configuration
+    // Your specific Firebase configuration (CORRECTED storageBucket)
     const firebaseConfig = {
       apiKey: "AIzaSyAcr5TenAk29l84SAOf0DfUDufw76H8F9A",
       authDomain: "concretelive.firebaseapp.com",
       projectId: "concretelive",
-      storageBucket: "concretelive.appspot.com", // <-- FIXED
+      storageBucket: "concretelive.appspot.com", // <-- FIXED!
       messagingSenderId: "605153900631",
       appId: "1:605153900631:web:68c72f63bdb2929a348b12"
     };
@@ -35,7 +122,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Get DOM elements after the page has loaded
+    // DOM elements
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordContainer = document.getElementById('passwordContainer');
@@ -59,7 +146,6 @@
         if (user) {
             // User is signed in.
             const statusText = `Currently logged in as: ${user.email}`;
-            console.log("Auth state changed: User is signed in as", user.email);
             userStatusDisplay.textContent = statusText;
             userStatusDisplay.classList.remove('hidden', 'bg-red-100', 'text-red-700');
             userStatusDisplay.classList.add('bg-green-100', 'text-green-700');
@@ -67,10 +153,8 @@
             // Show the logout button and hide the login form
             loginForm.classList.add('hidden');
             logoutContainer.classList.remove('hidden');
-
         } else {
             // No user is signed in.
-            console.log("Auth state changed: No user is signed in.");
             userStatusDisplay.textContent = "No user signed in.";
             userStatusDisplay.classList.remove('hidden', 'bg-green-100', 'text-green-700');
             userStatusDisplay.classList.add('bg-red-100', 'text-red-700');
@@ -164,92 +248,5 @@
       }
     });
   </script>
-
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .login-bg {
-      background-image: url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      position: relative;
-      min-height: 100vh;
-    }
-    .login-bg::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
-    }
-    .input-field {
-        transition: all 0.3s ease;
-    }
-    .input-field:focus {
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
-      border-color: #3b82f6;
-    }
-    .message-box {
-      font-weight: 600;
-      display: block;
-    }
-  </style>
-</head>
-<body class="login-bg flex items-center justify-center min-h-screen">
-
-  <!-- Main container for the login form -->
-  <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
-    <div class="text-center">
-      <!-- Strencrete Logo - Using a placeholder for now -->
-      <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
-      
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
-      <p class="text-gray-500 mb-8">Sign in or create an account to continue.</p>
-    </div>
-
-    <!-- Status display for onAuthStateChanged -->
-    <div id="userStatus" class="hidden message-box p-3 text-sm rounded-lg mb-4" role="status"></div>
-
-    <!-- The login form (initially visible) -->
-    <form id="loginForm" class="space-y-4">
-      <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-        <div class="mt-1">
-          <input id="email" name="email" type="email" autocomplete="email" required
-                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        </div>
-      </div>
-
-      <div id="passwordContainer" class="hidden">
-        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-        <div class="mt-1">
-          <input id="password" name="password" type="password" autocomplete="current-password" required
-                  class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        </div>
-      </div>
-
-      <!-- Message box for errors and instructions -->
-      <div id="messageBox" class="hidden message-box p-3 text-sm rounded-lg" role="alert"></div>
-
-      <div>
-        <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-          Continue
-        </button>
-      </div>
-    </form>
-
-    <!-- The logout container (initially hidden) -->
-    <div id="logoutContainer" class="hidden">
-        <p class="text-center text-gray-700 mb-4">You are currently logged in.</p>
-        <button id="logoutBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
-            Sign Out
-        </button>
-    </div>
-  </div>
 </body>
 </html>
