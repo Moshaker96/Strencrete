@@ -96,8 +96,7 @@
             onAuthStateChanged,
             fetchSignInMethodsForEmail,
             signInWithEmailAndPassword,
-            createUserWithEmailAndPassword,
-            signOut
+            createUserWithEmailAndPassword
           } = firebaseAuthModule;
 
           // Your specific Firebase configuration
@@ -122,7 +121,7 @@
           const submitBtn = document.getElementById('submitBtn');
           const messageBox = document.getElementById('messageBox');
 
-          let isSignInMode = false; // State to track whether to sign in or sign up
+          let authFlowMode = 'check'; // State to track the authentication flow: 'check', 'signIn', or 'signUp'
 
           // Function to display messages to the user
           function showMessage(text, isError = false) {
@@ -148,7 +147,7 @@
               
               // Reset the form state for the next login attempt
               submitBtn.textContent = 'Continue';
-              isSignInMode = false;
+              authFlowMode = 'check';
               passwordContainer.classList.add('hidden');
               passwordInput.removeAttribute('required');
               passwordInput.value = '';
@@ -163,14 +162,13 @@
             const password = passwordInput.value;
             hideMessage(); // Clear previous messages
             
-            // First, handle the email input to determine if it's a sign-in or sign-up flow
-            if (submitBtn.textContent === 'Continue') {
+            if (authFlowMode === 'check') {
               try {
                 const methods = await fetchSignInMethodsForEmail(auth, email);
 
                 if (methods.includes('password')) {
                   // The email has a password, so it's a sign-in attempt
-                  isSignInMode = true;
+                  authFlowMode = 'signIn';
                   showMessage('Please enter your password to sign in.');
                   passwordContainer.classList.remove('hidden');
                   passwordInput.setAttribute('required', 'required');
@@ -181,7 +179,7 @@
                     showMessage('This email is associated with a different sign-in method.', true);
                 } else {
                   // Email does not exist, so it's a sign-up attempt
-                  isSignInMode = false;
+                  authFlowMode = 'signUp';
                   showMessage('Email not found. Please enter a password to create a new account.');
                   passwordContainer.classList.remove('hidden');
                   passwordInput.setAttribute('required', 'required');
@@ -191,7 +189,7 @@
               } catch (error) {
                 showMessage(`An error occurred: ${error.message}`, true);
               }
-            } else if (isSignInMode) {
+            } else if (authFlowMode === 'signIn') {
                 // User is in sign-in mode, try to sign in
                 try {
                   await signInWithEmailAndPassword(auth, email, password);
@@ -204,20 +202,13 @@
                     showMessage(`Sign-in failed: ${error.message}`, true);
                   }
                 }
-            } else {
+            } else if (authFlowMode === 'signUp') {
                 // User is in sign-up mode, try to create an account
                 try {
                   await createUserWithEmailAndPassword(auth, email, password);
                   showMessage('Account created successfully!', false);
                 } catch (error) {
-                  if (error.code === 'auth/email-already-in-use') {
-                    isSignInMode = true;
-                    showMessage('This email is already in use. Please sign in instead.');
-                    submitBtn.textContent = 'Sign In';
-                    passwordInput.focus();
-                  } else {
-                    showMessage(`Account creation failed: ${error.message}`, true);
-                  }
+                  showMessage(`Account creation failed: ${error.message}`, true);
                 }
             }
           });
