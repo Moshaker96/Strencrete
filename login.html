@@ -74,6 +74,7 @@
   </div>
   <script type="module">
     document.addEventListener("DOMContentLoaded", function() {
+      // Firebase imports
       import("https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js").then(firebaseAppModule => {
         import("https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js").then(firebaseAuthModule => {
           const { initializeApp } = firebaseAppModule;
@@ -86,7 +87,7 @@
             signOut
           } = firebaseAuthModule;
 
-          // Your new Firebase config with the new API key
+          // Firebase config
           const firebaseConfig = {
             apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
             authDomain: "concretelive.firebaseapp.com",
@@ -134,6 +135,7 @@
             messageBox.classList.add('hidden');
           }
 
+          // Main fix: ensure correct logic for auth state
           onAuthStateChanged(auth, (user) => {
             if (user) {
               userStatusDisplay.textContent = `Currently logged in as: ${user.email}`;
@@ -147,6 +149,12 @@
               userStatusDisplay.classList.add('bg-red-100', 'text-red-700');
               loginForm.classList.remove('hidden');
               logoutContainer.classList.add('hidden');
+              // Reset form and UI
+              submitBtn.textContent = 'Continue';
+              showPasswordField(false);
+              if (emailInput) emailInput.value = '';
+              if (passwordInput) passwordInput.value = '';
+              hideMessage();
             }
           });
 
@@ -198,7 +206,7 @@
             try {
               await signOut(auth);
               showMessage('You have been signed out.', false);
-              emailInput.value = '';
+              if (emailInput) emailInput.value = '';
               showPasswordField(false);
               submitBtn.textContent = 'Continue';
             } catch (error) {
