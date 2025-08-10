@@ -2,53 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Firebase Login Test</title>
+  <title>Strencrete Login (Fixed)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind CSS CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .login-bg {
+      background-image: url('Gemini_Generated_Image_t1yxs0t1yxs0t1yx.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      min-height: 100vh;
+    }
+    .login-bg::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+    }
+    .input-field { transition: all 0.3s ease; }
+    .input-field:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.25);
+      border-color: #3b82f6;
+    }
+    .message-box { font-weight: 600; display: block; }
+  </style>
 </head>
-<body>
-  <form id="loginForm" autocomplete="off">
-    <input id="email" type="email" required placeholder="Email" /><br>
-    <div id="passwordContainer" style="display:none;">
-      <input id="password" type="password" required placeholder="Password" /><br>
+<body class="login-bg flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md mx-4 sm:mx-auto z-10 relative">
+    <div class="text-center">
+      <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg shadow">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Dashboard Login</h1>
+      <p class="text-gray-500 mb-8">Sign in or create an account to continue.</p>
     </div>
-    <button type="submit" id="submitBtn">Continue</button>
-    <div id="messageBox"></div>
-  </form>
+    <div id="userStatus" class="hidden message-box p-3 text-sm rounded-lg mb-4" role="status"></div>
+    <form id="loginForm" class="space-y-4" autocomplete="off">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+        <div class="mt-1">
+          <input id="email" name="email" type="email" autocomplete="email" required
+            class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+      </div>
+      <div id="passwordContainer" class="hidden">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <div class="mt-1">
+          <input id="password" name="password" type="password" autocomplete="current-password"
+            class="input-field appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+      </div>
+      <div id="messageBox" class="hidden message-box p-3 text-sm rounded-lg" role="alert"></div>
+      <div>
+        <button type="submit" id="submitBtn"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+          Continue
+        </button>
+      </div>
+    </form>
+    <div id="logoutContainer" class="hidden">
+      <p class="text-center text-gray-700 mb-4">You are currently logged in.</p>
+      <button id="logoutBtn"
+        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+        Sign Out
+      </button>
+    </div>
+  </div>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, fetchSignInMethodsForEmail, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    const firebaseConfig = { /* ...your config... */ };
-    initializeApp(firebaseConfig);
-    const auth = getAuth();
+    import {
+      getAuth,
+      onAuthStateChanged,
+      fetchSignInMethodsForEmail,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    // --- IMPORTANT: Replace this with your real API key from your Firebase Console! ---
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_REAL_API_KEY_HERE",
+      authDomain: "concretelive.firebaseapp.com",
+      projectId: "concretelive",
+      storageBucket: "concretelive.appspot.com",
+      messagingSenderId: "605153900631",
+      appId: "1:605153900631:web:68c72f63bdb2929a348b12"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordContainer = document.getElementById('passwordContainer');
     const passwordInput = document.getElementById('password');
     const submitBtn = document.getElementById('submitBtn');
     const messageBox = document.getElementById('messageBox');
+    const userStatusDisplay = document.getElementById('userStatus');
+    const logoutContainer = document.getElementById('logoutContainer');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function showPasswordField(show) {
+      if (show) {
+        passwordContainer.classList.remove('hidden');
+        passwordInput.setAttribute('required', 'required');
+        setTimeout(() => passwordInput.focus(), 30); // Give browser time to render
+      } else {
+        passwordContainer.classList.add('hidden');
+        passwordInput.removeAttribute('required');
+        passwordInput.value = '';
+      }
+    }
+
+    function showMessage(text, isError = false) {
+      messageBox.textContent = text;
+      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
+      messageBox.classList.add(isError ? 'bg-red-100' : 'bg-blue-100');
+      messageBox.classList.add(isError ? 'text-red-700' : 'text-blue-700');
+    }
+
+    function hideMessage() {
+      messageBox.classList.add('hidden');
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userStatusDisplay.textContent = `Currently logged in as: ${user.email}`;
+        userStatusDisplay.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+        userStatusDisplay.classList.add('bg-green-100', 'text-green-700');
+        loginForm.classList.add('hidden');
+        logoutContainer.classList.remove('hidden');
+      } else {
+        userStatusDisplay.textContent = "No user signed in.";
+        userStatusDisplay.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+        userStatusDisplay.classList.add('bg-red-100', 'text-red-700');
+        loginForm.classList.remove('hidden');
+        logoutContainer.classList.add('hidden');
+      }
+    });
+
     loginForm.addEventListener('submit', async (e) => {
-      console.log("Form submitted!"); // Should always appear
       e.preventDefault();
+      hideMessage();
+      submitBtn.disabled = true;
       const email = emailInput.value.trim();
       const password = passwordInput.value;
       if (submitBtn.textContent === 'Continue') {
-        const methods = await fetchSignInMethodsForEmail(auth, email);
-        if (methods.length === 0) {
-          messageBox.textContent = "No user. Enter password to create account.";
-          passwordContainer.style.display = "";
-          submitBtn.textContent = "Create Account";
-        } else {
-          messageBox.textContent = "Enter your password to sign in.";
-          passwordContainer.style.display = "";
-          submitBtn.textContent = "Sign In";
+        try {
+          const methods = await fetchSignInMethodsForEmail(auth, email);
+          if (methods.length === 0) {
+            showMessage('No user found. Enter a password to create an account.');
+            showPasswordField(true);
+            submitBtn.textContent = 'Create Account';
+          } else if (methods.includes('password')) {
+            showMessage('Enter your password to sign in.');
+            showPasswordField(true);
+            submitBtn.textContent = 'Sign In';
+          } else {
+            showMessage('This email is not associated with an email/password login.', true);
+            submitBtn.textContent = 'Continue';
+            showPasswordField(false);
+          }
+        } catch (error) {
+          showMessage(`Error: ${error.message}`, true);
         }
       } else if (submitBtn.textContent === 'Sign In') {
-        await signInWithEmailAndPassword(auth, email, password);
-        messageBox.textContent = "Signed in!";
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          showMessage('Sign in successful!', false);
+        } catch (error) {
+          showMessage(`Sign-in failed: ${error.message}`, true);
+          showPasswordField(true);
+        }
       } else if (submitBtn.textContent === 'Create Account') {
-        await createUserWithEmailAndPassword(auth, email, password);
-        messageBox.textContent = "Account created!";
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          showMessage('Account created successfully!', false);
+        } catch (error) {
+          showMessage(`Account creation failed: ${error.message}`, true);
+        }
+      }
+      submitBtn.disabled = false;
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        showMessage('You have been signed out.', false);
+        emailInput.value = '';
+        showPasswordField(false);
+        submitBtn.textContent = 'Continue';
+      } catch (error) {
+        showMessage(`Sign-out failed: ${error.message}`, true);
       }
     });
+
+    // For debugging: Confirm JS runs
+    console.log("Strencrete login script loaded.");
   </script>
 </body>
 </html>
