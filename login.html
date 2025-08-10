@@ -23,7 +23,7 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // DOM elements
+  // DOM elements (match your existing IDs exactly)
   const loginForm = document.getElementById('loginForm');
   const emailInput = document.getElementById('email');
   const passwordContainer = document.getElementById('passwordContainer');
@@ -34,10 +34,11 @@
   const logoutContainer = document.getElementById('logoutContainer');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  // Show password from start
+  // Always show password field
   passwordContainer.classList.remove('hidden');
   passwordInput.setAttribute('required', 'required');
 
+  // Message helpers
   function showMessage(text, isError = false) {
     messageBox.textContent = text;
     messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
@@ -90,7 +91,7 @@
         await createUserWithEmailAndPassword(auth, email, password);
         showMessage('Account created successfully!');
       } else {
-        showMessage('This email is not associated with an email/password login.', true);
+        showMessage('This email is not set up for email/password login.', true);
       }
     } catch (error) {
       showMessage(`Error: ${error.message}`, true);
@@ -102,13 +103,11 @@
   logoutBtn.addEventListener('click', async () => {
     try {
       await signOut(auth);
-      showMessage('You have been signed out.', false);
+      showMessage('You have been signed out.');
       emailInput.value = '';
       passwordInput.value = '';
     } catch (error) {
       showMessage(`Sign-out failed: ${error.message}`, true);
     }
   });
-
-  console.log("Strencrete login script loaded with single-click login.");
 </script>
