@@ -78,7 +78,7 @@
       <div id="messageBox" class="hidden message-box p-3 text-sm rounded-lg" role="alert"></div>
 
       <div>
-        <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+        <button type="submit" id="submitBtn" data-mode="check" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
           Continue
         </button>
       </div>
@@ -121,8 +121,6 @@
           const submitBtn = document.getElementById('submitBtn');
           const messageBox = document.getElementById('messageBox');
 
-          let authFlowMode = 'check'; // State to track the authentication flow: 'check', 'signIn', or 'signUp'
-
           // Function to display messages to the user
           function showMessage(text, isError = false) {
             messageBox.textContent = text;
@@ -147,7 +145,7 @@
               
               // Reset the form state for the next login attempt
               submitBtn.textContent = 'Continue';
-              authFlowMode = 'check';
+              submitBtn.dataset.mode = 'check';
               passwordContainer.classList.add('hidden');
               passwordInput.removeAttribute('required');
               passwordInput.value = '';
@@ -160,36 +158,37 @@
             e.preventDefault();
             const email = emailInput.value;
             const password = passwordInput.value;
+            const mode = submitBtn.dataset.mode;
             hideMessage(); // Clear previous messages
             
-            if (authFlowMode === 'check') {
+            if (mode === 'check') {
               try {
                 const methods = await fetchSignInMethodsForEmail(auth, email);
 
                 if (methods.includes('password')) {
                   // The email has a password, so it's a sign-in attempt
-                  authFlowMode = 'signIn';
                   showMessage('Please enter your password to sign in.');
                   passwordContainer.classList.remove('hidden');
                   passwordInput.setAttribute('required', 'required');
                   submitBtn.textContent = 'Sign In';
+                  submitBtn.dataset.mode = 'signIn';
                   passwordInput.focus();
                 } else if (methods.length > 0) {
                     // Email exists, but not with a password.
                     showMessage('This email is associated with a different sign-in method.', true);
                 } else {
                   // Email does not exist, so it's a sign-up attempt
-                  authFlowMode = 'signUp';
                   showMessage('Email not found. Please enter a password to create a new account.');
                   passwordContainer.classList.remove('hidden');
                   passwordInput.setAttribute('required', 'required');
                   submitBtn.textContent = 'Create Account';
+                  submitBtn.dataset.mode = 'signUp';
                   passwordInput.focus();
                 }
               } catch (error) {
                 showMessage(`An error occurred: ${error.message}`, true);
               }
-            } else if (authFlowMode === 'signIn') {
+            } else if (mode === 'signIn') {
                 // User is in sign-in mode, try to sign in
                 try {
                   await signInWithEmailAndPassword(auth, email, password);
@@ -202,13 +201,20 @@
                     showMessage(`Sign-in failed: ${error.message}`, true);
                   }
                 }
-            } else if (authFlowMode === 'signUp') {
+            } else if (mode === 'signUp') {
                 // User is in sign-up mode, try to create an account
                 try {
                   await createUserWithEmailAndPassword(auth, email, password);
                   showMessage('Account created successfully!', false);
                 } catch (error) {
-                  showMessage(`Account creation failed: ${error.message}`, true);
+                  // The most common error here is the email already being in use
+                  if (error.code === 'auth/email-already-in-use') {
+                    showMessage('This email is already in use. Please sign in instead.', true);
+                    submitBtn.textContent = 'Sign In';
+                    submitBtn.dataset.mode = 'signIn';
+                  } else {
+                    showMessage(`Account creation failed: ${error.message}`, true);
+                  }
                 }
             }
           });
