@@ -34,12 +34,8 @@
   <!-- Sidebar -->
   <aside class="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0">
     <div class="flex items-center justify-center md:justify-start mb-8">
-      <!-- 
-        Strencrete Logo: Replaced the local file path with a placeholder image URL.
-        You can replace this URL with the public URL of your logo once it's hosted online
-        (e.g., in Firebase Storage or another CDN).
-      -->
-      <img src="https://placehold.co/96x96/4C51BF/FFFFFF?text=Logo" alt="Strencrete Logo" class="w-24 h-auto rounded-lg shadow-md">
+      <!-- Strencrete Logo: Now using the uploaded image. -->
+      <img src="uploaded:strencrete-logo.jpg-c70c29d5-6bdc-47cd-bc16-9000605800eb" alt="Strencrete Logo" class="w-24 h-auto rounded-lg shadow-md">
     </div>
     <div class="text-center md:text-left mb-8">
       <h2 class="text-lg font-bold text-gray-900" id="userName">Welcome, User</h2>
@@ -59,14 +55,25 @@
 
   <!-- Main Content Area -->
   <main class="flex-grow p-8">
-    <header class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Projects Overview</h1>
-      <p class="text-gray-600">Monitor all your concrete projects in one place.</p>
+    <header class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Projects Overview</h1>
+        <p class="text-gray-600">Monitor and manage all your concrete projects in one place.</p>
+      </div>
+      <!-- Create Project Button -->
+      <button id="createProjectBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out flex items-center space-x-2">
+        <i data-lucide="plus"></i>
+        <span>Create Project</span>
+      </button>
     </header>
 
-    <!-- Projects Grid -->
-    <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Project cards will be injected here by JavaScript -->
+    <!-- Projects Grid or Empty State Message -->
+    <div id="projectsContent" class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+      <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No projects found</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Get started by creating a new project.
+      </p>
     </div>
   </main>
 
@@ -94,46 +101,8 @@
     const userNameElement = document.getElementById('userName');
     const userEmailElement = document.getElementById('userEmail');
     const signOutBtn = document.getElementById('signOutBtn');
-    const projectsGrid = document.getElementById('projectsGrid');
-
-    // Placeholder project data
-    const projects = [
-      { id: 1, name: 'Bridge Foundation Phase 1', status: 'Active', sensors: 12, lastUpdated: '2 hours ago' },
-      { id: 2, name: 'Skyscraper Core Wall A', status: 'On Hold', sensors: 8, lastUpdated: '1 day ago' },
-      { id: 3, name: 'Residential Slab Curing', status: 'Completed', sensors: 4, lastUpdated: '1 week ago' },
-      { id: 4, name: 'Dam Reinforcement Project', status: 'Active', sensors: 15, lastUpdated: '30 minutes ago' },
-      { id: 5, name: 'Highway Overpass Section 2', status: 'Active', sensors: 9, lastUpdated: '5 hours ago' }
-    ];
-
-    /**
-     * Renders project cards to the DOM.
-     * @param {Array<Object>} projectsData - The list of project objects to display.
-     */
-    function renderProjects(projectsData) {
-      projectsGrid.innerHTML = ''; // Clear existing projects
-      projectsData.forEach(project => {
-        const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
-                             project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
-                             'bg-gray-100 text-gray-800';
-        
-        const projectCard = `
-          <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-            <div class="flex justify-between items-start mb-4">
-              <h3 class="text-xl font-semibold text-gray-900">${project.name}</h3>
-              <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}">
-                ${project.status}
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors}</p>
-            <p class="text-sm text-gray-500">Last updated: ${project.lastUpdated}</p>
-          </div>
-        `;
-        projectsGrid.innerHTML += projectCard;
-      });
-      // IMPORTANT: Call Lucide to render the icons after the projects have been added to the DOM.
-      // This is crucial for dynamically added content.
-      lucide.createIcons();
-    }
+    const createProjectBtn = document.getElementById('createProjectBtn');
+    const projectsContent = document.getElementById('projectsContent');
 
     // This is a crucial function that listens for changes in the user's sign-in state.
     onAuthStateChanged(auth, (user) => {
@@ -143,10 +112,7 @@
         userEmailElement.textContent = user.email;
         console.log("User is logged in:", user.uid);
         
-        // Render projects when the user is logged in
-        renderProjects(projects);
-        
-        // Call lucide.createIcons() to render the icons inside the sidebar as well.
+        // This is necessary to render the icons inside the sidebar and button
         lucide.createIcons();
       } else {
         // User is signed out.
@@ -164,6 +130,11 @@
       }).catch((error) => {
         console.error("Error signing out:", error);
       });
+    });
+
+    // Add event listener to the "Create Project" button
+    createProjectBtn.addEventListener('click', () => {
+        alert('Create Project button clicked! You can add a form or a modal here.');
     });
   </script>
 </body>
