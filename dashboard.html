@@ -1,159 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Strencrete Dashboard</title>
-  <!-- Tailwind CSS CDN for styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Inter font from Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <!-- Lucide icons for professional look -->
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
-  
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f3f4f6; /* Light gray background */
-    }
-    /* Simple scrollbar for a cleaner look */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #e5e7eb;
-    }
-    ::-webkit-scrollbar-thumb {
-      background-color: #9ca3af;
-      border-radius: 4px;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strencrete Dashboard</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide icons for professional look -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        /* Simple scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e5e7eb;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #9ca3af;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 
-  <!-- Sidebar -->
-  <aside class="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0">
-    <div class="flex items-center justify-center md:justify-start mb-8">
-      <!-- Strencrete Logo -->
-      <img src="strencrete-logo.jpg" alt="Strencrete Logo" class="w-24 h-auto rounded-lg shadow-md">
-    </div>
-    <div class="text-center md:text-left mb-8">
-      <h2 class="text-lg font-bold text-gray-900" id="userName">Welcome, User</h2>
-      <p class="text-sm text-gray-500" id="userEmail">user@example.com</p>
-    </div>
-    <nav class="space-y-2">
-      <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-150 ease-in-out">
-        <i data-lucide="layout-grid"></i>
-        <span>Projects</span>
-      </a>
-      <button id="signOutBtn" class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 w-full hover:bg-red-50 hover:text-red-600 transition-colors duration-150 ease-in-out">
-        <i data-lucide="log-out"></i>
-        <span>Sign Out</span>
-      </button>
-    </nav>
-  </aside>
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0">
+        <div class="flex items-center justify-center md:justify-start mb-8">
+            <!-- Strencrete Logo Placeholder -->
+            <img src="https://placehold.co/96x96/6366f1/ffffff?text=Logo" alt="Strencrete Logo" class="w-24 h-auto rounded-lg shadow-md">
+        </div>
+        <div class="text-center md:text-left mb-8">
+            <h2 class="text-lg font-bold text-gray-900" id="userName">Welcome, User</h2>
+            <p class="text-sm text-gray-500" id="userEmail">user@example.com</p>
+        </div>
+        <nav class="space-y-2">
+            <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-150 ease-in-out">
+                <i data-lucide="layout-grid"></i>
+                <span>Projects</span>
+            </a>
+            <button id="signOutBtn" class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 w-full hover:bg-red-50 hover:text-red-600 transition-colors duration-150 ease-in-out">
+                <i data-lucide="log-out"></i>
+                <span>Sign Out</span>
+            </button>
+            <button id="addProjectBtn" class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 w-full hover:bg-green-50 hover:text-green-600 transition-colors duration-150 ease-in-out">
+                <i data-lucide="plus"></i>
+                <span>Add New Project</span>
+            </button>
+        </nav>
+    </aside>
 
-  <!-- Main Content Area -->
-  <main class="flex-grow p-8">
-    <header class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Projects Overview</h1>
-      <p class="text-gray-600">Monitor all your concrete projects in one place.</p>
-    </header>
+    <!-- Main Content Area -->
+    <main class="flex-grow p-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Projects Overview</h1>
+            <p class="text-gray-600">Monitor all your concrete projects in one place.</p>
+        </header>
 
-    <!-- Projects Grid -->
-    <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Project cards will be injected here by JavaScript -->
-    </div>
-  </main>
+        <!-- Projects Grid -->
+        <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Project cards will be injected here by JavaScript -->
+        </div>
 
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
+        <!-- Message/Loading area -->
+        <div id="statusMessage" class="text-center mt-8 text-gray-500"></div>
 
-    // Your Firebase project configuration (UPDATED with new API key)
-    const firebaseConfig = {
-      apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo", // <-- NEW API KEY
-      authDomain: "concretelive.firebaseapp.com",
-      projectId: "concretelive",
-      storageBucket: "concretelive.appspot.com",
-      messagingSenderId: "605153900631",
-      appId: "1:605153900631:web:68c72f63bdb2929a348b12"
-    };
+    </main>
+    
+    <script type="module">
+        // Firebase imports from CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const userNameElement = document.getElementById('userName');
-    const userEmailElement = document.getElementById('userEmail');
-    const signOutBtn = document.getElementById('signOutBtn');
-    const projectsGrid = document.getElementById('projectsGrid');
-
-    // Placeholder project data
-    const projects = [
-      { id: 1, name: 'Bridge Foundation Phase 1', status: 'Active', sensors: 12, lastUpdated: '2 hours ago' },
-      { id: 2, name: 'Skyscraper Core Wall A', status: 'On Hold', sensors: 8, lastUpdated: '1 day ago' },
-      { id: 3, name: 'Residential Slab Curing', status: 'Completed', sensors: 4, lastUpdated: '1 week ago' },
-      { id: 4, name: 'Dam Reinforcement Project', status: 'Active', sensors: 15, lastUpdated: '30 minutes ago' },
-      { id: 5, name: 'Highway Overpass Section 2', status: 'Active', sensors: 9, lastUpdated: '5 hours ago' }
-    ];
-
-    // Function to render projects from the placeholder data
-    function renderProjects(projectsData) {
-      projectsGrid.innerHTML = ''; // Clear existing projects
-      projectsData.forEach(project => {
-        const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
-                            project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800';
+        // IMPORTANT: Global variables are automatically provided by the Canvas environment.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
-        const projectCard = `
-          <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-            <div class="flex justify-between items-start mb-4">
-              <h3 class="text-xl font-semibold text-gray-900">${project.name}</h3>
-              <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}">
-                ${project.status}
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors}</p>
-            <p class="text-sm text-gray-500">Last updated: ${project.lastUpdated}</p>
-          </div>
-        `;
-        projectsGrid.innerHTML += projectCard;
-      });
-      // Call Lucide to render the icons after the projects have been added to the DOM
-      lucide.createIcons();
-    }
+        // Initialize Firebase services
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    // This is a crucial function that listens for changes in the user's sign-in state.
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in.
-        userNameElement.textContent = user.displayName || 'Name Not Set';
-        userEmailElement.textContent = user.email;
-        console.log("User is logged in:", user.uid);
-        
-        // Render projects when the user is logged in
-        renderProjects(projects);
-        
-        // This is necessary to render the icons inside the sidebar
-        lucide.createIcons();
-      } else {
-        // User is signed out.
-        console.log("User is not logged in. Redirecting to login page.");
-        window.location.href = 'login.html';
-      }
-    });
+        const userNameElement = document.getElementById('userName');
+        const userEmailElement = document.getElementById('userEmail');
+        const signOutBtn = document.getElementById('signOutBtn');
+        const addProjectBtn = document.getElementById('addProjectBtn');
+        const projectsGrid = document.getElementById('projectsGrid');
+        const statusMessage = document.getElementById('statusMessage');
 
-    // Add an event listener to the Sign Out button
-    signOutBtn.addEventListener('click', () => {
-      signOut(auth).then(() => {
-        // Sign-out successful. The onAuthStateChanged listener will handle the redirect.
-        console.log("User signed out successfully.");
-      }).catch((error) => {
-        console.error("Error signing out:", error);
-      });
-    });
-  </script>
+        // Function to render projects from a Firestore data array
+        function renderProjects(projectsData) {
+            projectsGrid.innerHTML = ''; // Clear existing projects
+            if (projectsData.length === 0) {
+                projectsGrid.innerHTML = `<div class="col-span-full text-center text-gray-400 p-8">No projects found. Click 'Add New Project' to get started.</div>`;
+            } else {
+                projectsData.forEach(project => {
+                    const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
+                                        project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-gray-100 text-gray-800';
+                    
+                    const projectCard = `
+                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300 cursor-pointer" onclick="showProjectDetails('${project.id}', '${project.name}')">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold text-gray-900">${project.name}</h3>
+                                <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}">
+                                    ${project.status}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors}</p>
+                            <p class="text-sm text-gray-500">Last updated: ${project.lastUpdated}</p>
+                        </div>
+                    `;
+                    projectsGrid.innerHTML += projectCard;
+                });
+            }
+            // Call Lucide to render the icons after the projects have been added to the DOM
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+        
+        // Simple function to simulate navigating to a project details page
+        window.showProjectDetails = function(projectId, projectName) {
+            statusMessage.textContent = `You clicked on project: "${projectName}" (ID: ${projectId}). This would lead to a new page.`;
+            console.log("Clicked project:", projectName, "ID:", projectId);
+        }
+
+        // Add a new project to the database
+        async function addNewProject() {
+            try {
+                statusMessage.textContent = 'Adding new project...';
+                const projectName = prompt('Enter a name for the new project:');
+                if (!projectName) {
+                    statusMessage.textContent = 'Project creation cancelled.';
+                    return;
+                }
+
+                const projectsCollectionRef = collection(db, `artifacts/${appId}/public/data/projects`);
+                
+                await addDoc(projectsCollectionRef, {
+                    name: projectName,
+                    status: 'Active',
+                    sensors: Math.floor(Math.random() * 20) + 1, // Random number of sensors
+                    lastUpdated: new Date().toLocaleString(),
+                    createdAt: serverTimestamp()
+                });
+
+                statusMessage.textContent = `Project "${projectName}" added successfully!`;
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                statusMessage.textContent = `Error adding project: ${e.message}`;
+            }
+        }
+
+        // --- AUTHENTICATION STATE CHANGE LISTENER ---
+        // This is a crucial function that listens for changes in the user's sign-in state.
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User is signed in.
+                userNameElement.textContent = user.displayName || 'Welcome';
+                userEmailElement.textContent = user.email || 'guest';
+                console.log("User is logged in:", user.uid);
+                
+                // Create a real-time listener for the projects collection
+                const projectsCollectionRef = collection(db, `artifacts/${appId}/public/data/projects`);
+                const unsubscribe = onSnapshot(projectsCollectionRef, (snapshot) => {
+                    const projectsData = [];
+                    snapshot.forEach(doc => {
+                        projectsData.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderProjects(projectsData);
+                    statusMessage.textContent = `Displaying ${projectsData.length} project(s).`;
+                }, (error) => {
+                    console.error("Error getting real-time projects:", error);
+                    statusMessage.textContent = `Failed to load projects: ${error.message}`;
+                });
+                
+                // Clean up the listener when the user signs out
+                return () => unsubscribe();
+
+            } else {
+                // User is signed out.
+                console.log("User is not logged in. Redirecting to login page.");
+                // Note: The redirection to login.html is handled in the Firebase Studio environment
+                // but for this example, you would normally redirect here.
+                userNameElement.textContent = 'Guest';
+                userEmailElement.textContent = 'Not Signed In';
+            }
+        });
+
+        // Add event listeners
+        signOutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                console.log("User signed out successfully.");
+            }).catch((error) => {
+                console.error("Error signing out:", error);
+            });
+        });
+
+        addProjectBtn.addEventListener('click', addNewProject);
+        
+        // Final authentication step using initialAuthToken
+        if (initialAuthToken) {
+            signInWithCustomToken(auth, initialAuthToken).catch((error) => {
+                console.error("Error signing in with custom token:", error);
+            });
+        } else {
+            signInAnonymously(auth).catch((error) => {
+                console.error("Error signing in anonymously:", error);
+            });
+        }
+    </script>
 </body>
 </html>
