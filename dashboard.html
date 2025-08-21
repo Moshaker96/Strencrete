@@ -30,7 +30,7 @@
         position: fixed;
         inset: 0;
         background-color: rgba(100, 116, 139, 0.5);
-        display: flex;
+        display: none; /* Hidden by default */
         align-items: center;
         justify-content: center;
         z-index: 100;
@@ -42,7 +42,6 @@
         box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         width: 100%;
         max-width: 24rem;
-        text-align: center;
     }
   </style>
 </head>
@@ -51,6 +50,7 @@
   <!-- Sidebar -->
   <aside class="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0">
     <div class="flex items-center justify-center md:justify-start mb-8">
+      <!-- Your provided logo image -->
       <img src="strencrete-logo.jpg" alt="Strencrete Logo" class="w-24 h-auto rounded-lg shadow-md">
     </div>
     <div class="text-center md:text-left mb-8">
@@ -70,57 +70,237 @@
   </aside>
 
   <!-- Main Content Area -->
-  <main class="flex-grow p-8">
+  <main class="flex-grow p-8 overflow-y-auto">
     <header class="mb-8 flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold text-gray-900">Projects Overview</h1>
         <p class="text-gray-600">Monitor and manage all your concrete projects in one place.</p>
       </div>
-      <!-- Create Project Button -->
-      <button id="createProjectBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out flex items-center space-x-2">
+      <!-- Create Project Button with direct onclick handler -->
+      <button onclick="document.getElementById('createProjectModal').style.display = 'flex'" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out flex items-center space-x-2">
         <i data-lucide="plus"></i>
         <span>Create Project</span>
       </button>
     </header>
 
-    <!-- Projects Grid or Empty State Message -->
-    <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-      <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
-      <h3 class="mt-2 text-lg font-medium text-gray-900">No projects found</h3>
-      <p class="mt-1 text-sm text-gray-500">
-        Get started by creating a new project.
-      </p>
+    <!-- Projects Grid Container -->
+    <div id="projects-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Projects will be dynamically inserted here -->
+      <!-- Loading state or empty message -->
+      <div id="loading-state" class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100 col-span-full">
+        <div class="animate-spin rounded-full h-10 w-10 border-4 border-t-blue-500 border-gray-200 mx-auto mb-4"></div>
+        <h3 class="mt-2 text-lg font-medium text-gray-900">Loading projects...</h3>
+      </div>
     </div>
+
   </main>
 
-  <script>
-    // This function will create and show a simple modal message.
+  <!-- Create Project Modal -->
+  <div id="createProjectModal" class="modal-backdrop">
+    <div class="modal-content">
+      <h2 class="text-2xl font-bold mb-4 text-center">Create New Project</h2>
+      <form id="createProjectForm">
+        <div class="mb-4">
+          <label for="projectName" class="block text-sm font-medium text-gray-700">Project Name</label>
+          <input type="text" id="projectName" name="projectName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+        </div>
+        <div class="mb-4">
+          <label for="clientName" class="block text-sm font-medium text-gray-700">Client Name</label>
+          <input type="text" id="clientName" name="clientName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+        </div>
+        <div class="mb-6">
+          <label for="projectDescription" class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea id="projectDescription" name="projectDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"></textarea>
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="document.getElementById('createProjectModal').style.display = 'none'" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, collection, addDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- GLOBAL VARIABLES ---
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // --- FIREBASE INITIALIZATION ---
+    let db, auth;
+    let userId;
+    
+    // Function to render a project card
+    function renderProjectCard(projectData, projectId) {
+      const { projectName, clientName, projectDescription } = projectData;
+      return `
+        <div id="project-${projectId}" class="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between transition-transform transform hover:scale-105 duration-200 ease-in-out border border-gray-100">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-xl font-bold text-gray-900">${projectName}</h3>
+              <p class="text-sm font-medium text-gray-500">${clientName}</p>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">${projectDescription}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Function to show a message modal
     function showMessageModal(message) {
       const modal = document.createElement('div');
       modal.className = 'modal-backdrop';
+      modal.style.display = 'flex';
       modal.innerHTML = `
-        <div class="modal-content">
+        <div class="modal-content text-center">
           <p class="text-lg font-medium text-gray-900">${message}</p>
           <button onclick="this.closest('.modal-backdrop').remove()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">OK</button>
         </div>
       `;
       document.body.appendChild(modal);
     }
+    
+    // Listen for the DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize Lucide icons
+      lucide.createIcons();
 
-    // Wait for the entire document to be loaded before trying to find elements.
-    document.addEventListener('DOMContentLoaded', () => {
-        // Find the "Create Project" button by its ID.
-        const createProjectBtn = document.getElementById('createProjectBtn');
+      const createProjectForm = document.getElementById('createProjectForm');
+      const projectsContainer = document.getElementById('projects-container');
+      const loadingState = document.getElementById('loading-state');
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        // Sign in the user
+        if (initialAuthToken) {
+          await signInWithCustomToken(auth, initialAuthToken);
+        } else {
+          await signInAnonymously(auth);
+        }
         
-        // Add a click event listener to the button.
-        createProjectBtn.addEventListener('click', () => {
-            console.log("Button Clicked!");
-            // This line proves the button is working.
-            showMessageModal("The button is working! Check the console for a message.");
+        // Listen for authentication state changes
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            userId = user.uid;
+            console.log("User signed in with ID:", userId);
+            listenForProjects();
+          } else {
+            console.log("No user is signed in.");
+            projectsContainer.innerHTML = `
+              <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100 col-span-full">
+                <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
+                <h3 class="mt-2 text-lg font-medium text-gray-900">Sign in to view your projects.</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                  Please reload the page to try again.
+                </p>
+              </div>
+            `;
+            lucide.createIcons();
+          }
         });
 
-        // Initialize Lucide icons
+      } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        showMessageModal("Failed to connect to the database. Please check the console for details.");
+        projectsContainer.innerHTML = `
+          <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100 col-span-full">
+            <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
+            <h3 class="mt-2 text-lg font-medium text-gray-900">Could not load projects.</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Check the console for an error message.
+            </p>
+          </div>
+        `;
         lucide.createIcons();
+      }
+
+      // Function to listen for real-time project updates from Firestore
+      async function listenForProjects() {
+        if (!db || !userId) {
+          console.log("Database or user ID not available. Skipping project listener.");
+          return;
+        }
+
+        const projectsColRef = collection(db, `artifacts/${appId}/users/${userId}/projects`);
+        const q = query(projectsColRef);
+
+        onSnapshot(q, (snapshot) => {
+          loadingState.style.display = 'none';
+          
+          if (snapshot.empty) {
+            projectsContainer.innerHTML = `
+              <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100 col-span-full">
+                <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
+                <h3 class="mt-2 text-lg font-medium text-gray-900">No projects found</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                  Get started by creating a new project.
+                </p>
+              </div>
+            `;
+          } else {
+            projectsContainer.innerHTML = '';
+            snapshot.forEach((doc) => {
+              const projectData = doc.data();
+              const projectId = doc.id;
+              projectsContainer.innerHTML += renderProjectCard(projectData, projectId);
+            });
+          }
+          lucide.createIcons();
+        }, (error) => {
+          console.error("Error listening to projects:", error);
+          showMessageModal("Failed to load projects. Check console for errors.");
+          projectsContainer.innerHTML = `
+            <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100 col-span-full">
+              <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
+              <h3 class="mt-2 text-lg font-medium text-gray-900">Error loading projects.</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Check the console for an error message.
+              </p>
+            </div>
+          `;
+          lucide.createIcons();
+        });
+      }
+
+      // Form submission handling
+      createProjectForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!db || !userId) {
+          showMessageModal("You are not authenticated. Please reload the page.");
+          return;
+        }
+
+        const projectName = document.getElementById('projectName').value;
+        const clientName = document.getElementById('clientName').value;
+        const projectDescription = document.getElementById('projectDescription').value;
+
+        const newProject = {
+          projectName: projectName,
+          clientName: clientName,
+          projectDescription: projectDescription,
+          createdAt: Date.now()
+        };
+        
+        try {
+          const projectsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/projects`);
+          await addDoc(projectsCollectionRef, newProject);
+
+          document.getElementById('createProjectModal').style.display = 'none';
+          createProjectForm.reset();
+        } catch (error) {
+          console.error("Error adding document: ", error);
+          showMessageModal("Failed to create project. Please try again. Check the console for details.");
+        }
+      });
     });
   </script>
 </body>
