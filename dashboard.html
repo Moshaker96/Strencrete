@@ -79,25 +79,20 @@
 
   <script type="module">
     // Import all necessary Firebase SDKs, including signInAnonymously.
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signOut, signInAnonymously } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
-    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-    // Your Firebase project configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
-      authDomain: "concretelive.firebaseapp.com",
-      projectId: "concretelive",
-      storageBucket: "concretelive.appspot.com",
-      messagingSenderId: "605153900631",
-      appId: "1:605153900631:web:68c72f63bdb2929a348b12"
-    };
+    // The Firebase configuration is now provided securely by the environment.
+    const firebaseConfig = JSON.parse(__firebase_config);
+    const __initial_auth_token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
     // Initialize Firebase app and services
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
+    
     // Get DOM elements
     const userNameElement = document.getElementById('userName');
     const userEmailElement = document.getElementById('userEmail');
@@ -107,61 +102,64 @@
 
     // This listener is called whenever the user's sign-in state changes.
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in.
-        userNameElement.textContent = user.displayName || 'User';
-        userEmailElement.textContent = user.email || 'Anonymous';
-        console.log("User is logged in:", user.uid);
-        lucide.createIcons();
+        if (user) {
+            // User is signed in.
+            userNameElement.textContent = user.displayName || 'User';
+            userEmailElement.textContent = user.email || 'Anonymous';
+            console.log("User is logged in:", user.uid);
+            lucide.createIcons();
 
-        const projectsCollectionRef = collection(db, 'projects');
+            const projectsCollectionRef = collection(db, 'projects');
 
-        onSnapshot(projectsCollectionRef, (snapshot) => {
-          const projectCardsHTML = [];
-          snapshot.forEach(doc => {
-            const project = doc.data();
-            const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
-                                project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-gray-100 text-gray-800';
+            onSnapshot(projectsCollectionRef, (snapshot) => {
+                const projectCardsHTML = [];
+                snapshot.forEach(doc => {
+                    const project = doc.data();
+                    const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
+                        project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-gray-100 text-gray-800';
 
-            projectCardsHTML.push(`
-              <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                <div class="flex justify-between items-start mb-4">
-                  <h3 class="text-xl font-semibold text-gray-900">${project.name || 'Untitled Project'}</h3>
-                  <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}">
-                    ${project.status || 'Unknown'}
-                  </span>
-                </div>
-                <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors || 'N/A'}</p>
-                <p class="text-sm text-gray-500">Last updated: ${project.lastUpdated ? project.lastUpdated.toDate().toLocaleString() : 'N/A'}</p>
-              </div>
-            `);
-          });
+                    projectCardsHTML.push(`
+                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold text-gray-900">${project.name || 'Untitled Project'}</h3>
+                                <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}">
+                                    ${project.status || 'Unknown'}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors || 'N/A'}</p>
+                            <p class="text-sm text-gray-500">Last updated: ${project.createdAt ? project.createdAt.toDate().toLocaleString() : 'N/A'}</p>
+                        </div>
+                    `);
+                });
 
-          if (projectCardsHTML.length > 0) {
-            projectsContent.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${projectCardsHTML.join('')}</div>`;
-          } else {
-            projectsContent.innerHTML = `
-              <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-                <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
-                <h3 class="mt-2 text-lg font-medium text-gray-900">No projects found</h3>
-                <p class="mt-1 text-sm text-gray-500">
-                  Get started by creating a new project.
-                </p>
-              </div>
-            `;
-          }
-          lucide.createIcons();
-        });
-      } else {
-        // ** NEW: Sign in anonymously if no user is found. **
-        console.log("Signing in anonymously...");
-        signInAnonymously(auth).then(() => {
-          console.log("Anonymous user signed in.");
-        }).catch((error) => {
-          console.error("Error signing in anonymously:", error);
-        });
-      }
+                if (projectCardsHTML.length > 0) {
+                    projectsContent.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${projectCardsHTML.join('')}</div>`;
+                } else {
+                    projectsContent.innerHTML = `
+                        <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+                            <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
+                            <h3 class="mt-2 text-lg font-medium text-gray-900">No projects found</h3>
+                            <p class="mt-1 text-sm text-gray-500">
+                                Get started by creating a new project.
+                            </p>
+                        </div>
+                    `;
+                }
+                lucide.createIcons();
+            });
+        } else {
+            // Use the provided auth token if it exists, otherwise sign in anonymously.
+            if (__initial_auth_token) {
+                signInWithCustomToken(auth, __initial_auth_token).catch((error) => {
+                    console.error("Error signing in with custom token:", error);
+                });
+            } else {
+                signInAnonymously(auth).catch((error) => {
+                    console.error("Error signing in anonymously:", error);
+                });
+            }
+        }
     });
 
     // Add an event listener to the Sign Out button
