@@ -4,16 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Strencrete Dashboard</title>
-
-  <!-- Tailwind CSS (CDN for dev only, switch to CLI/PostCSS for production) -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- Inter font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
   <!-- Lucide icons -->
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
-
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -63,15 +59,16 @@
     <div id="projectsContent" class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
       <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
       <h3 class="mt-2 text-lg font-medium text-gray-900">No data found</h3>
-      <p class="mt-1 text-sm text-gray-500">Start by adding a new Strencrete entry.</p>
+      <p class="mt-1 text-sm text-gray-500">
+        Start by adding a new Strencrete entry.
+      </p>
     </div>
   </main>
 
-  <!-- Firebase + Dashboard Script -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
+    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js';
 
     // Firebase config
     const firebaseConfig = {
@@ -95,47 +92,49 @@
     const createProjectBtn = document.getElementById('createProjectBtn');
     const projectsContent = document.getElementById('projectsContent');
 
-    const PROJECTS_PATH = collection(db, "strencrete");
+    // Firestore path
+    const PROJECTS_PATH = collection(db, 'strencrete');
 
     // Auth listener
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        userNameElement.textContent = user.displayName || "User";
+        userNameElement.textContent = user.displayName || 'User';
         userEmailElement.textContent = user.email;
         lucide.createIcons();
 
-        // Listen to Firestore collection
+        // Read entries
         onSnapshot(PROJECTS_PATH, (snapshot) => {
           const projectCardsHTML = [];
-          snapshot.forEach((doc) => {
+          snapshot.forEach(doc => {
             const project = doc.data();
+            const createdAt = project.createdAt?.toDate
+              ? project.createdAt.toDate().toLocaleString()
+              : 'N/A';
+
             const statusColor =
-              project.status === "Active"
-                ? "bg-green-100 text-green-800"
-                : project.status === "On Hold"
-                ? "bg-yellow-100 text-yellow-800"
-                : project.status === "Completed"
-                ? "bg-blue-100 text-blue-800"
-                : "bg-gray-100 text-gray-800";
+              project.status === 'Active' ? 'bg-green-100 text-green-800' :
+              project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
+              project.status === 'Completed' ? 'bg-blue-100 text-blue-800' :
+              project.status === 'Archived' ? 'bg-red-100 text-red-800' :
+              'bg-gray-100 text-gray-800';
 
             projectCardsHTML.push(`
               <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
                 <div class="flex justify-between items-start mb-4">
-                  <h3 class="text-xl font-semibold text-gray-900">${project.name || "Untitled Entry"}</h3>
+                  <h3 class="text-xl font-semibold text-gray-900">${project.name || 'Untitled Entry'}</h3>
                   <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}">
-                    ${project.status || "Unknown"}
+                    ${project.status || 'Unknown'}
                   </span>
                 </div>
-                <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors || "N/A"}</p>
-                <p class="text-sm text-gray-500">Created: ${project.createdAt?.toDate().toLocaleString() || "N/A"}</p>
+                <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors ?? 'N/A'}</p>
+                <p class="text-sm text-gray-500">Created: ${createdAt}</p>
               </div>
             `);
           });
 
-          projectsContent.innerHTML =
-            projectCardsHTML.length > 0
-              ? `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${projectCardsHTML.join("")}</div>`
-              : `
+          projectsContent.innerHTML = projectCardsHTML.length > 0
+            ? `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${projectCardsHTML.join('')}</div>`
+            : `
               <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
                 <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
                 <h3 class="mt-2 text-lg font-medium text-gray-900">No data found</h3>
@@ -145,19 +144,19 @@
           lucide.createIcons();
         });
       } else {
-        window.location.href = "login.html";
+        window.location.href = 'login.html';
       }
     });
 
     // Sign out
-    signOutBtn.addEventListener("click", () => {
+    signOutBtn.addEventListener('click', () => {
       signOut(auth).then(() => console.log("User signed out."));
     });
 
     // Create entry modal
-    createProjectBtn.addEventListener("click", () => {
-      const modal = document.createElement("div");
-      modal.className = "fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center";
+    createProjectBtn.addEventListener('click', () => {
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center';
       modal.innerHTML = `
         <div class="p-8 border w-96 shadow-lg rounded-md bg-white">
           <h3 class="text-lg font-bold text-gray-900 mb-4">Add Strencrete Entry</h3>
@@ -187,34 +186,42 @@
           </form>
         </div>
       `;
-
       document.body.appendChild(modal);
 
-      document.getElementById("closeModal").addEventListener("click", () => {
-        document.body.removeChild(modal);
-      });
+      document.getElementById('closeModal').addEventListener('click', () => document.body.removeChild(modal));
 
-      document.getElementById("createProjectForm").addEventListener("submit", async (e) => {
+      document.getElementById('createProjectForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const submitButton = document.getElementById("submitProject");
-        const formStatus = document.getElementById("formStatus");
+        const submitButton = document.getElementById('submitProject');
+        const formStatus = document.getElementById('formStatus');
         submitButton.disabled = true;
         formStatus.textContent = "Saving...";
 
-        const projectName = document.getElementById("projectName").value;
-        const projectStatus = document.getElementById("projectStatus").value;
-        const sensorCount = parseInt(document.getElementById("sensorCount").value, 10);
+        const projectName = document.getElementById('projectName').value.trim();
+        const projectStatus = document.getElementById('projectStatus').value;
+        const sensorCount = parseInt(document.getElementById('sensorCount').value, 10);
+
+        if (!projectName || !projectStatus) {
+          formStatus.textContent = "Error: Missing required fields.";
+          submitButton.disabled = false;
+          return;
+        }
+
+        const payload = {
+          name: projectName,
+          status: projectStatus,
+          sensors: sensorCount,
+          createdAt: serverTimestamp()
+        };
+
+        console.log("Adding document to Firestore:", payload);
 
         try {
-          await addDoc(PROJECTS_PATH, {
-            name: projectName,
-            status: projectStatus,
-            sensors: sensorCount,
-            createdAt: serverTimestamp()
-          });
+          await addDoc(PROJECTS_PATH, payload);
           formStatus.textContent = "Saved!";
           setTimeout(() => document.body.removeChild(modal), 1500);
         } catch (error) {
+          console.error("Firestore write failed:", error);
           formStatus.textContent = "Error: " + error.message;
           submitButton.disabled = false;
         }
