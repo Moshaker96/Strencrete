@@ -1,124 +1,213 @@
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
-  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
-  import { getFirestore, collection, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strencrete Dashboard</title>
+  <!-- Tailwind CSS CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide icons for professional look -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6; /* Light gray background */
+    }
+    /* Simple scrollbar for a cleaner look */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e5e7eb;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: #9ca3af;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen">
 
-  // Your Firebase project configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
-    authDomain: "concretelive.firebaseapp.com",
-    projectId: "concretelive",
-    storageBucket: "concretelive.appspot.com",
-    messagingSenderId: "605153900631",
-    appId: "1:605153900631:web:68c72f63bdb2929a348b12"
-  };
+  <!-- Sidebar -->
+  <aside class="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0">
+    <div class="flex items-center justify-center md:justify-start mb-8">
+      <!-- Strencrete Logo -->
+      <img src="strencrete-logo.jpg" alt="Strencrete Logo" class="w-24 h-auto rounded-lg shadow-md">
+    </div>
+    <div class="text-center md:text-left mb-8">
+      <h2 class="text-lg font-bold text-gray-900" id="userName">Welcome, User</h2>
+      <p class="text-sm text-gray-500" id="userEmail">user@example.com</p>
+    </div>
+    <nav class="space-y-2">
+      <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-150 ease-in-out">
+        <i data-lucide="layout-grid"></i>
+        <span>Projects</span>
+      </a>
+      <button id="signOutBtn" class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 w-full hover:bg-red-50 hover:text-red-600 transition-colors duration-150 ease-in-out">
+        <i data-lucide="log-out"></i>
+        <span>Sign Out</span>
+      </button>
+    </nav>
+  </aside>
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app); // Initialize Firestore
+  <!-- Main Content Area -->
+  <main class="flex-grow p-8">
+    <header class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Projects Overview</h1>
+        <p class="text-gray-600">Monitor and manage all your concrete projects in one place.</p>
+      </div>
+      <!-- Create Project Button -->
+      <button id="createProjectBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out flex items-center space-x-2">
+        <i data-lucide="plus"></i>
+        <span>Create Project</span>
+      </button>
+    </header>
 
-  // Get DOM elements
-  const userNameElement = document.getElementById('userName');
-  const userEmailElement = document.getElementById('userEmail');
-  const signOutBtn = document.getElementById('signOutBtn');
-  const createProjectBtn = document.getElementById('createProjectBtn');
-  const projectsContent = document.getElementById('projectsContent');
+    <!-- Projects Grid or Empty State Message -->
+    <div id="projectsContent" class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+      <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No projects found</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Get started by creating a new project.
+      </p>
+    </div>
+  </main>
 
-  // This is a crucial function that listens for changes in the user's sign-in state.
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is signed in.
-      userNameElement.textContent = user.displayName || 'User';
-      userEmailElement.textContent = user.email;
-      console.log("User is logged in:", user.uid);
+  <script type="module">
+    // Import the Firebase SDKs you need.
+    // getFirestore, collection, and onSnapshot are essential for fetching data.
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
+    import { getFirestore, collection, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js';
 
-      // This is necessary to render the icons inside the sidebar and button
-      lucide.createIcons();
+    // Your Firebase project configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
+      authDomain: "concretelive.firebaseapp.com",
+      projectId: "concretelive",
+      storageBucket: "concretelive.appspot.com",
+      messagingSenderId: "605153900631",
+      appId: "1:605153900631:web:68c72f63bdb2929a348b12"
+    };
 
-      // ** NEW: Start listening for projects data from Firestore **
-      // Use a simple, top-level collection name.
-      // Make sure this matches the collection name you created in the console.
-      const projectsCollectionRef = collection(db, 'projects');
+    // Initialize Firebase app and services
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app); // Get a reference to the Firestore database
 
-      onSnapshot(projectsCollectionRef, (snapshot) => {
-        const projectCardsHTML = [];
-        snapshot.forEach(doc => {
-          const project = doc.data();
-          const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
-                              project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-800';
+    // Get DOM elements
+    const userNameElement = document.getElementById('userName');
+    const userEmailElement = document.getElementById('userEmail');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const createProjectBtn = document.getElementById('createProjectBtn');
+    const projectsContent = document.getElementById('projectsContent');
 
-          // Create the HTML for each project card
-          projectCardsHTML.push(`
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-semibold text-gray-900">${project.name}</h3>
-                <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}">
-                  ${project.status}
-                </span>
+    // This listener is called whenever the user's sign-in state changes.
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in.
+        userNameElement.textContent = user.displayName || 'User';
+        userEmailElement.textContent = user.email;
+        console.log("User is logged in:", user.uid);
+
+        // This renders the Lucide icons. It must be called after the user is logged in
+        // and the HTML structure is stable.
+        lucide.createIcons();
+
+        // ** THIS IS THE CRITICAL PART FOR CONNECTING TO FIRESTORE **
+        // 1. Get a reference to the 'projects' collection.
+        //    Make sure the collection name in your Firestore console is exactly 'projects'.
+        const projectsCollectionRef = collection(db, 'projects');
+
+        // 2. Use onSnapshot to listen for real-time changes.
+        //    It's an automatic listener that updates the page whenever data changes.
+        onSnapshot(projectsCollectionRef, (snapshot) => {
+          const projectCardsHTML = [];
+          snapshot.forEach(doc => {
+            const project = doc.data(); // Get the data from each document
+
+            // Determine the color of the status badge based on the project status
+            const statusColor = project.status === 'Active' ? 'bg-green-100 text-green-800' :
+                                project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800';
+
+            // Create the HTML for each project card using the document data
+            projectCardsHTML.push(`
+              <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex justify-between items-start mb-4">
+                  <h3 class="text-xl font-semibold text-gray-900">${project.name || 'Untitled Project'}</h3>
+                  <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${statusColor}">
+                    ${project.status || 'Unknown'}
+                  </span>
+                </div>
+                <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors || 'N/A'}</p>
+                <p class="text-sm text-gray-500">Last updated: ${project.lastUpdated || 'N/A'}</p>
               </div>
-              <p class="text-sm text-gray-500 mb-2">Sensors: ${project.sensors}</p>
-              <p class="text-sm text-gray-500">Last updated: ${project.lastUpdated || 'N/A'}</p>
-            </div>
-          `);
+            `);
+          });
+
+          // Check if there are any projects and update the UI accordingly.
+          if (projectCardsHTML.length > 0) {
+            projectsContent.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${projectCardsHTML.join('')}</div>`;
+          } else {
+            // Show the "No projects found" message if there are no documents in the collection
+            projectsContent.innerHTML = `
+              <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+                <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
+                <h3 class="mt-2 text-lg font-medium text-gray-900">No projects found</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                  Get started by creating a new project.
+                </p>
+              </div>
+            `;
+          }
+          // It's important to call createIcons() again because we replaced the innerHTML.
+          lucide.createIcons();
         });
 
-        // If there are projects, display them; otherwise, show the "No projects" message.
-        if (projectCardsHTML.length > 0) {
-          projectsContent.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${projectCardsHTML.join('')}</div>`;
-        } else {
-          projectsContent.innerHTML = `
-            <div class="text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-              <i data-lucide="folder-x" class="mx-auto h-16 w-16 text-gray-400 mb-4"></i>
-              <h3 class="mt-2 text-lg font-medium text-gray-900">No projects found</h3>
-              <p class="mt-1 text-sm text-gray-500">
-                Get started by creating a new project.
-              </p>
-            </div>
-          `;
-          lucide.createIcons(); // Re-render icons after changing innerHTML
-        }
-      });
-
-    } else {
-      // User is signed out.
-      console.log("User is not logged in. Redirecting to login page.");
-      window.location.href = 'login.html';
-    }
-  });
-
-  // Add an event listener to the Sign Out button
-  signOutBtn.addEventListener('click', () => {
-    signOut(auth).then(() => {
-      console.log("User signed out successfully.");
-    }).catch((error) => {
-      console.error("Error signing out:", error);
+      } else {
+        // User is signed out.
+        console.log("User is not logged in. Redirecting to login page.");
+        window.location.href = 'login.html';
+      }
     });
-  });
 
-  // Add event listener to the "Create Project" button
-  createProjectBtn.addEventListener('click', () => {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center';
-      modal.innerHTML = `
-        <div class="p-8 border w-96 shadow-lg rounded-md bg-white">
-          <h3 class="text-lg font-bold">Create Project</h3>
-          <p class="text-sm text-gray-500 mt-2">
-            Create Project button clicked! You can add a form or a modal here.
-          </p>
-          <div class="mt-4 flex justify-end">
-            <button id="closeModal" class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              Close
-            </button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-
-      document.getElementById('closeModal').addEventListener('click', () => {
-          document.body.removeChild(modal);
+    // Add an event listener to the Sign Out button
+    signOutBtn.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        console.log("User signed out successfully.");
+      }).catch((error) => {
+        console.error("Error signing out:", error);
       });
-  });
-</script>
+    });
+
+    // Add event listener to the "Create Project" button
+    createProjectBtn.addEventListener('click', () => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center';
+        modal.innerHTML = `
+          <div class="p-8 border w-96 shadow-lg rounded-md bg-white">
+            <h3 class="text-lg font-bold">Create Project</h3>
+            <p class="text-sm text-gray-500 mt-2">
+              Create Project button clicked! You can add a form or a modal here.
+            </p>
+            <div class="mt-4 flex justify-end">
+              <button id="closeModal" class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Close
+              </button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+    });
+  </script>
+</body>
+</html>
