@@ -105,16 +105,16 @@
     // Global variables provided by the environment
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-    // Firebase configuration from your project
+    // Your web app's Firebase configuration (corrected)
     const firebaseConfig = {
-      apiKey: "AIzaSyDMdxriLa_8LDxnEt6o8FhQgzuoFrGCY1M",
+      apiKey: "AIzaSyAaGp3HXLD5QQnkHSODAmyTOvqbPlF4sCo",
       authDomain: "concretelive.firebaseapp.com",
       projectId: "concretelive",
-      storageBucket: "concretelive.firebasestorage.app",
+      storageBucket: "concretelive.appspot.com",
       messagingSenderId: "605153900631",
-      appId: "1:605153900631:web:aec2f5b8011174b7348b12"
+      appId: "1:605153900631:web:68c72f63bdb2929a348b12"
     };
-
+    
     let app;
     let auth;
     let db;
@@ -137,11 +137,11 @@
         if (user) {
           // User is authenticated, proceed with dashboard
           userId = user.uid;
-          userNameElement.textContent = `User ID: ${userId}`;
-          userEmailElement.textContent = user.email || `Anonymous User`;
+          userNameElement.textContent = user.displayName || 'User';
+          userEmailElement.textContent = user.email || 'Anonymous User';
           lucide.createIcons();
           
-          // Define the correct Firestore path using the authenticated user's ID and app ID
+          // CORRECT Firestore path using the authenticated user's ID
           const COLLECTION_PATH = collection(db, 'artifacts', appId, 'users', userId, 'strencrete_entries');
           
           // Listen for data changes
@@ -194,6 +194,7 @@
     } catch (error) {
       userNameElement.textContent = "Error";
       userEmailElement.textContent = "Firebase initialization failed: " + error.message;
+      console.error(error);
     }
 
     // Sign out
