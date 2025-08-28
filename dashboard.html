@@ -99,12 +99,13 @@
   <script type="module">
     // Using Firebase version 9.8.1 from your code
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
+    import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
     import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js';
 
     // Global variables provided by the environment
     const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : null);
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
     let app;
     let auth;
@@ -117,13 +118,32 @@
     const signOutBtn = document.getElementById('signOutBtn');
     const createProjectBtn = document.getElementById('createProjectBtn');
     const projectsContent = document.getElementById('projectsContent');
-    const modalContainer = document.getElementById('modalContainer');
 
     // --- Firebase Initialization and Authentication ---
     if (firebaseConfig) {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
       db = getFirestore(app);
+
+      // Function to handle initial sign-in
+      const signInWithToken = async () => {
+        try {
+          if (initialAuthToken) {
+            await signInWithCustomToken(auth, initialAuthToken);
+            console.log("Signed in with custom token.");
+          } else {
+            await signInAnonymously(auth);
+            console.log("Signed in anonymously.");
+          }
+        } catch (error) {
+          console.error("Authentication failed:", error);
+          userNameElement.textContent = "Auth Error";
+          userEmailElement.textContent = error.message;
+        }
+      };
+
+      // Call the sign-in function on load
+      signInWithToken();
 
       onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -190,12 +210,13 @@
 
     // Sign out
     signOutBtn.addEventListener('click', () => {
+      if (!auth) {
+        console.error("Firebase Auth is not initialized.");
+        return;
+      }
       signOut(auth).then(() => {
         console.log("User signed out.");
-        userNameElement.textContent = 'Loading...';
-        userEmailElement.textContent = '';
-        // Redirect to login page after signing out
-        window.location.href = 'login.html';
+        // The onAuthStateChanged listener will handle the redirect
       }).catch(error => {
         console.error("Sign out failed:", error);
       });
