@@ -99,13 +99,21 @@
   <script type="module">
     // Using Firebase version 9.8.1 from your code
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
+    import { getAuth, onAuthStateChanged, signOut, signInAnonymously } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
     import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js';
 
     // Global variables provided by the environment
-    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : null);
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // Firebase configuration from your project
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMdxriLa_8LDxnEt6o8FhQgzuoFrGCY1M",
+      authDomain: "concretelive.firebaseapp.com",
+      projectId: "concretelive",
+      storageBucket: "concretelive.firebasestorage.app",
+      messagingSenderId: "605153900631",
+      appId: "1:605153900631:web:aec2f5b8011174b7348b12"
+    };
 
     let app;
     let auth;
@@ -120,37 +128,26 @@
     const projectsContent = document.getElementById('projectsContent');
 
     // --- Firebase Initialization and Authentication ---
-    if (firebaseConfig) {
+    try {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
       db = getFirestore(app);
 
-      // Function to handle initial sign-in
-      const signInWithToken = async () => {
-        try {
-          if (initialAuthToken) {
-            await signInWithCustomToken(auth, initialAuthToken);
-            console.log("Signed in with custom token.");
-          } else {
-            await signInAnonymously(auth);
-            console.log("Signed in anonymously.");
-          }
-        } catch (error) {
-          console.error("Authentication failed:", error);
-          userNameElement.textContent = "Auth Error";
-          userEmailElement.textContent = error.message;
-        }
-      };
-
-      // Call the sign-in function on load
-      signInWithToken();
+      // Sign in anonymously on load
+      signInAnonymously(auth).then(() => {
+        console.log("Signed in anonymously.");
+      }).catch(error => {
+        console.error("Authentication failed:", error);
+        userNameElement.textContent = "Auth Error";
+        userEmailElement.textContent = error.message;
+      });
 
       onAuthStateChanged(auth, (user) => {
         if (user) {
           // User is authenticated, proceed with dashboard
           userId = user.uid;
-          userNameElement.textContent = user.displayName || 'Strencrete User';
-          userEmailElement.textContent = user.email || `User ID: ${userId}`;
+          userNameElement.textContent = `User ID: ${userId}`;
+          userEmailElement.textContent = user.email || `Anonymous User`;
           lucide.createIcons();
           
           // Define the correct Firestore path using the authenticated user's ID and app ID
@@ -203,9 +200,9 @@
           window.location.href = 'login.html';
         }
       });
-    } else {
-        userNameElement.textContent = "Error";
-        userEmailElement.textContent = "Firebase config missing.";
+    } catch (error) {
+      userNameElement.textContent = "Error";
+      userEmailElement.textContent = "Firebase initialization failed: " + error.message;
     }
 
     // Sign out
