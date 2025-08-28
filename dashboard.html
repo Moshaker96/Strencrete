@@ -100,13 +100,13 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    // Using Firebase version 9.6.1 for consistency with your login page
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     // Global variables provided by the environment
     const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : null);
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
     let app;
@@ -128,9 +128,10 @@
       auth = getAuth(app);
       db = getFirestore(app);
 
-      // Authenticate with the provided token or anonymously
-      onAuthStateChanged(auth, async (user) => {
+      // We only need to listen for the auth state. The login page handles signing in.
+      onAuthStateChanged(auth, (user) => {
         if (user) {
+          // User is authenticated, proceed with dashboard
           userId = user.uid;
           userNameElement.textContent = user.displayName || 'Strencrete User';
           userEmailElement.textContent = user.email || `User ID: ${userId}`;
@@ -182,17 +183,8 @@
           });
 
         } else {
-          // If no user is authenticated, sign them in with the custom token or anonymously
-          try {
-            if (initialAuthToken) {
-              await signInWithCustomToken(auth, initialAuthToken);
-            } else {
-              await signInAnonymously(auth);
-            }
-          } catch (error) {
-            console.error("Authentication failed:", error);
-            // In a real app, you might show an error message to the user
-          }
+          // User is not authenticated, redirect to login page
+          window.location.href = 'login.html';
         }
       });
     } else {
@@ -206,6 +198,8 @@
         console.log("User signed out.");
         userNameElement.textContent = 'Loading...';
         userEmailElement.textContent = '';
+        // Redirect to login page after signing out
+        window.location.href = 'login.html';
       }).catch(error => {
         console.error("Sign out failed:", error);
       });
