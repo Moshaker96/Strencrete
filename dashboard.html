@@ -23,16 +23,13 @@
 <body class="flex flex-col md:flex-row min-h-screen">
 
   <!-- Sidebar -->
-  <aside class="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0 rounded-r-2xl">
+  <aside class="w-full md:w-64 bg-white shadow-lg p-6 flex-shrink-0">
     <div class="flex items-center justify-center md:justify-start mb-8">
-      <!-- Placeholder logo with a more modern feel -->
-      <div class="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center shadow-lg">
-        <span class="text-white text-3xl font-bold">SC</span>
-      </div>
+      <img src="strencrete-logo.jpg" onerror="this.onerror=null;this.src='https://placehold.co/96x96/e5e7eb/6b7280?text=LOGO';" alt="Strencrete Logo" class="w-24 h-auto rounded-lg shadow-md">
     </div>
     <div class="text-center md:text-left mb-8">
-      <h2 class="text-lg font-bold text-gray-900" id="userName">Loading...</h2>
-      <p class="text-sm text-gray-500" id="userEmail"></p>
+      <h2 class="text-lg font-bold text-gray-900" id="userName">Welcome, User</h2>
+      <p class="text-sm text-gray-500" id="userEmail">user@example.com</p>
     </div>
     <nav class="space-y-2">
       <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-150 ease-in-out">
@@ -47,13 +44,13 @@
   </aside>
 
   <!-- Main Content -->
-  <main class="flex-grow p-8 overflow-y-auto">
+  <main class="flex-grow p-8">
     <header class="mb-8 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
       <div>
         <h1 class="text-3xl font-bold text-gray-900">Strencrete Overview</h1>
         <p class="text-gray-600">Monitor and manage your Strencrete data in real-time.</p>
       </div>
-      <button id="createProjectBtn" class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out flex items-center space-x-2">
+      <button id="createProjectBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out flex items-center space-x-2">
         <i data-lucide="plus"></i>
         <span>Add Entry</span>
       </button>
@@ -67,7 +64,7 @@
       </p>
     </div>
   </main>
-
+  
   <!-- Modal for creating a new entry -->
   <div id="modalContainer" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
     <div class="bg-white p-8 border w-11/12 md:w-96 shadow-lg rounded-2xl">
@@ -100,10 +97,10 @@
   </div>
 
   <script type="module">
-    // Using Firebase version 9.6.1 for consistency with your login page
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    // Using Firebase version 9.8.1 from your code
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js';
+    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js';
 
     // Global variables provided by the environment
     const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : null);
@@ -128,7 +125,6 @@
       auth = getAuth(app);
       db = getFirestore(app);
 
-      // We only need to listen for the auth state. The login page handles signing in.
       onAuthStateChanged(auth, (user) => {
         if (user) {
           // User is authenticated, proceed with dashboard
@@ -137,7 +133,7 @@
           userEmailElement.textContent = user.email || `User ID: ${userId}`;
           lucide.createIcons();
           
-          // Define the correct Firestore path for the current user and app
+          // Define the correct Firestore path using the authenticated user's ID and app ID
           const COLLECTION_PATH = collection(db, 'artifacts', appId, 'users', userId, 'strencrete_entries');
           
           // Listen for data changes
@@ -207,57 +203,89 @@
 
     // --- Modal and Form Logic ---
     createProjectBtn.addEventListener('click', () => {
-      modalContainer.classList.remove('hidden');
-    });
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center';
+      modal.innerHTML = `
+        <div class="bg-white p-8 border w-11/12 md:w-96 shadow-lg rounded-2xl">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Add Strencrete Entry</h3>
+          <form id="createProjectForm" class="space-y-4">
+            <div>
+              <label for="projectName" class="block text-sm font-medium text-gray-700">Name</label>
+              <input type="text" id="projectName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" required>
+            </div>
+            <div>
+              <label for="projectStatus" class="block text-sm font-medium text-gray-700">Status</label>
+              <select id="projectStatus" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" required>
+                <option value="Active">Active</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Completed">Completed</option>
+                <option value="Archived">Archived</option>
+              </select>
+            </div>
+            <div>
+              <label for="sensorCount" class="block text-sm font-medium text-gray-700">Number of Sensors</label>
+              <input type="number" id="sensorCount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" value="0" min="0" required>
+            </div>
+            <div class="mt-4 flex flex-col md:flex-row justify-end items-center space-y-2 md:space-y-0 md:space-x-2">
+              <p id="formStatus" class="text-sm text-gray-500 mr-auto"></p>
+              <button type="button" id="closeModal" class="w-full md:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-300">Cancel</button>
+              <button type="submit" id="submitProject" class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700">Save</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
 
-    modalContainer.addEventListener('click', (e) => {
-      if (e.target.id === 'modalContainer' || e.target.id === 'closeModal') {
-        modalContainer.classList.add('hidden');
-      }
-    });
+      modal.addEventListener('click', (e) => {
+        if (e.target.id === 'modalContainer' || e.target.id === 'closeModal') {
+          modal.remove();
+        }
+      });
 
-    document.getElementById('createProjectForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitButton = document.getElementById('submitProject');
-      const formStatus = document.getElementById('formStatus');
-      submitButton.disabled = true;
-      formStatus.textContent = "Saving...";
+      document.getElementById('createProjectForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitButton = document.getElementById('submitProject');
+        const formStatus = document.getElementById('formStatus');
+        submitButton.disabled = true;
+        formStatus.textContent = "Saving...";
 
-      const projectName = document.getElementById('projectName').value.trim();
-      const projectStatus = document.getElementById('projectStatus').value;
-      const sensorCount = parseInt(document.getElementById('sensorCount').value, 10);
+        const projectName = document.getElementById('projectName').value.trim();
+        const projectStatus = document.getElementById('projectStatus').value;
+        const sensorCount = parseInt(document.getElementById('sensorCount').value, 10);
 
-      if (!projectName || !projectStatus) {
-        formStatus.textContent = "Error: Missing required fields.";
-        submitButton.disabled = false;
-        return;
-      }
-      
-      if (!db || !userId) {
-        formStatus.textContent = "Error: Authentication not ready.";
-        submitButton.disabled = false;
-        return;
-      }
+        if (!projectName || !projectStatus) {
+          formStatus.textContent = "Error: Missing required fields.";
+          submitButton.disabled = false;
+          return;
+        }
 
-      const payload = {
-        name: projectName,
-        status: projectStatus,
-        sensors: sensorCount,
-        createdAt: serverTimestamp()
-      };
+        if (!db || !userId) {
+          formStatus.textContent = "Error: Authentication not ready. Please try refreshing the page.";
+          submitButton.disabled = false;
+          return;
+        }
 
-      console.log("Adding document to Firestore:", payload);
+        const payload = {
+          name: projectName,
+          status: projectStatus,
+          sensors: sensorCount,
+          createdAt: serverTimestamp()
+        };
 
-      try {
-        const COLLECTION_PATH = collection(db, 'artifacts', appId, 'users', userId, 'strencrete_entries');
-        await addDoc(COLLECTION_PATH, payload);
-        formStatus.textContent = "Saved!";
-        setTimeout(() => modalContainer.classList.add('hidden'), 1500);
-      } catch (error) {
-        console.error("Firestore write failed:", error);
-        formStatus.textContent = "Error: " + error.message;
-        submitButton.disabled = false;
-      }
+        console.log("Adding document to Firestore:", payload);
+
+        try {
+          const COLLECTION_PATH = collection(db, 'artifacts', appId, 'users', userId, 'strencrete_entries');
+          await addDoc(COLLECTION_PATH, payload);
+          formStatus.textContent = "Saved!";
+          setTimeout(() => modal.remove(), 1500);
+        } catch (error) {
+          console.error("Firestore write failed:", error);
+          formStatus.textContent = "Error: " + error.message;
+          submitButton.disabled = false;
+        }
+      });
     });
   </script>
 </body>
