@@ -18,7 +18,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* Sophisticated industrial dark mode slate background */
+            background-color: #0f172a; 
             color: #f8fafc;
             margin: 0;
             padding: 0;
@@ -70,45 +70,53 @@
         }
 
         /* ==========================================================================
-           NEW HEARTBEAT PULSE ANIMATION (Ultrasonic Echo Design)
+           HIGH-VISIBILITY STRUCTURAL HEARTBEAT (Ultrasonic Radar Sweep)
            ========================================================================== */
+        .heartbeat-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 5; /* Forces the pulse out in front of the background grid */
+        }
+
         .heartbeat-pulse {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 150vmax;
-            height: 150vmax;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(6, 182, 212, 0.04) 40%, transparent 70%);
+            width: 140vmax;
+            height: 140vmax;
+            /* Enhanced bright cyan and vibrant blue radial mix */
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.22) 0%, rgba(59, 130, 246, 0.08) 35%, transparent 65%);
+            border-radius: 50%;
             opacity: 0;
-            pointer-events: none;
-            z-index: 1;
-            animation: structural-heartbeat 4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+            animation: structural-heartbeat 3.5s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
         }
 
-        /* Double-pulse rhythm (lub-dub action) */
+        /* Highly visible dual-beat telemetry sequence */
         @keyframes structural-heartbeat {
             0% {
-                transform: translate(-50%, -50%) scale(0.35);
+                transform: translate(-50%, -50%) scale(0.1);
                 opacity: 0;
             }
-            8% {
-                opacity: 1;
+            5% {
+                opacity: 0.9; /* Strong initial spike */
             }
-            22% {
-                transform: translate(-50%, -50%) scale(0.65);
-                opacity: 0.15;
+            20% {
+                transform: translate(-50%, -50%) scale(0.45);
+                opacity: 0.2;
             }
-            28% {
-                transform: translate(-50%, -50%) scale(0.62);
-                opacity: 0.35; /* Secondary echo thump */
+            25% {
+                transform: translate(-50%, -50%) scale(0.42);
+                opacity: 0.6; /* The distinct secondary 'thump-thump' echo */
             }
-            45% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0;
+            60% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0; /* Smooth dispersion into the dark background */
             }
             100% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: translate(-50%, -50%) scale(1.1);
                 opacity: 0;
             }
         }
@@ -143,8 +151,10 @@
         <!-- Grid Matrix Layout Base -->
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 z-0"></div>
         
-        <!-- Live Ultrasonic Heartbeat Pulse Layer -->
-        <div class="heartbeat-pulse"></div>
+        <!-- 🟢 Fixed High-Visibility Heartbeat Pulse Container Layer -->
+        <div class="heartbeat-container">
+            <div class="heartbeat-pulse"></div>
+        </div>
         
         <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-12 gap-12 items-center relative z-10">
             <div class="lg:col-span-7 text-left space-y-6">
@@ -363,7 +373,6 @@
 
     <!-- Vanilla Javascript Logic Core -->
     <script>
-        // High-performance smooth scrolling architecture mapping setup hooks
         function scrollToSection(sectionId) {
             const element = document.getElementById(sectionId);
             if (element) {
@@ -377,12 +386,11 @@
             }
         }
 
-        // Modern Intersection Observer interface tracking fade-in rendering loops
         const scrollRevealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    scrollRevealObserver.unobserve(entry.target); // Kill layout element watch processing loop instantly post-reveal
+                    scrollRevealObserver.unobserve(entry.target); 
                 }
             });
         }, {
