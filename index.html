@@ -67,25 +67,6 @@
             opacity: 1;
         }
 
-        /* Nav Link Hover Effect */
-        .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: #3b82f6;
-            transition: width 0.3s ease;
-        }
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
         /* ==========================================================================
            HIGH-VISIBILITY STRUCTURAL HEARTBEAT (Optimized Telemetry Loop)
            ========================================================================== */
@@ -139,20 +120,22 @@
 </head>
 <body class="antialiased selection:bg-blue-500 selection:text-white">
 
-    <nav class="fixed top-0 w-full z-50 bg-slate-950/40 backdrop-blur-md border-b border-slate-900/60">
-        <div class="max-w-7xl mx-auto flex items-center justify-between py-5 px-8">
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto flex items-center justify-between py-4 px-6">
             <a href="#" class="flex items-center space-x-3 group">
-                <img src="strencrete-logo.jpg" alt="Strencrete" class="w-9 h-9 object-cover rounded-md opacity-90 group-hover:opacity-100 transition-opacity">
-                <span class="font-bold text-xl tracking-tight text-white">Strencrete</span>
+                <div class="relative w-11 h-11 overflow-hidden rounded-xl border border-slate-200 shadow-sm transition-transform group-hover:scale-105">
+                    <img src="strencrete-logo.jpg" alt="Strencrete" class="w-full h-full object-cover">
+                </div>
+                <span class="font-extrabold text-2xl tracking-tight text-slate-900">Strencrete</span>
             </a>
             
-            <div class="hidden md:flex items-center space-x-10 text-xs uppercase tracking-widest font-semibold">
-                <button onclick="scrollToSection('about')" class="nav-link text-slate-400 hover:text-slate-100 transition-colors cursor-pointer">About</button>
-                <button onclick="scrollToSection('solution')" class="nav-link text-slate-400 hover:text-slate-100 transition-colors cursor-pointer">Solution</button>
-                <button onclick="scrollToSection('benefits')" class="nav-link text-slate-400 hover:text-slate-100 transition-colors cursor-pointer">Benefits</button>
+            <div class="hidden md:flex items-center space-x-8 font-semibold text-sm tracking-wide">
+                <button onclick="scrollToSection('about')" class="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">About</button>
+                <button onclick="scrollToSection('solution')" class="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Solution</button>
+                <button onclick="scrollToSection('benefits')" class="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Benefits</button>
                 
-                <a href="https://live.strencrete.com/" class="inline-flex items-center space-x-2 text-blue-400 hover:text-white bg-blue-950/30 hover:bg-blue-600 border border-blue-900/60 hover:border-blue-500 px-5 py-2.5 rounded-lg transition-all duration-300 shadow-sm font-bold tracking-wider">
-                    <i class="fa-solid fa-square-terminal text-[10px]"></i>
+                <a href="https://live.strencrete.com/" class="flex items-center space-x-2 text-white bg-slate-950 hover:bg-blue-600 transition-all duration-300 px-5 py-2.5 rounded-xl border border-slate-900 shadow-sm font-medium">
+                    <i class="fa-solid fa-chart-line text-xs text-blue-400"></i>
                     <span>Console Log-In</span>
                 </a>
             </div>
