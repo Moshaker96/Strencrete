@@ -294,7 +294,7 @@
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
                             </span>
-                            <span class="text-xs font-mono text-slate-300">WebGL Procedural Box Framework Engine v3.1</span>
+                            <span class="text-xs font-mono text-slate-300">WebGL High-Fidelity Infrastructure Engine v4.0</span>
                         </div>
                         <div class="flex items-center space-x-3 text-xs text-slate-500">
                             <span class="px-2 py-0.5 bg-slate-950 rounded text-slate-400 font-mono">Dynamic Mockup</span>
@@ -302,10 +302,10 @@
                         </div>
                     </div>
 
-                    <div class="flex-1 relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 min-h-[380px]">
+                    <div class="flex-1 relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 min-h-[420px]">
                         <div id="bim-loader" class="absolute inset-0 z-30 bg-slate-950/90 flex flex-col items-center justify-center text-center p-4 transition-opacity duration-500">
                             <div class="w-12 h-12 border-2 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
-                            <p class="text-xs font-mono text-slate-400 tracking-wider">GENERATING PROCEDURAL BOX MODEL...</p>
+                            <p class="text-xs font-mono text-slate-400 tracking-wider">GENERATING HIGH-FIDELITY STRUCTURAL MODEL...</p>
                         </div>
                         
                         <canvas id="three-canvas" class="w-full h-full block absolute inset-0 z-10"></canvas>
@@ -465,36 +465,70 @@
     </footer>
 
     <script>
-        let scene, camera, renderer, modelGroup;
+        let scene, camera, renderer, modelGroup, concreteTexture;
         const container = document.getElementById('three-canvas').parentElement;
         const canvasElement = document.getElementById('three-canvas');
 
-        // Target dictionary storing structural elements
         const structuralElements = {};
+        const sensorNodes = [];
+
+        // Procedural generation of raw concrete textures with aggregate grain noise
+        function createProceduralConcreteTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Gray base color spectrum matching standard Portland cement matrix
+            ctx.fillStyle = '#7a848f';
+            ctx.fillRect(0, 0, 512, 512);
+
+            // Add fine matte speck variations
+            for (let i = 0; i < 40000; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const size = Math.random() * 1.5;
+                const opacity = Math.random() * 0.15;
+                ctx.fillStyle = Math.random() > 0.5 ? `rgba(255,255,255,${opacity})` : `rgba(0,0,0,${opacity * 1.3})`;
+                ctx.fillRect(x, y, size, size);
+            }
+
+            // Simulate structural formwork shutter board grain line impressions
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.lineWidth = 1;
+            for (let j = 0; j < 512; j += 64) {
+                ctx.beginPath();
+                ctx.moveTo(0, j);
+                ctx.lineTo(512, j);
+                ctx.stroke();
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            return texture;
+        }
 
         function initThreeEngine() {
-            // Scene Setup
             scene = new THREE.Scene();
-            scene.background = new THREE.Color('#0b1329');
+            scene.background = new THREE.Color('#090f1d');
 
-            // Camera Setup
-            camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
-            camera.position.set(4, 3.5, 6.5);
+            camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100);
+            camera.position.set(4.5, 4, 7);
             camera.lookAt(0, 0, 0);
 
-            // Lighting Matrix Setup
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            // Balanced lighting layout for architectural highlights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
             scene.add(ambientLight);
 
-            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight1.position.set(6, 10, 8);
-            scene.add(directionalLight1);
+            const primaryLight = new THREE.DirectionalLight(0xfff3e0, 0.85); // Soft overhead key light
+            primaryLight.position.set(5, 9, 6);
+            scene.add(primaryLight);
 
-            const directionalLight2 = new THREE.DirectionalLight(0x3b82f6, 0.4);
-            directionalLight2.position.set(-6, -4, -3);
-            scene.add(directionalLight2);
+            const fillLight = new THREE.DirectionalLight(0x3b82f6, 0.4); // Cool side bounce light
+            fillLight.position.set(-6, 2, -2);
+            scene.add(fillLight);
 
-            // Renderer Configuration
             renderer = new THREE.WebGLRenderer({ canvas: canvasElement, antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -502,77 +536,140 @@
             modelGroup = new THREE.Group();
             scene.add(modelGroup);
 
-            // Generate Procedural Industrial Box Segment Layout
-            generateProceduralBoxSegment();
+            concreteTexture = createProceduralConcreteTexture();
 
-            // Clear Loading Overlay Screen
+            // Run structural generation matrix
+            generateHighFidelityStructure();
+
             document.getElementById('bim-loader').style.opacity = '0';
             setTimeout(() => document.getElementById('bim-loader').style.display = 'none', 500);
 
-            // Run Frame Tick Loops
             window.requestAnimationFrame(tickLoop);
         }
 
-        function generateProceduralBoxSegment() {
-            const length = 3.0; // depth along Z axis
+        function generateHighFidelityStructure() {
+            const length = 3.2; // dimension matching standard casting links
             
-            // --- 1. ELEMENT A: SEGMENT 24 (Normal Base Slab Floor Mesh) ---
-            const baseGeo = new THREE.BoxGeometry(3.6, 0.35, length);
+            // --- 1. ELEMENT A: SEGMENT 24 (Base Slab with Keyway joint profiles) ---
+            const baseGroup = new THREE.Group();
             const baseMat = new THREE.MeshStandardMaterial({ 
-                color: 0x10b981, roughness: 0.5, metalness: 0.1 
+                map: concreteTexture, color: 0x8fa095, roughness: 0.78, metalness: 0.05
             });
-            const baseSlab = new THREE.Mesh(baseGeo, baseMat);
-            baseSlab.position.set(0, -0.9, 0);
-            baseSlab.name = "Segment_24_InvertSlab";
-            modelGroup.add(baseSlab);
-            structuralElements["Segment_24_InvertSlab"] = baseSlab;
+            concreteTexture.repeat.set(1.5, 1.5);
 
-            // --- 2. ELEMENT B: SEGMENT 25 (Left & Right Side Walls Group) ---
+            // Left & Right sub-components detailing a recessed center construction joint channel
+            const leftBase = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.4, length), baseMat);
+            leftBase.position.set(-1.0, 0, 0);
+            const rightBase = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.4, length), baseMat);
+            rightBase.position.set(1.0, 0, 0);
+            const centerBase = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.32, length), baseMat);
+            centerBase.position.set(0, -0.04, 0);
+
+            baseGroup.add(leftBase, rightBase, centerBase);
+            baseGroup.position.set(0, -1.0, 0);
+            baseGroup.name = "Segment_24_InvertSlab";
+            modelGroup.add(baseGroup);
+            structuralElements["Segment_24_InvertSlab"] = baseGroup;
+
+            // --- 2. ELEMENT B: SEGMENT 25 (High-Fidelity Vertical Structural Side Walls) ---
             const wallsGroup = new THREE.Group();
-            const wallGeo = new THREE.BoxGeometry(0.35, 1.5, length);
             const wallMat = new THREE.MeshStandardMaterial({ 
-                color: 0x22d3ee, roughness: 0.4, metalness: 0.1 
+                map: concreteTexture, color: 0x94b3c2, roughness: 0.72, metalness: 0.05
             });
-            
-            const leftWall = new THREE.Mesh(wallGeo, wallMat);
-            leftWall.position.set(-1.625, 0, 0);
-            
-            const rightWall = new THREE.Mesh(wallGeo, wallMat);
-            rightWall.position.set(1.625, 0, 0);
-            
-            wallsGroup.add(leftWall);
-            wallsGroup.add(rightWall);
+
+            const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.6, length), wallMat);
+            leftWall.position.set(-1.6, 0, 0);
+            const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.6, length), wallMat);
+            rightWall.position.set(1.6, 0, 0);
+
+            wallsGroup.add(leftWall, rightWall);
+            wallsGroup.position.set(0, 0, 0);
             wallsGroup.name = "Segment_25_StructuralWalls";
             modelGroup.add(wallsGroup);
             structuralElements["Segment_25_StructuralWalls"] = wallsGroup;
 
-            // --- 3. ELEMENT C: SEGMENT 28 (Structural Top Roof Slab Mesh) ---
-            const topGeo = new THREE.BoxGeometry(3.6, 0.35, length);
-            const topMat = new THREE.MeshStandardMaterial({ 
-                color: 0x3b82f6, roughness: 0.5, metalness: 0.1, transparent: true, opacity: 0.85
+            // --- 3. ELEMENT C: SEGMENT 28 (Structural Top Roof Slab + Detailed Internal Rebar Cage) ---
+            const topGroup = new THREE.Group();
+            
+            // Concrete shell wrapper
+            const topSlabConcrete = new THREE.Mesh(
+                new THREE.BoxGeometry(3.6, 0.4, length), 
+                new THREE.MeshStandardMaterial({ 
+                    map: concreteTexture, color: 0xa3b3cc, roughness: 0.7, metalness: 0.05,
+                    transparent: true, opacity: 0.65
+                })
+            );
+            topSlabConcrete.position.set(0, 0, 0);
+            topGroup.add(topSlabConcrete);
+
+            // High-fidelity structural rebar grid cage framework layout
+            const rebarMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.3, metalness: 0.8 });
+            const longBarGeo = new THREE.CylinderGeometry(0.015, 0.015, length, 8);
+            const transBarGeo = new THREE.CylinderGeometry(0.012, 0.012, 3.3, 8);
+
+            // Generate Longitudinal running rebar links
+            for (let x = -1.5; x <= 1.5; x += 0.4) {
+                const barTop = new THREE.Mesh(longBarGeo, rebarMat);
+                barTop.rotation.x = Math.PI / 2;
+                barTop.position.set(x, 0.1, 0);
+                
+                const barBottom = new THREE.Mesh(longBarGeo, rebarMat);
+                barBottom.rotation.x = Math.PI / 2;
+                barBottom.position.set(x, -0.1, 0);
+                
+                topGroup.add(barTop, barBottom);
+            }
+
+            // Generate Transverse cross stirrup link rings
+            for (let z = -length/2 + 0.2; z <= length/2 - 0.2; z += 0.35) {
+                const crossBar = new THREE.Mesh(transBarGeo, rebarMat);
+                crossBar.rotation.z = Math.PI / 2;
+                crossBar.position.set(0, 0.1, z);
+                topGroup.add(crossBar);
+            }
+
+            topGroup.position.set(0, 1.0, 0);
+            topGroup.name = "Segment_28_TopSlab";
+            modelGroup.add(topGroup);
+            structuralElements["Segment_28_TopSlab"] = topGroup;
+
+            // --- 4. EMBEDDED IoT TELEMETRY SENSOR HARDWARE NODES ---
+            const sensorGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.12, 16);
+            const sensorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.9 });
+            const lightGeo = new THREE.SphereGeometry(0.02, 8, 8);
+
+            const sensorPositions = [
+                new THREE.Vector3(-1.6, 0.2, 0.4),  // Left Wall Core Cluster Node
+                new THREE.Vector3(1.6, -0.3, -0.6)  // Right Wall Ambient Gradient Node
+            ];
+
+            sensorPositions.forEach((pos) => {
+                const nodeGroup = new THREE.Group();
+                const cylinder = new THREE.Mesh(sensorGeo, sensorMat);
+                cylinder.rotation.x = Math.PI / 2;
+                
+                const indicatorLight = new THREE.Mesh(lightGeo, new THREE.MeshBasicMaterial({ color: 0x22d3ee }));
+                indicatorLight.position.set(0, 0, 0.07);
+                
+                nodeGroup.add(cylinder, indicatorLight);
+                nodeGroup.position.copy(pos);
+                modelGroup.add(nodeGroup);
+                sensorNodes.push(indicatorLight); 
             });
-            const topSlab = new THREE.Mesh(topGeo, topMat);
-            topSlab.position.set(0, 0.9, 0);
-            topSlab.name = "Segment_28_TopSlab";
-            modelGroup.add(topSlab);
-            structuralElements["Segment_28_TopSlab"] = topSlab;
         }
 
-        // Panel Event Handlers modifying visual properties mapping to selections
         function focusElement(elementId) {
             document.getElementById('selected-bim-element').innerText = elementId;
             
-            // Reset Sidebar Buttons UI styles classes configuration
             ['btn-seg24', 'btn-seg25', 'btn-seg28'].forEach(id => {
-                const targetBtn = document.getElementById(id);
-                if (targetBtn) {
-                    targetBtn.classList.remove('border-cyan-500/40', 'bg-slate-900', 'shadow-[0_0_10px_rgba(34,211,238,0.05)]');
-                    targetBtn.classList.add('bg-slate-950', 'border-slate-800');
-                    targetBtn.querySelector('span').className = 'text-slate-400';
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.classList.remove('border-cyan-500/40', 'bg-slate-900', 'shadow-[0_0_10px_rgba(34,211,238,0.05)]');
+                    btn.classList.add('bg-slate-950', 'border-slate-800');
+                    btn.querySelector('span').className = 'text-slate-400';
                 }
             });
 
-            // Active matching item mapping logic
             let btnId = 'btn-seg25';
             if (elementId === 'Segment_24_InvertSlab') btnId = 'btn-seg24';
             if (elementId === 'Segment_28_TopSlab') btnId = 'btn-seg28';
@@ -584,20 +681,24 @@
                 activeBtn.querySelector('span').className = 'text-white';
             }
 
-            // Adjust element scales and highlights inside scene
             Object.keys(structuralElements).forEach(key => {
                 const item = structuralElements[key];
                 if(item) {
-                    const targetScale = (key === elementId) ? 1.05 : 1.0;
-                    item.scale.set(targetScale, targetScale, targetScale);
+                    const isSelected = (key === elementId);
                     
-                    // Traversal update for grouped meshes (like the two side walls) vs single meshes
                     item.traverse((child) => {
-                        if (child.isMesh && child.material && child.material.emissive) {
-                            if (key === elementId) {
-                                child.material.emissive = new THREE.Color('#06b6d4').multiplyScalar(0.25);
-                            } else {
-                                child.material.emissive = new THREE.Color('#000000');
+                        if (child.isMesh && child.material) {
+                            if (key === "Segment_28_TopSlab" && child.material.transparent) {
+                                // Dynamic visibility control revealing internal structural rebar when selected
+                                child.material.opacity = isSelected ? 0.35 : 0.75;
+                            }
+                            
+                            if (child.material.emissive) {
+                                if (isSelected) {
+                                    child.material.emissive = new THREE.Color('#06b6d4').multiplyScalar(0.2);
+                                } else {
+                                    child.material.emissive = new THREE.Color('#000000');
+                                }
                             }
                         }
                     });
@@ -605,44 +706,49 @@
             });
         }
 
-        // Viewport Control Functions
         function resetCameraView() {
-            camera.position.set(4, 3.5, 6.5);
+            camera.position.set(4.5, 4, 7);
             camera.lookAt(0, 0, 0);
             modelGroup.rotation.set(0, 0, 0);
         }
 
         function zoomBimModel(zoomIn) {
-            const ratio = zoomIn ? 0.85 : 1.15;
-            camera.position.multiplyScalar(ratio);
+            camera.position.multiplyScalar(zoomIn ? 0.88 : 1.12);
         }
 
-        // Animation Engine Loop Function
         const clock = new THREE.Clock();
         function tickLoop() {
             const elapsedTime = clock.getElapsedTime();
 
-            // Smooth rotational animation around assembly layout
             if(modelGroup) {
-                modelGroup.rotation.y = elapsedTime * 0.15;
+                modelGroup.rotation.y = elapsedTime * 0.1;
             }
 
-            // Emissive dynamic pulse animation mapped on the active side walls curing sequence
+            // Sync structural wall thermal mass pulse curves
             const hydratingWalls = structuralElements["Segment_25_StructuralWalls"];
             if (hydratingWalls) {
                 hydratingWalls.traverse((child) => {
-                    if (child.isMesh && child.material && child.material.emissive && child.scale.x === 1) {
-                        const intensity = 0.15 + Math.sin(elapsedTime * 3.5) * 0.1;
-                        child.material.emissive = new THREE.Color('#22d3ee').multiplyScalar(intensity);
+                    if (child.isMesh && child.material && child.material.emissive) {
+                        const activeSelector = document.getElementById('selected-bim-element').innerText;
+                        if (activeSelector !== "Segment_25_StructuralWalls") {
+                            const intensity = 0.12 + Math.sin(elapsedTime * 2.8) * 0.08;
+                            child.material.emissive = new THREE.Color('#0ea5e9').multiplyScalar(intensity);
+                        }
                     }
                 });
             }
+
+            // High-frequency telemetry light blinking loop
+            sensorNodes.forEach((light) => {
+                if (light.material) {
+                    light.material.color.setHex(Math.floor(elapsedTime * 4) % 2 === 0 ? 0x22d3ee : 0x016080);
+                }
+            });
 
             renderer.render(scene, camera);
             window.requestAnimationFrame(tickLoop);
         }
 
-        // Window resize layout management handler
         window.addEventListener('resize', () => {
             if (!container || !camera || !renderer) return;
             camera.aspect = container.clientWidth / container.clientHeight;
@@ -650,25 +756,21 @@
             renderer.setSize(container.clientWidth, container.clientHeight);
         });
 
-        // Trigger startup engine procedures on execution
         document.addEventListener('DOMContentLoaded', () => {
             initThreeEngine();
         });
 
-        // Section Scroll Navigation Helpers
         function scrollToSection(sectionId) {
             const element = document.getElementById(sectionId);
             if (element) {
                 const navHeight = document.querySelector('nav').offsetHeight;
-                const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
                 window.scrollTo({
-                    top: elementPosition - navHeight,
+                    top: element.getBoundingClientRect().top + window.pageYOffset - navHeight,
                     behavior: 'smooth'
                 });
             }
         }
 
-        // Reveal animations using standard intersection boundaries setup observers
         const scrollRevealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
