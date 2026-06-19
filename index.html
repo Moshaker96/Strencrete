@@ -312,7 +312,7 @@
                         
                         <div class="absolute top-4 left-4 z-20 bg-slate-900/90 border border-slate-700/50 backdrop-blur text-white px-3 py-1.5 rounded text-xs shadow font-mono pointer-events-none">
                             <span class="text-slate-500 mr-1">Selected Element:</span> 
-                            <span class="font-semibold text-cyan-400" id="selected-bim-element">Segment_25_StructuralWalls</span>
+                            <span class="font-semibold text-cyan-400" id="selected-bim-element">Segment_28_TopSlab</span>
                         </div>
 
                         <div class="absolute bottom-4 right-4 z-20 flex items-center space-x-1.5 bg-slate-900/80 border border-slate-800 p-1.5 rounded-lg text-slate-400">
@@ -342,19 +342,19 @@
                                     </div>
                                     <span class="text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-900/60 px-1.5 py-0.5 rounded">Cured</span>
                                 </div>
-                                <div id="btn-seg25" class="p-2.5 rounded-lg bg-slate-900 border border-cyan-500/40 shadow-[0_0_10px_rgba(34,211,238,0.05)] cursor-pointer flex items-center justify-between transition group" onclick="focusElement('Segment_25_StructuralWalls')">
-                                    <div class="flex items-center space-x-2 text-white">
-                                        <i class="fa-solid fa-layer-group text-cyan-400"></i>
+                                <div id="btn-seg25" class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 hover:border-cyan-500/50 cursor-pointer flex items-center justify-between transition group" onclick="focusElement('Segment_25_StructuralWalls')">
+                                    <div class="flex items-center space-x-2 text-slate-400">
+                                        <i class="fa-solid fa-layer-group text-slate-600 group-hover:text-cyan-400 transition-colors"></i>
                                         <span>Seg 25 - Left & Right Walls</span>
                                     </div>
-                                    <span class="text-[10px] text-cyan-400 bg-cyan-950/40 border border-cyan-800/60 px-1.5 py-0.5 rounded animate-pulse">Hydrating</span>
+                                    <span class="text-[10px] text-cyan-400 bg-cyan-950/40 border border-cyan-800/60 px-1.5 py-0.5 rounded">Hydrating</span>
                                 </div>
-                                <div id="btn-seg28" class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 hover:border-cyan-500/50 cursor-pointer flex items-center justify-between transition group" onclick="focusElement('Segment_28_TopSlab')">
-                                    <div class="flex items-center space-x-2 text-slate-400">
-                                        <i class="fa-solid fa-layer-group text-slate-700 group-hover:text-blue-400 transition-colors"></i>
+                                <div id="btn-seg28" class="p-2.5 rounded-lg bg-slate-900 border border-cyan-500/40 shadow-[0_0_10px_rgba(34,211,238,0.05)] cursor-pointer flex items-center justify-between transition group" onclick="focusElement('Segment_28_TopSlab')">
+                                    <div class="flex items-center space-x-2 text-white">
+                                        <i class="fa-solid fa-layer-group text-cyan-400"></i>
                                         <span>Seg 28 - Structural Top Slab</span>
                                     </div>
-                                    <span class="text-[10px] text-blue-400 bg-blue-950/40 border border-blue-900/60 px-1.5 py-0.5 rounded">Scheduled</span>
+                                    <span class="text-[10px] text-blue-400 bg-blue-950/40 border border-blue-900/60 px-1.5 py-0.5 rounded animate-pulse">Telemetry Activating</span>
                                 </div>
                             </div>
                         </div>
@@ -374,20 +374,22 @@
                                     </div>
                                 </div>
                                 <div class="relative">
-                                    <span class="absolute -left-[20.5px] top-0.5 bg-cyan-400 h-3 w-3 rounded-full border-2 border-slate-900 ring-4 ring-cyan-500/20"></span>
+                                    <span class="absolute -left-[20.5px] top-0.5 bg-emerald-500 h-3 w-3 rounded-full border-2 border-slate-900"></span>
                                     <div class="space-y-0.5">
-                                        <div class="text-white font-semibold flex items-center justify-between">
+                                        <div class="text-slate-200 font-semibold flex items-center justify-between">
                                             <span>Side Walls Curing Window</span>
-                                            <span class="font-mono text-[10px] text-cyan-400 animate-pulse">In Progress</span>
                                         </div>
-                                        <p class="text-[11px] text-slate-400 font-light">Wireless telemetry arrays calculating dynamic internal core hydration parameters.</p>
+                                        <p class="text-[11px] text-slate-500 font-light">Wireless telemetry arrays logging clean structural stability limits.</p>
                                     </div>
                                 </div>
                                 <div class="relative">
-                                    <span class="absolute -left-[20.5px] top-0.5 bg-blue-500 h-3 w-3 rounded-full border-2 border-slate-900"></span>
+                                    <span class="absolute -left-[20.5px] top-0.5 bg-cyan-400 h-3 w-3 rounded-full border-2 border-slate-900 ring-4 ring-cyan-500/20"></span>
                                     <div class="space-y-0.5">
-                                        <div class="text-slate-500 font-medium">Top Slab Formwork Assembly</div>
-                                        <p class="text-[11px] text-slate-600 font-light">Preparing falsework structures; tracking structural wall metrics for load clearances.</p>
+                                        <div class="text-white font-semibold flex items-center justify-between">
+                                            <span>Top Slab Live Telemetry Initialization</span>
+                                            <span class="font-mono text-[10px] text-cyan-400 animate-pulse">Active</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-400 font-light">3 Embedded smart nodes reporting live internal matrix readings.</p>
                                     </div>
                                 </div>
                             </div>
@@ -471,6 +473,7 @@
 
         const structuralElements = {};
         const sensorNodes = [];
+        const topSlabBeatingPulses = [];
 
         // Procedural generation of raw concrete textures with aggregate grain noise
         function createProceduralConcreteTexture() {
@@ -479,11 +482,10 @@
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            // Gray base color spectrum matching standard Portland cement matrix
             ctx.fillStyle = '#7a848f';
             ctx.fillRect(0, 0, 512, 512);
 
-            // Add fine matte speck variations
+            // Fine aggregate specks
             for (let i = 0; i < 40000; i++) {
                 const x = Math.random() * 512;
                 const y = Math.random() * 512;
@@ -493,7 +495,7 @@
                 ctx.fillRect(x, y, size, size);
             }
 
-            // Simulate structural formwork shutter board grain line impressions
+            // Shutter panel seams lines
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.04)';
             ctx.lineWidth = 1;
             for (let j = 0; j < 512; j += 64) {
@@ -517,15 +519,14 @@
             camera.position.set(4.5, 4, 7);
             camera.lookAt(0, 0, 0);
 
-            // Balanced lighting layout for architectural highlights
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
             scene.add(ambientLight);
 
-            const primaryLight = new THREE.DirectionalLight(0xfff3e0, 0.85); // Soft overhead key light
+            const primaryLight = new THREE.DirectionalLight(0xfff3e0, 0.85); 
             primaryLight.position.set(5, 9, 6);
             scene.add(primaryLight);
 
-            const fillLight = new THREE.DirectionalLight(0x3b82f6, 0.4); // Cool side bounce light
+            const fillLight = new THREE.DirectionalLight(0x3b82f6, 0.4); 
             fillLight.position.set(-6, 2, -2);
             scene.add(fillLight);
 
@@ -538,26 +539,26 @@
 
             concreteTexture = createProceduralConcreteTexture();
 
-            // Run structural generation matrix
             generateHighFidelityStructure();
 
             document.getElementById('bim-loader').style.opacity = '0';
             setTimeout(() => document.getElementById('bim-loader').style.display = 'none', 500);
 
+            // Default focus on Top Slab to show the new embedded elements instantly
+            focusElement('Segment_28_TopSlab');
+
             window.requestAnimationFrame(tickLoop);
         }
 
         function generateHighFidelityStructure() {
-            const length = 3.2; // dimension matching standard casting links
+            const length = 3.2; 
             
             // --- 1. ELEMENT A: SEGMENT 24 (Base Slab with Keyway joint profiles) ---
             const baseGroup = new THREE.Group();
             const baseMat = new THREE.MeshStandardMaterial({ 
                 map: concreteTexture, color: 0x8fa095, roughness: 0.78, metalness: 0.05
             });
-            concreteTexture.repeat.set(1.5, 1.5);
 
-            // Left & Right sub-components detailing a recessed center construction joint channel
             const leftBase = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.4, length), baseMat);
             leftBase.position.set(-1.0, 0, 0);
             const rightBase = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.4, length), baseMat);
@@ -571,7 +572,7 @@
             modelGroup.add(baseGroup);
             structuralElements["Segment_24_InvertSlab"] = baseGroup;
 
-            // --- 2. ELEMENT B: SEGMENT 25 (High-Fidelity Vertical Structural Side Walls) ---
+            // --- 2. ELEMENT B: SEGMENT 25 (Vertical Side Walls) ---
             const wallsGroup = new THREE.Group();
             const wallMat = new THREE.MeshStandardMaterial({ 
                 map: concreteTexture, color: 0x94b3c2, roughness: 0.72, metalness: 0.05
@@ -588,26 +589,24 @@
             modelGroup.add(wallsGroup);
             structuralElements["Segment_25_StructuralWalls"] = wallsGroup;
 
-            // --- 3. ELEMENT C: SEGMENT 28 (Structural Top Roof Slab + Detailed Internal Rebar Cage) ---
+            // --- 3. ELEMENT C: SEGMENT 28 (Structural Top Roof Slab + Detailed Internal Rebar) ---
             const topGroup = new THREE.Group();
             
-            // Concrete shell wrapper
             const topSlabConcrete = new THREE.Mesh(
                 new THREE.BoxGeometry(3.6, 0.4, length), 
                 new THREE.MeshStandardMaterial({ 
                     map: concreteTexture, color: 0xa3b3cc, roughness: 0.7, metalness: 0.05,
-                    transparent: true, opacity: 0.65
+                    transparent: true, opacity: 0.35
                 })
             );
             topSlabConcrete.position.set(0, 0, 0);
             topGroup.add(topSlabConcrete);
 
-            // High-fidelity structural rebar grid cage framework layout
-            const rebarMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.3, metalness: 0.8 });
+            // Rebar Cage Matrix
+            const rebarMat = new THREE.MeshStandardMaterial({ color: 0x54657a, roughness: 0.3, metalness: 0.8 });
             const longBarGeo = new THREE.CylinderGeometry(0.015, 0.015, length, 8);
             const transBarGeo = new THREE.CylinderGeometry(0.012, 0.012, 3.3, 8);
 
-            // Generate Longitudinal running rebar links
             for (let x = -1.5; x <= 1.5; x += 0.4) {
                 const barTop = new THREE.Mesh(longBarGeo, rebarMat);
                 barTop.rotation.x = Math.PI / 2;
@@ -620,7 +619,6 @@
                 topGroup.add(barTop, barBottom);
             }
 
-            // Generate Transverse cross stirrup link rings
             for (let z = -length/2 + 0.2; z <= length/2 - 0.2; z += 0.35) {
                 const crossBar = new THREE.Mesh(transBarGeo, rebarMat);
                 crossBar.rotation.z = Math.PI / 2;
@@ -628,34 +626,74 @@
                 topGroup.add(crossBar);
             }
 
+            // --- 4. THREE AUTOMATED BEATING SENSOR NODES EMBEDDED INSIDE TOP SLAB ---
+            const nodeGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.1, 12);
+            const nodeMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.1, metalness: 0.9 });
+            const ledGeo = new THREE.SphereGeometry(0.015, 8, 8);
+            
+            // Semi-transparent thermodynamic "beating" heat pulse sphere geometry
+            const pulseGeo = new THREE.SphereGeometry(0.3, 24, 24);
+
+            const slabSensorPositions = [
+                new THREE.Vector3(-1.0, 0.0, -0.8), // Left-flank sensor node
+                new THREE.Vector3(0.0, 0.0, 0.2),   // Core mid-span sensor node
+                new THREE.Vector3(1.1, 0.0, 0.7)    // Right-flank sensor node
+            ];
+
+            slabSensorPositions.forEach((pos, index) => {
+                const sensorContainer = new THREE.Group();
+                
+                // Hardware body mesh
+                const cylinder = new THREE.Mesh(nodeGeo, nodeMat);
+                cylinder.rotation.x = Math.PI / 2;
+                sensorContainer.add(cylinder);
+
+                // Live status telemetry core led indicators
+                const led = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: 0x22d3ee }));
+                led.position.set(0, 0, 0.052);
+                sensorContainer.add(led);
+                sensorNodes.push(led); 
+
+                // Thermodynamic pulse indicator mesh
+                const pulseMat = new THREE.MeshBasicMaterial({
+                    color: index === 1 ? 0xf97316 : 0x06b6d4, // core shows orange peak hydration heat; flanks show cyan
+                    transparent: true,
+                    opacity: 0.25,
+                    blending: THREE.AdditiveBlending
+                });
+                const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
+                sensorContainer.add(pulseMesh);
+                
+                // Offsetting phase loop arrays so they don't pulse perfectly uniformly
+                topSlabBeatingPulses.push({
+                    mesh: pulseMesh,
+                    baseScale: 1.0,
+                    phaseOffset: index * 1.8
+                });
+
+                sensorContainer.position.copy(pos);
+                topGroup.add(sensorContainer);
+            });
+
             topGroup.position.set(0, 1.0, 0);
             topGroup.name = "Segment_28_TopSlab";
             modelGroup.add(topGroup);
             structuralElements["Segment_28_TopSlab"] = topGroup;
 
-            // --- 4. EMBEDDED IoT TELEMETRY SENSOR HARDWARE NODES ---
-            const sensorGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.12, 16);
-            const sensorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.9 });
-            const lightGeo = new THREE.SphereGeometry(0.02, 8, 8);
-
-            const sensorPositions = [
-                new THREE.Vector3(-1.6, 0.2, 0.4),  // Left Wall Core Cluster Node
-                new THREE.Vector3(1.6, -0.3, -0.6)  // Right Wall Ambient Gradient Node
-            ];
-
-            sensorPositions.forEach((pos) => {
-                const nodeGroup = new THREE.Group();
-                const cylinder = new THREE.Mesh(sensorGeo, sensorMat);
-                cylinder.rotation.x = Math.PI / 2;
-                
-                const indicatorLight = new THREE.Mesh(lightGeo, new THREE.MeshBasicMaterial({ color: 0x22d3ee }));
-                indicatorLight.position.set(0, 0, 0.07);
-                
-                nodeGroup.add(cylinder, indicatorLight);
-                nodeGroup.position.copy(pos);
-                modelGroup.add(nodeGroup);
-                sensorNodes.push(indicatorLight); 
-            });
+            // --- 5. WALLS ADDITIONAL SENSOR TELEMETRY ---
+            const sideSensorGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.1, 12);
+            const sideSensorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.9 });
+            const sidePos = new THREE.Vector3(-1.6, 0.2, 0.4);
+            
+            const sideNode = new THREE.Group();
+            const sideCyl = new THREE.Mesh(sideSensorGeo, sideSensorMat);
+            sideCyl.rotation.x = Math.PI / 2;
+            const sideLed = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: 0x22d3ee }));
+            sideLed.position.set(0, 0, 0.052);
+            sideNode.add(sideCyl, sideLed);
+            sideNode.position.copy(sidePos);
+            wallsGroup.add(sideNode);
+            sensorNodes.push(sideLed);
         }
 
         function focusElement(elementId) {
@@ -689,16 +727,8 @@
                     item.traverse((child) => {
                         if (child.isMesh && child.material) {
                             if (key === "Segment_28_TopSlab" && child.material.transparent) {
-                                // Dynamic visibility control revealing internal structural rebar when selected
-                                child.material.opacity = isSelected ? 0.35 : 0.75;
-                            }
-                            
-                            if (child.material.emissive) {
-                                if (isSelected) {
-                                    child.material.emissive = new THREE.Color('#06b6d4').multiplyScalar(0.2);
-                                } else {
-                                    child.material.emissive = new THREE.Color('#000000');
-                                }
+                                // Keep visibility high to reveal rebar matrix and embedded pulse elements cleanly
+                                child.material.opacity = isSelected ? 0.35 : 0.85;
                             }
                         }
                     });
@@ -721,27 +751,23 @@
             const elapsedTime = clock.getElapsedTime();
 
             if(modelGroup) {
-                modelGroup.rotation.y = elapsedTime * 0.1;
+                modelGroup.rotation.y = elapsedTime * 0.12;
             }
 
-            // Sync structural wall thermal mass pulse curves
-            const hydratingWalls = structuralElements["Segment_25_StructuralWalls"];
-            if (hydratingWalls) {
-                hydratingWalls.traverse((child) => {
-                    if (child.isMesh && child.material && child.material.emissive) {
-                        const activeSelector = document.getElementById('selected-bim-element').innerText;
-                        if (activeSelector !== "Segment_25_StructuralWalls") {
-                            const intensity = 0.12 + Math.sin(elapsedTime * 2.8) * 0.08;
-                            child.material.emissive = new THREE.Color('#0ea5e9').multiplyScalar(intensity);
-                        }
-                    }
-                });
-            }
+            // Drive the heart-beat expanding thermodynamic loops on the 3 top slab nodes
+            topSlabBeatingPulses.forEach((pulse) => {
+                const wave = Math.sin(elapsedTime * 4.0 + pulse.phaseOffset);
+                // Expand radius dynamically
+                const scaleFactor = 0.65 + (wave + 1.0) * 0.45; 
+                pulse.mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                // Dim down transparency as the pulse wave moves outward to model a realistic heat dissipated glow
+                pulse.mesh.material.opacity = 0.35 - (scaleFactor * 0.2);
+            });
 
-            // High-frequency telemetry light blinking loop
+            // Status indicator hardware blinking cycle loops
             sensorNodes.forEach((light) => {
                 if (light.material) {
-                    light.material.color.setHex(Math.floor(elapsedTime * 4) % 2 === 0 ? 0x22d3ee : 0x016080);
+                    light.material.color.setHex(Math.floor(elapsedTime * 5) % 2 === 0 ? 0x22d3ee : 0x004c66);
                 }
             });
 
